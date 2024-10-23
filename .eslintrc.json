@@ -3,6 +3,10 @@
         "next/core-web-vitals",
         "next/typescript"
     ],
+    "ignorePatterns": [
+        "src/components/ui/*.tsx",
+        "next-env.d.ts"
+    ],
     "rules": {
         "indent": [
             "error",
