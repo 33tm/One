@@ -28,7 +28,8 @@
             "error",
             "never"
         ],
+        "react/display-name": "off",
         "import/no-anonymous-default-export": "off",
-        "react/display-name": "off"
+        "@typescript-eslint/consistent-type-imports": "error"
     }
 }
