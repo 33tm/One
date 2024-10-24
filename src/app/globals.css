@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    * {
+        @apply border-border;
+    }
+}
+
 :root {
     --background: #171717;
     --foreground: 0 0% 98%;
@@ -28,14 +34,4 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
-}
-
-@layer base {
-    * {
-        @apply font-sans border-border;
-    }
-
-    body {
-        @apply bg-background text-foreground;
-    }
 }
