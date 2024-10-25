@@ -4,18 +4,21 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext } from "@/contexts/UserContext"
 import { Button } from "@/components/ui/button"
 
-export function Auth() {
+export function AuthButton() {
     const { refresh } = useContext(UserContext)
     const [token, setToken] = useState<string | null>()
 
     useEffect(() => {
         const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL}/auth`)
         ws.onmessage = ({ data }) => {
-            if (data !== "auth")
-                return setToken(data)
-            ws.close()
-            refresh()
-            new BroadcastChannel("auth").postMessage("")
+            if (data === "auth") {
+                ws.close()
+                refresh()
+                new BroadcastChannel("auth").postMessage(null)
+            } else {
+                localStorage.setItem("token", data)
+                setToken(data)
+            }
         }
     }, [refresh])
 
