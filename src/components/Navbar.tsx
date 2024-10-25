@@ -3,7 +3,7 @@
 import Link from "next/link"
 
 import { useContext } from "react"
-import { UserContext } from "@/contexts/UserContext"
+import { AuthContext } from "@/contexts/AuthContext"
 import { SearchContext } from "@/contexts/SearchContext"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 
@@ -49,11 +49,9 @@ import {
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
-    const { user, logout } = useContext(UserContext)
+    const { user, logout } = useContext(AuthContext)
 
-    const desktop = useMediaQuery("(min-width: 768px)")
-
-    if (desktop) {
+    if (useMediaQuery("(min-width: 768px)")) {
         return (
             <div className="flex w-screen p-4">
                 <Link href="/" className="my-auto px-4">
@@ -117,32 +115,32 @@ export function Navbar() {
                 </div>
             </div>
         )
+    } else {
+        return (
+            <div className="flex w-screen p-4">
+                <Drawer>
+                    <DrawerTrigger asChild>
+                        <Button variant="ghost" className="w-10">
+                            <MenuIcon />
+                        </Button>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                        <DrawerHeader>
+                            <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                            <DrawerDescription>This action cannot be undone.</DrawerDescription>
+                        </DrawerHeader>
+                        <DrawerFooter>
+                            <Button variant="secondary">Submit</Button>
+                            <DrawerClose>
+                                <Button variant="outline">Cancel</Button>
+                            </DrawerClose>
+                        </DrawerFooter>
+                    </DrawerContent>
+                </Drawer>
+                <Link href="/" className="ml-auto my-auto px-4">
+                    <Circle strokeWidth={4} />
+                </Link>
+            </div>
+        )
     }
-
-    return (
-        <div className="flex w-screen p-4">
-            <Drawer>
-                <DrawerTrigger asChild>
-                    <Button variant="ghost" className="w-10">
-                        <MenuIcon />
-                    </Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                    <DrawerHeader>
-                        <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-                        <DrawerDescription>This action cannot be undone.</DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
-                        <Button variant="secondary">Submit</Button>
-                        <DrawerClose>
-                            <Button variant="outline">Cancel</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
-            <Link href="/" className="ml-auto my-auto px-4">
-                <Circle strokeWidth={4} />
-            </Link>
-        </div>
-    )
 }

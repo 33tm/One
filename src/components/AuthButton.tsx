@@ -1,38 +1,18 @@
 "use client"
 
-import { useContext, useEffect, useState } from "react"
-import { UserContext } from "@/contexts/UserContext"
+import { useContext } from "react"
+import { AuthContext } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 
-export function AuthButton() {
-    const { refresh } = useContext(UserContext)
-    const [token, setToken] = useState<string | null>()
-
-    useEffect(() => {
-        const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL}/auth`)
-        ws.onmessage = ({ data }) => {
-            if (data === "auth") {
-                ws.close()
-                refresh()
-                new BroadcastChannel("auth").postMessage(null)
-            } else {
-                localStorage.setItem("token", data)
-                setToken(data)
-            }
-        }
-    }, [refresh])
-
-    function auth() {
-        if (!token) return
-        window.open(
-            `https://pausd.schoology.com/oauth/authorize?oauth_token=${token}&oauth_callback=${process.env.NEXT_PUBLIC_CALLBACK_URL}`,
-            "_blank",
-            `popup, noreferrer, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
-        )
-    }
+export function AuthButton({ className }: { className?: string }) {
+    const { auth, loading } = useContext(AuthContext)
 
     return (
-        <Button onClick={auth} disabled={!token}>
+        <Button
+            onClick={auth}
+            disabled={loading}
+            className={className}
+        >
             Continue with Schoology
         </Button>
     )

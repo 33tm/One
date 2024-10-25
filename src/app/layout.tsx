@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 
-import { UserProvider } from "@/contexts/UserContext"
+import { AuthProvider } from "@/contexts/AuthContext"
 import { SearchProvider } from "@/contexts/SearchContext"
 
 import "@/app/globals.css"
@@ -15,11 +15,11 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
     return (
         <html lang="en">
             <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased font-sans text-foreground bg-background`}>
-                <UserProvider>
+                <AuthProvider>
                     <SearchProvider>
                         {children}
                     </SearchProvider>
-                </UserProvider>
+                </AuthProvider>
             </body>
         </html>
     )
