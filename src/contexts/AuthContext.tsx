@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useEffect, useState } from "react"
+import { createContext, useCallback, useEffect, useState } from "react"
 
 interface Section {
     id: string
@@ -37,16 +37,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     const [user, setUser] = useState<UserType | null>(null)
     const [token, setToken] = useState<string | null>(null)
 
-    function auth() {
-        if (!token) return
-        window.open(
-            `https://pausd.schoology.com/oauth/authorize?oauth_token=${token}&oauth_callback=${process.env.NEXT_PUBLIC_CALLBACK_URL}`,
-            "_blank",
-            `popup, noreferrer, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
-        )
-    }
-
-    function refresh() {
+    const refresh = useCallback(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify`, {
             method: "POST",
             credentials: "include"
@@ -67,6 +58,17 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                 }
             }
         })
+    }, [token])
+
+    useEffect(refresh, [refresh])
+
+    function auth() {
+        if (!token) return
+        window.open(
+            `https://pausd.schoology.com/oauth/authorize?oauth_token=${token}&oauth_callback=${process.env.NEXT_PUBLIC_CALLBACK_URL}`,
+            "_blank",
+            `popup, noreferrer, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
+        )
     }
 
     function logout() {
@@ -75,9 +77,6 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             credentials: "include"
         }).then(refresh)
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(refresh, [])
 
     const loading = !token
 

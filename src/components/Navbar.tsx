@@ -7,6 +7,7 @@ import { useContext } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 import { SearchContext } from "@/contexts/SearchContext"
 
+import { useSchedule } from "@/hooks/useSchedule"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 
 import { AuthButton } from "@/components/AuthButton"
@@ -48,15 +49,15 @@ import {
     User,
     Wrench
 } from "lucide-react"
-import { useSchedule } from "@/hooks/useSchedule"
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, logout } = useContext(AuthContext)
 
-    const schedule = useSchedule(user)
+    const desktop = useMediaQuery("(min-width: 768px)")
+    const { schedule, status } = useSchedule(user)
 
-    if (useMediaQuery("(min-width: 768px)")) {
+    if (desktop) {
         return (
             <div className="flex w-screen p-4">
                 <Link href="/" className="my-auto px-4">
@@ -78,8 +79,13 @@ export function Navbar() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <div className="flex ml-auto space-x-2">
-                    <div className="m-auto text-muted-foreground">
-                        {schedule}
+                    <div className={`m-auto pr-2 text-sm text-muted-foreground transition-opacity ease-in duration-200 ${!status && "opacity-0"}`}>
+                        {schedule && (
+                            <div className="flex space-x-1 hover:cursor-default">
+                                <p className="font-bold">{schedule.period}</p>
+                                <p>{schedule.start}-{schedule.end}</p>
+                            </div>
+                        )}
                     </div>
                     <Button
                         variant="outline"
@@ -125,7 +131,7 @@ export function Navbar() {
         )
     } else {
         return (
-            <div className="fixed flex bottom-0 w-screen p-4 outline">
+            <div className="fixed flex bottom-0 w-screen p-4">
                 <Drawer>
                     <DrawerTrigger asChild>
                         <Button variant="ghost" className="w-10">
