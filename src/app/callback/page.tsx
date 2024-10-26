@@ -1,11 +1,13 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 
 import { CgSpinner } from "react-icons/cg"
+import { TriangleAlert } from "lucide-react"
 
 export default function Callback() {
+    const [error, setError] = useState<string>()
     const key = useSearchParams().get("oauth_token")
 
     useEffect(() => {
@@ -15,12 +17,19 @@ export default function Callback() {
             method: "POST",
             body: JSON.stringify({ key }),
             credentials: "include"
-        })
+        }).then(async res => res.status !== 200 && setError(await res.text()))
     }, [key])
 
     return (
         <div className="flex h-screen">
-            <CgSpinner className="m-auto text-4xl animate-spin" />
+            {error ? (
+                <div className="m-auto space-y-4 text-muted-foreground">
+                    <TriangleAlert size={32} className="m-auto" />
+                    <p>An error occurred during authentication.</p>
+                </div>
+            ) : (
+                <CgSpinner className="m-auto text-4xl animate-spin" />
+            )}
         </div>
     )
 }
