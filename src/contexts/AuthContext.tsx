@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useCallback, useEffect, useState } from "react"
+import { TriangleAlert } from "lucide-react"
 
 interface Section {
     id: string
@@ -36,6 +37,7 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [user, setUser] = useState<UserType | null>(null)
     const [token, setToken] = useState<string | null>(null)
+    const [error, setError] = useState(false)
 
     const refresh = useCallback(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify`, {
@@ -57,7 +59,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                     new BroadcastChannel("auth").postMessage(null)
                 }
             }
-        })
+        }).catch(() => setError(true))
     }, [token])
 
     useEffect(refresh, [refresh])
@@ -75,14 +77,21 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
             method: "POST",
             credentials: "include"
-        }).then(refresh)
+        }).then(refresh).catch(() => setError(true))
     }
 
     const loading = !token
 
     return (
         <AuthContext.Provider value={{ user, loading, auth, refresh, logout }}>
-            {children}
+            {error ? (
+                <div className="flex h-screen">
+                    <div className="m-auto space-y-4 text-muted-foreground">
+                        <TriangleAlert size={32} className="m-auto" />
+                        <p>Server is offline!</p>
+                    </div>
+                </div>
+            ) : children}
         </AuthContext.Provider>
     )
 }
