@@ -2,9 +2,19 @@
 
 import { createContext, useEffect, useState } from "react"
 
-interface UserType {
+interface Section {
+    id: string
+    name: string
+    period: number
+    teacher: string
+    image: string
+}
+
+export interface UserType {
     id: number
     name: string
+    class: number
+    sections: Section[]
 }
 
 interface AuthContextType {
