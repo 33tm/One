@@ -3,8 +3,10 @@
 import Link from "next/link"
 
 import { useContext } from "react"
+
 import { AuthContext } from "@/contexts/AuthContext"
 import { SearchContext } from "@/contexts/SearchContext"
+
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 
 import { AuthButton } from "@/components/AuthButton"
@@ -46,10 +48,13 @@ import {
     User,
     Wrench
 } from "lucide-react"
+import { useSchedule } from "@/hooks/useSchedule"
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, logout } = useContext(AuthContext)
+
+    const schedule = useSchedule(user)
 
     if (useMediaQuery("(min-width: 768px)")) {
         return (
@@ -73,6 +78,9 @@ export function Navbar() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <div className="flex ml-auto space-x-2">
+                    <div className="m-auto text-muted-foreground">
+                        {schedule}
+                    </div>
                     <Button
                         variant="outline"
                         className="text-muted-foreground"
@@ -117,7 +125,7 @@ export function Navbar() {
         )
     } else {
         return (
-            <div className="flex w-screen p-4">
+            <div className="fixed flex bottom-0 w-screen p-4 outline">
                 <Drawer>
                     <DrawerTrigger asChild>
                         <Button variant="ghost" className="w-10">
