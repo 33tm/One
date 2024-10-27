@@ -1,6 +1,9 @@
 "use client"
 
-import { createContext, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { createContext, useContext, useEffect, useState } from "react"
+
+import { AuthContext } from "@/contexts/AuthContext"
 
 import {
     CommandDialog,
@@ -15,6 +18,8 @@ export const SearchContext = createContext<() => void>(() => { })
 
 export const SearchProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [open, setOpen] = useState(false)
+    const { user } = useContext(AuthContext)
+    const router = useRouter()
 
     useEffect(() => {
         function event(e: KeyboardEvent) {
@@ -27,16 +32,29 @@ export const SearchProvider = ({ children }: Readonly<{ children: React.ReactNod
         return () => document.removeEventListener("keydown", event)
     }, [])
 
+    const grades = user?.sections.map(section => (
+        <CommandItem
+            key={section.id}
+            onSelect={() => {
+                setOpen(false)
+                router.push(`/grades/${section.id}`)
+            }}
+        >
+            {section.name}
+        </CommandItem>
+    ))
+
     return (
         <SearchContext.Provider value={() => setOpen(open => !open)}>
             <CommandDialog open={open} onOpenChange={setOpen}>
                 <CommandInput placeholder="Search" />
                 <CommandList className="mb-1">
                     <CommandEmpty>No results found!</CommandEmpty>
-                    <CommandGroup heading="Communities">
-                        <CommandItem>Chemistry Honors</CommandItem>
-                        <CommandItem>Analysis Honors</CommandItem>
-                    </CommandGroup>
+                    {grades && (
+                        <CommandGroup heading="Grades">
+                            {grades}
+                        </CommandGroup>
+                    )}
                 </CommandList>
             </CommandDialog>
             {children}

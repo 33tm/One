@@ -14,7 +14,8 @@ export default function Course() {
     console.log(grades)
 
     return (
-        <p>
-        </p>
+        <title>
+            {`${user?.sections.find(section => section.id === id)?.name} | Grades | Gunn One`}
+        </title>
     )
 }
