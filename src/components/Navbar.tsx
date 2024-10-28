@@ -81,10 +81,14 @@ export function Navbar() {
                 <div className="flex ml-auto space-x-2">
                     <div className={`m-auto pr-2 text-sm text-muted-foreground transition-opacity ease-in duration-200 ${!status && "opacity-0"}`}>
                         {schedule && (
-                            <div className="flex space-x-1 hover:cursor-default">
+                            <Link
+                                href="https://gunnwatt.web.app"
+                                target="_blank"
+                                className="flex space-x-1.5 hover:cursor-pointer"
+                            >
                                 <p className="font-bold">{schedule.period}</p>
                                 <p>{schedule.start}-{schedule.end}</p>
-                            </div>
+                            </Link>
                         )}
                     </div>
                     <Button
