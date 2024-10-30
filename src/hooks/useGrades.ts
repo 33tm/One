@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
+import { AuthContext } from "@/contexts/AuthContext"
 
 export function useGrades(id: string) {
+    const { user } = useContext(AuthContext)
     const [error, setError] = useState<string>()
     const [grades, setGrades] = useState(getCached())
 
@@ -15,6 +17,7 @@ export function useGrades(id: string) {
     }
 
     function refresh() {
+        if (!user) return
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/sections/${id}/grades`, {
             method: "POST",
             credentials: "include"
@@ -29,7 +32,7 @@ export function useGrades(id: string) {
         })
     }
 
-    useEffect(refresh, [])
+    useEffect(refresh, [user])
 
-    return { grades, error }
+    return { grades, error, refresh }
 }

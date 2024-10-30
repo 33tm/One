@@ -4,7 +4,7 @@ import { useContext } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 
-export function AuthButton({ className }: { className?: string }) {
+export function Auth({ className }: { className?: string }) {
     const { auth, loading } = useContext(AuthContext)
 
     return (

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react"
-import type { UserType } from "@/contexts/AuthContext"
+import { useCallback, useContext, useEffect, useState } from "react"
+import { AuthContext } from "@/contexts/AuthContext"
 
 // https://github.com/GunnWATT/watt/blob/main/shared/data/schedule.ts#L8
 interface PeriodObj {
@@ -20,7 +20,8 @@ interface Response {
     seconds: number
 }
 
-export function useSchedule(user: UserType | null) {
+export function useSchedule() {
+    const { user } = useContext(AuthContext)
     const [status, setStatus] = useState<Response>()
     const [schedule, setSchedule] = useState<{
         period: string

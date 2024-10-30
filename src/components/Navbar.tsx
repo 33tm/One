@@ -7,10 +7,10 @@ import { useContext } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 import { SearchContext } from "@/contexts/SearchContext"
 
-import { useSchedule } from "@/hooks/useSchedule"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 
-import { AuthButton } from "@/components/AuthButton"
+import { Auth } from "@/components/Auth"
+import { Schedule } from "@/components/Schedule"
 import { Button } from "@/components/ui/button"
 
 import {
@@ -54,10 +54,7 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, logout } = useContext(AuthContext)
 
-    const desktop = useMediaQuery("(min-width: 768px)")
-    const { schedule, status } = useSchedule(user)
-
-    if (desktop) {
+    if (useMediaQuery("(min-width: 768px)")) {
         return (
             <div className="flex w-screen p-4">
                 <Link href="/" className="my-auto px-4">
@@ -79,18 +76,13 @@ export function Navbar() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <div className="flex ml-auto space-x-2">
-                    <div className={`m-auto pr-2 text-sm text-muted-foreground transition-opacity ease-in duration-200 ${!status && "opacity-0"}`}>
-                        {schedule && (
-                            <Link
-                                href="https://gunnwatt.web.app"
-                                target="_blank"
-                                className="flex space-x-1.5 hover:cursor-pointer"
-                            >
-                                <p className="font-bold">{schedule.period}</p>
-                                <p>{schedule.start}-{schedule.end}</p>
-                            </Link>
-                        )}
-                    </div>
+                    <Link
+                        href="https://gunnwatt.web.app"
+                        target="_blank"
+                        className="pr-2 my-auto transition-opacity ease-in duration-200 hover:opacity-75 hover:cursor-pointer"
+                    >
+                        <Schedule />
+                    </Link>
                     <Button
                         variant="outline"
                         className="text-muted-foreground"
@@ -129,7 +121,7 @@ export function Navbar() {
                                 </Button>
                             </PopoverContent>
                         </Popover>
-                    ) : <AuthButton />}
+                    ) : <Auth />}
                 </div>
             </div>
         )
@@ -155,7 +147,8 @@ export function Navbar() {
                         </DrawerFooter>
                     </DrawerContent>
                 </Drawer>
-                <Link href="/" className="ml-auto my-auto px-4">
+                <Schedule />
+                <Link href="/" className="my-auto pr-4">
                     <Circle strokeWidth={4} />
                 </Link>
             </div>

@@ -9,13 +9,13 @@ import { AuthContext } from "@/contexts/AuthContext"
 export default function Course() {
     const { id } = useParams<{ id: string }>()
     const { user } = useContext(AuthContext)
-    const { grades, error } = useGrades(id)
-
-    console.log(grades)
+    const { grades, error, refresh } = useGrades(id)
 
     return (
-        <title>
-            {`${user?.sections.find(section => section.id === id)?.name} | Grades | Gunn One`}
-        </title>
+        <>
+            <title>
+                {`${user?.sections.find(section => section.id === id)?.name} | Grades | Gunn One`}
+            </title>
+        </>
     )
 }
