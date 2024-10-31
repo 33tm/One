@@ -43,7 +43,7 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, logout } = useContext(AuthContext)
 
-    const points = ["75px", 1]
+    const points = ["75px", "300px", 1]
     const [snap, setSnap] = useState<number | string | null>(points[0])
 
     if (useMediaQuery("(min-width: 768px)")) {
@@ -119,9 +119,9 @@ export function Navbar() {
         )
     } else {
         return (
-            <Drawer.Root open dismissible={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap}>
+            <Drawer.Root open dismissible={false} modal={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap} snapToSequentialPoint>
                 <Drawer.Portal>
-                    <Drawer.Content className={`fixed flex-col bg-background border border-border border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] ${snap === 1 && "max-h-[97%]"}`}>
+                    <Drawer.Content className={`fixed flex-col bg-background z-50 border border-border border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] ${snap === 1 && "max-h-[97%]"}`}>
                         <Drawer.Title />
                         <Drawer.Description />
                         <div className="flex h-[75px]">

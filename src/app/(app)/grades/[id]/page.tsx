@@ -1,13 +1,16 @@
 "use client"
 
-import { useContext, useState } from "react"
-import { notFound, useParams } from "next/navigation"
+import Link from "next/link"
+
+import { useParams } from "next/navigation"
+import { useContext, useEffect, useState } from "react"
 import { useGrades } from "@/hooks/useGrades"
 
 import { AuthContext } from "@/contexts/AuthContext"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+
 import { ArrowLeft } from "lucide-react"
+import { Loader } from "@/components/Loader"
+import { Error } from "@/components/Error"
 
 export default function Course() {
     const { id } = useParams<{ id: string }>()
@@ -15,9 +18,9 @@ export default function Course() {
     const { grades, error, refreshing, refresh } = useGrades(id)
 
     const { periods, scales } = grades.data
-    const [period, setPeriod] = useState(periods[0])
+    const [period, setPeriod] = useState(periods[0] || null)
 
-    console.log(period)
+    useEffect(() => setPeriod(periods[0] || null), [periods])
 
     if (!user) {
         return (
@@ -25,20 +28,21 @@ export default function Course() {
         )
     }
 
+    if (error) return <Error message={error} />
+
+    if (!period) return <Loader />
+
     const section = user.sections.find(section => section.id === id)
 
-    if (!section) {
-        return (
-            <></>
-        )
-    }
+    if (!section) return <Error message="Invalid state!" />
 
     return (
         <>
             <title>
                 {`${section.name} | Grades | Gunn One`}
             </title>
-            <div className="flex fixed md:relative bottom-20 md:bottom-0 mx-8">
+            {refreshing && "Refreshing..."}
+            <div className="flex fixed md:relative bottom-48 md:bottom-0 mx-8">
                 <div className="space-y-1">
                     <Link href="/grades" className="flex text-sm text-muted-foreground opacity-75 hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
@@ -50,7 +54,6 @@ export default function Course() {
                 </div>
                 <p className="text-xl md:text-3xl text-muted-foreground font-bold">{period.grade}%</p>
             </div>
-            {/* {refreshing && "Refreshing..."}
             {period && period.categories.map(category => (
                 <div key={category.id}>
                     <p>{category.name}</p>
@@ -60,7 +63,7 @@ export default function Course() {
                         </div>
                     ))}
                 </div>
-            ))} */}
+            ))}
         </>
     )
 }

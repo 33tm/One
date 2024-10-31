@@ -6,6 +6,10 @@
     * {
         @apply border-border;
     }
+
+    *:focus {
+        outline: none;
+    }
 }
 
 :root {

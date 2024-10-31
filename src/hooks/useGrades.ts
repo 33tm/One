@@ -1,6 +1,55 @@
 import { useState, useEffect, useContext, useCallback } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 
+export function useGrades(id: string) {
+    const { user } = useContext(AuthContext)
+    const [error, setError] = useState<string>()
+    const [grades, setGrades] = useState<Grades>(getCached())
+    const [refreshing, setRefreshing] = useState(false)
+
+    function getCached() {
+        const defaultGrades = {
+            data: {
+                periods: [],
+                scales: []
+            },
+            timestamp: 0
+        } satisfies Grades
+        try {
+            const cached = localStorage.getItem(`${id}-grades`)
+            if (!cached) return defaultGrades
+            return JSON.parse(cached)
+        } catch {
+            return defaultGrades
+        }
+    }
+
+    const refresh = useCallback(() => {
+        console.log(user)
+        setRefreshing(true)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/sections/${id}/grades`, {
+            method: "POST",
+            credentials: "include"
+        }).then(async res => {
+            if (res.status === 200) {
+                const grades = {
+                    data: await res.json(),
+                    timestamp: Date.now()
+                } satisfies Grades
+                setGrades(grades)
+                // localStorage.setItem(`${id}-grades`, JSON.stringify(grades))
+            } else {
+                setError("Unable to fetch grades!")
+            }
+            setRefreshing(false)
+        })
+    }, [user])
+
+    useEffect(refresh, [user])
+
+    return { grades, error, refreshing, refresh }
+}
+
 interface Grades {
     data: {
         periods: {
@@ -26,67 +75,15 @@ interface Grades {
         }[]
         scales: {
             id: number
-            title: string
+            name: string
             type: number
-            auto_averaging: number
-            hide_numeric: number
+            average: boolean
+            numeric: boolean
             scale: {
-                level: {
-                    grade: string
-                    cutoff: number
-                    average: number
-                }[]
-            }
+                grade: string
+                ceiling: number
+            }[]
         }[]
     }
     timestamp: number
-}
-
-export function useGrades(id: string) {
-    const { user } = useContext(AuthContext)
-    const [error, setError] = useState<string>()
-    const [grades, setGrades] = useState<Grades>(getCached())
-    const [refreshing, setRefreshing] = useState(false)
-
-    function getCached() {
-        const defaultGrades = {
-            data: {
-                periods: [],
-                scales: []
-            },
-            timestamp: 0
-        } satisfies Grades
-        try {
-            const cached = localStorage.getItem(`${id}-grades`)
-            if (!cached) return defaultGrades
-            return JSON.parse(cached)
-        } catch {
-            return defaultGrades
-        }
-    }
-
-    function refresh() {
-        if (!user) return
-        setRefreshing(true)
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/sections/${id}/grades`, {
-            method: "POST",
-            credentials: "include"
-        }).then(async res => {
-            if (res.status === 200) {
-                const grades = {
-                    data: await res.json(),
-                    timestamp: Date.now()
-                } satisfies Grades
-                setGrades(grades)
-                localStorage.setItem(`${id}-grades`, JSON.stringify(grades))
-            } else {
-                setError("Error")
-            }
-            setRefreshing(false)
-        })
-    }
-
-    useEffect(refresh, [user])
-
-    return { grades, error, refreshing, refresh }
 }

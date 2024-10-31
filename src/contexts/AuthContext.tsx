@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useCallback, useEffect, useState } from "react"
-import { TriangleAlert } from "lucide-react"
+import { Error } from "@/components/Error"
 
 interface Section {
     id: string
@@ -84,14 +84,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 
     return (
         <AuthContext.Provider value={{ user, loading, auth, refresh, logout }}>
-            {error ? (
-                <div className="flex h-screen">
-                    <div className="m-auto space-y-4 text-muted-foreground">
-                        <TriangleAlert size={32} className="m-auto" />
-                        <p>Server is offline!</p>
-                    </div>
-                </div>
-            ) : children}
+            {error ? <Error message="Server is offline!" /> : children}
         </AuthContext.Provider>
     )
 }
