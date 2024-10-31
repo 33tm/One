@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useContext } from "react"
+import { useContext, useState } from "react"
 
 import { AuthContext } from "@/contexts/AuthContext"
 import { SearchContext } from "@/contexts/SearchContext"
@@ -12,17 +12,6 @@ import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { Auth } from "@/components/Auth"
 import { Schedule } from "@/components/Schedule"
 import { Button } from "@/components/ui/button"
-
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger
-} from "@/components/ui/drawer"
 
 import {
     NavigationMenu,
@@ -44,15 +33,18 @@ import {
     Circle,
     Command,
     LogOut,
-    MenuIcon,
     Search,
     User,
     Wrench
 } from "lucide-react"
+import { Drawer } from "vaul"
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, logout } = useContext(AuthContext)
+
+    const points = ["75px", 1]
+    const [snap, setSnap] = useState<number | string | null>(points[0])
 
     if (useMediaQuery("(min-width: 768px)")) {
         return (
@@ -127,31 +119,25 @@ export function Navbar() {
         )
     } else {
         return (
-            <div className="fixed flex bottom-0 w-screen p-4">
-                <Drawer>
-                    <DrawerTrigger asChild>
-                        <Button variant="ghost" className="w-10">
-                            <MenuIcon />
-                        </Button>
-                    </DrawerTrigger>
-                    <DrawerContent>
-                        <DrawerHeader>
-                            <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-                            <DrawerDescription>This action cannot be undone.</DrawerDescription>
-                        </DrawerHeader>
-                        <DrawerFooter>
-                            <Button variant="secondary">Submit</Button>
-                            <DrawerClose>
-                                <Button variant="outline">Cancel</Button>
-                            </DrawerClose>
-                        </DrawerFooter>
-                    </DrawerContent>
-                </Drawer>
-                <Schedule />
-                <Link href="/" className="my-auto pr-4">
-                    <Circle strokeWidth={4} />
-                </Link>
-            </div>
+            <Drawer.Root open dismissible={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap}>
+                <Drawer.Portal>
+                    <Drawer.Content className={`fixed flex-col bg-background border border-border border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] ${snap === 1 && "max-h-[97%]"}`}>
+                        <Drawer.Title />
+                        <Drawer.Description />
+                        <div className="flex h-[75px]">
+                            <Schedule className="ml-[25px]" />
+                            <Link href="/" className="my-auto mr-[25px]">
+                                <Circle size={30} strokeWidth={4} />
+                            </Link>
+                        </div>
+                        {user ? (
+                            <div>
+                                {user.name}
+                            </div>
+                        ) : <Auth />}
+                    </Drawer.Content>
+                </Drawer.Portal>
+            </Drawer.Root>
         )
     }
 }

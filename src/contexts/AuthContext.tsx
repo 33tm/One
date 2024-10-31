@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             } else {
                 setUser(null)
                 if (token) return
-                const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL}/auth`)
+                const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL?.replace("http", "ws")}/auth`)
                 ws.onmessage = ({ data }) => {
                     if (data !== "auth")
                         return setToken(data)
