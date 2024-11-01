@@ -77,7 +77,6 @@ export function Navbar() {
                     </Link>
                     <Button
                         variant="outline"
-                        className="text-muted-foreground"
                         onClick={toggle}
                     >
                         <Search />

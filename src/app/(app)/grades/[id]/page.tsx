@@ -28,13 +28,13 @@ export default function Course() {
         )
     }
 
-    if (error) return <Error message={error} />
+    if (error) return <Error>{error}</Error>
 
     if (!period) return <Loader />
 
     const section = user.sections.find(section => section.id === id)
 
-    if (!section) return <Error message="Invalid state!" />
+    if (!section) return <Error>Invalid state!</Error>
 
     return (
         <>
@@ -44,7 +44,7 @@ export default function Course() {
             {refreshing && "Refreshing..."}
             <div className="flex fixed md:relative bottom-48 md:bottom-0 mx-8">
                 <div className="space-y-1">
-                    <Link href="/grades" className="flex text-sm text-muted-foreground opacity-75 hover:underline">
+                    <Link href="/grades" className="flex text-sm text-muted-foreground hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                     </Link>
                     <div className="text-xl font-extrabold">

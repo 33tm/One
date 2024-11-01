@@ -20,5 +20,5 @@ export default function Callback() {
         }).then(async res => res.status !== 200 && setError(await res.text()))
     }, [key])
 
-    return error ? <Error message="An error occurred during authentication." /> : <Loader />
+    return error ? <Error>An error occurred during authentication.</Error> : <Loader />
 }
