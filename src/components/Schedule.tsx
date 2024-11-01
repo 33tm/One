@@ -1,10 +1,10 @@
 import { useSchedule } from "@/hooks/useSchedule"
 
 export function Schedule({ className }: { className?: string }) {
-    const { schedule, status } = useSchedule()
+    const { schedule, loading } = useSchedule()
 
     return (
-        <div className={`${className} flex mr-auto my-auto space-x-1.5 text-sm text-muted-foreground transition-opacity ease-in duration-200 ${!status && "opacity-0"}`}>
+        <div className={`${className} flex mr-auto my-auto space-x-1.5 text-sm text-muted-foreground transition-opacity ease-in duration-200 ${loading && "opacity-0"}`}>
             {schedule && (
                 <>
                     <p className="font-bold">{schedule.period}</p>
