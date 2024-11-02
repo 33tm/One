@@ -81,7 +81,7 @@ export function Navbar() {
                     >
                         <Search />
                         Search
-                        <kbd className="[&_svg]:size-auto flex gap-1 rounded bg-muted px-1.5 font-mono">
+                        <kbd className="[&_svg]:size-auto flex gap-1 rounded bg-primary text-background transition-colors duration-200 px-1.5 font-mono">
                             <Command size={12} />
                             K
                         </kbd>
@@ -120,20 +120,23 @@ export function Navbar() {
         return (
             <Drawer.Root open dismissible={false} modal={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap} snapToSequentialPoint>
                 <Drawer.Portal>
-                    <Drawer.Content className={`fixed flex-col bg-background z-50 border border-border border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] ${snap === 1 && "max-h-[97%]"}`}>
-                        <Drawer.Title />
-                        <Drawer.Description />
-                        <div className="flex h-[75px]">
-                            <Schedule className="ml-[25px]" />
-                            <Link href="/" className="my-auto mr-[25px]">
-                                <Circle size={30} strokeWidth={4} />
-                            </Link>
-                        </div>
-                        {user ? (
-                            <div>
-                                {user.name}
+                    <Drawer.Content className={`fixed flex-col bg-inherit z-50 rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] duration-0 ${snap === 1 && "max-h-[97%]"}`}>
+                        {/* Dumb workaround for a smooth border color transition */}
+                        <div id="border" className="fixed h-full w-full rounded-t-[10px] border border-b-none">
+                            <Drawer.Title />
+                            <Drawer.Description />
+                            <div className="flex h-[75px]">
+                                <Schedule className="ml-[25px]" />
+                                <Link href="/" className="my-auto mr-[25px]">
+                                    <Circle size={30} strokeWidth={4} />
+                                </Link>
                             </div>
-                        ) : <Auth />}
+                            {user ? (
+                                <div>
+                                    {user.name}
+                                </div>
+                            ) : <Auth />}
+                        </div>
                     </Drawer.Content>
                 </Drawer.Portal>
             </Drawer.Root>

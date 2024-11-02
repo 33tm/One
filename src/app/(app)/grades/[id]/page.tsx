@@ -44,15 +44,15 @@ export default function Course() {
             {refreshing && "Refreshing..."}
             <div className="flex fixed md:relative bottom-48 md:bottom-0 mx-8">
                 <div className="space-y-1">
-                    <Link href="/grades" className="flex text-sm text-muted-foreground hover:underline">
+                    <Link href="/grades" className="flex text-sm text-secondary hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                     </Link>
                     <div className="text-xl font-extrabold">
-                        <h1 className="md:text-3xl">{section.name}</h1>
-                        <h1 className="md:text-2xl text-muted-foreground">{section.period} {section.teacher}</h1>
+                        <p className="md:text-3xl text-primary">{section.name}</p>
+                        <p className="md:text-2xl text-secondary">{section.period} {section.teacher}</p>
                     </div>
                 </div>
-                <p className="text-xl md:text-3xl text-muted-foreground font-bold">{period.grade}%</p>
+                <p className="text-xl md:text-3xl text-secondary font-bold">{period.grade}%</p>
             </div>
             {period && period.categories.map(category => (
                 <div key={category.id}>

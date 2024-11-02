@@ -1,17 +1,10 @@
 "use client"
 
-import { createContext, CSSProperties, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 
 const themes = [
     {
-        name: "Light",
-        background: "#FAFAFA",
-        primary: "#000000",
-        secondary: "#555555",
-        tirtiary: "#DDDDDD"
-    },
-    {
-        name: "Dark",
+        name: "Default",
         background: "#171717",
         primary: "#FAFAFA",
         secondary: "#A3A3A3",
@@ -52,8 +45,8 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
 
     return (
         <ThemeContext.Provider value={theme}>
-            <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))}>afafasdfsad</button>
             {children}
+            <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))} className="text-background bg-primary">rotate theme</button>
         </ThemeContext.Provider>
     )
 }
