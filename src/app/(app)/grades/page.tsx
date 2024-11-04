@@ -7,11 +7,9 @@ import { useContext } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 
 import { Auth } from "@/components/Auth"
-import { useMediaQuery } from "@/hooks/useMediaQuery"
 
 export default function Grades() {
     const { user } = useContext(AuthContext)
-    const desktop = useMediaQuery("(min-width: 768px)")
 
     return (
         <>
@@ -26,8 +24,8 @@ export default function Grades() {
                     {user?.sections.map((section) => (
                         <Link key={section.id} href={`/grades/${section.id}`}>
                             <div className="relative group text-center text-lg py-8 rounded-xl md:hover:scale-105 md:hover:shadow-2xl transition ease-out duration-200">
-                                <p className="font-bold">{section.name}</p>
-                                <p>{section.section}</p>
+                                <p className="font-bold truncate px-8">{section.name}</p>
+                                <p className="truncate px-8">{section.section}</p>
                                 <Image
                                     fill
                                     priority

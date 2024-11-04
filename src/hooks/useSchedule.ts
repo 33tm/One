@@ -21,7 +21,12 @@ export function useSchedule() {
         const controller = new AbortController()
 
         async function update() {
-            const query = user && user.gunn ? new URLSearchParams({
+            if (user && !user.gunn) {
+                setTimeout(() => setSchedule(undefined), 200)
+                return setLoading(true)
+            }
+
+            const query = user ? new URLSearchParams({
                 period0: hasPeriod(0),
                 period8: hasPeriod(8),
                 gradYear: `${user.class}`
