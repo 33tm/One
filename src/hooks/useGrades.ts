@@ -39,7 +39,7 @@ export function useGrades(id: string) {
                 setGrades(grades)
                 // localStorage.setItem(`${id}-grades`, JSON.stringify(grades))
             } else {
-                setError("Unable to fetch grades!")
+                setError(await res.text())
             }
             setRefreshing(false)
         })

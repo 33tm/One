@@ -21,11 +21,10 @@ export function useSchedule() {
         const controller = new AbortController()
 
         async function update() {
-            const query = user ? new URLSearchParams({
-                date: new Date().toISOString(),
+            const query = user && user.gunn ? new URLSearchParams({
                 period0: hasPeriod(0),
                 period8: hasPeriod(8),
-                gradYear: user.class.toString()
+                gradYear: `${user.class}`
             }).toString() : ""
 
             fetch(`https://gunnwatt.web.app/api/next-period?${query}`, { signal: controller.signal })

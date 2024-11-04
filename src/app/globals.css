@@ -15,19 +15,17 @@
         outline: none;
     }
 
-    button, a, kbd, #border {
+    button,
+    a,
+    kbd,
+    #border {
         transition:
             background-color 0.2s,
             border-color 0.2s,
             opacity 0.2s,
-            stroke 0.2s
-            !important;
+            stroke 0.2s !important;
     }
-    
-    p {
-        transition: color 0.2s !important;
-    }
-    
+
     svg {
         transition: stroke 0.2s !important;
     }
@@ -37,12 +35,12 @@
     /* ThemeContext.tsx */
     /* Wonder how many people will see this */
     /* I should really comment more it's like a time capsule minus the whole exciting part */
-    
+
     --background: #171717;
     --primary: #FAFAFA;
     --secondary: #A3A3A3;
     --tirtiary: #262626;
-    
+
     --popover: var(--background);
     --primary-foreground: var(--background);
 
@@ -52,18 +50,18 @@
     --popover-foreground: var(--primary);
     --secondary-foreground: var(--primary);
     --accent-foreground: var(--primary);
-    --destructive-foreground: var(--primary);
-    
+
     --muted-foreground: var(--secondary);
-    
+
     --border: var(--tirtiary);
     --muted: var(--tirtiary);
     --accent: var(--tirtiary);
     --input: var(--tirtiary);
-    
+
     --ring: 0 0% 83.1%;
-    --destructive: 0 62.8% 30.6%;
-    
+    --destructive: #BF1D1D;
+    --destructive-foreground: #FFFFFF;
+
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

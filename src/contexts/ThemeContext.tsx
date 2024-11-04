@@ -45,8 +45,8 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
 
     return (
         <ThemeContext.Provider value={theme}>
+            <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))} className="absolute text-background bg-primary">rotate theme</button>
             {children}
-            <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))} className="text-background bg-primary">rotate theme</button>
         </ThemeContext.Provider>
     )
 }

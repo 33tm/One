@@ -4,7 +4,9 @@ import { useContext } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 
-export function Auth({ className }: { className?: string }) {
+type Variant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+
+export function Auth({ className, variant="default" }: { className?: string, variant?: Variant }) {
     const { auth, loading } = useContext(AuthContext)
 
     return (
@@ -12,6 +14,7 @@ export function Auth({ className }: { className?: string }) {
             onClick={auth}
             disabled={loading}
             className={className}
+            variant={variant}
         >
             Continue with Schoology
         </Button>

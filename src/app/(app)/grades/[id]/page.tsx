@@ -16,19 +16,28 @@ export default function Course() {
     const { id } = useParams<{ id: string }>()
     const { user } = useContext(AuthContext)
     const { grades, error, refreshing, refresh } = useGrades(id)
-
     const { periods, scales } = grades.data
-    const [period, setPeriod] = useState(periods[0] || null)
+
+    const [period, setPeriod] = useState(periods[0])
 
     useEffect(() => setPeriod(periods[0] || null), [periods])
 
     if (!user) {
         return (
-            <></>
+            <>no user</>
         )
     }
 
-    if (error) return <Error>{error}</Error>
+    if (error) {
+        return (
+            <>
+                <Link href="/grades" className="flex text-sm text-secondary hover:underline">
+                    <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
+                </Link>
+                <Error>{error}</Error>
+            </>
+        )
+    }
 
     if (!period) return <Loader />
 
@@ -49,7 +58,7 @@ export default function Course() {
                     </Link>
                     <div className="text-xl font-extrabold">
                         <p className="md:text-3xl text-primary">{section.name}</p>
-                        <p className="md:text-2xl text-secondary">{section.period} {section.teacher}</p>
+                        <p className="md:text-2xl text-secondary">{section.section}</p>
                     </div>
                 </div>
                 <p className="text-xl md:text-3xl text-secondary font-bold">{period.grade}%</p>

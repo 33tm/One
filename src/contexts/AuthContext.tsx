@@ -6,15 +6,19 @@ import { Error } from "@/components/Error"
 interface Section {
     id: string
     name: string
+    section: string
     period: number
     teacher: string
+    school: string
     image: string
 }
 
 export interface UserType {
     id: number
     name: string
-    class: number
+    gunn: boolean
+    pausd: boolean
+    class: number | null
     sections: Section[]
 }
 
