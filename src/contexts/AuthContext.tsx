@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useCallback, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import { Error } from "@/components/Error"
 
 interface Section {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     const [token, setToken] = useState<string | null>(null)
     const [error, setError] = useState(false)
 
-    const refresh = useCallback(() => {
+    function refresh() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify`, {
             method: "POST",
             credentials: "include"
@@ -64,9 +64,9 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                 }
             }
         }).catch(() => setError(true))
-    }, [token])
+    }
 
-    useEffect(refresh, [refresh])
+    useEffect(refresh, [])
 
     function auth() {
         if (!token) return

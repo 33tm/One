@@ -1,8 +1,6 @@
-import { useState, useEffect, useContext, useCallback } from "react"
-import { AuthContext } from "@/contexts/AuthContext"
+import { useState, useEffect } from "react"
 
 export function useGrades(id: string) {
-    const { user } = useContext(AuthContext)
     const [error, setError] = useState<string>()
     const [grades, setGrades] = useState<Grades>(getCached())
     const [refreshing, setRefreshing] = useState(false)
@@ -24,8 +22,7 @@ export function useGrades(id: string) {
         }
     }
 
-    const refresh = useCallback(() => {
-        console.log(user)
+    function refresh() {
         setRefreshing(true)
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/sections/${id}/grades`, {
             method: "POST",
@@ -43,9 +40,9 @@ export function useGrades(id: string) {
             }
             setRefreshing(false)
         })
-    }, [user])
+    }
 
-    useEffect(refresh, [user])
+    useEffect(refresh, [])
 
     return { grades, error, refreshing, refresh }
 }
