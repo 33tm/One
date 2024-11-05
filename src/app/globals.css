@@ -5,6 +5,7 @@
 @layer base {
     * {
         @apply border-border;
+        scrollbar-color: var(--tirtiary) var(--background);
     }
 
     *::selection {

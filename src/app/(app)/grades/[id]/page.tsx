@@ -70,11 +70,11 @@ export default function Course() {
             <div className="flex">
                 <div className="m-4 w-64 xl:w-80 space-y-2.5">
                     {period && period.categories.map(c => {
-                        const current = c.id === category.id
+                        const current = c.id == category.id
                         return (
                             <div
                                 key={c.id}
-                                className={`flex rounded-lg bg-tirtiary ${current && "bg-current"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
+                                className={`flex rounded-lg ${current ? "bg-primary" : "bg-tirtiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
                                 onClick={() => setCategory(c)}
                             >
                                 <div className="flex justify-between w-full p-4 select-none">
@@ -87,7 +87,7 @@ export default function Course() {
                                         </p>
                                     </div>
                                     <p className={`font-semibold ${current && "text-tirtiary"}`}>
-                                        {c.grade ? `${c.grade}%` : "-"}
+                                        {c.grade && `${c.grade}%`}
                                     </p>
                                 </div>
                             </div>
