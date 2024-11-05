@@ -62,7 +62,7 @@ interface Grades {
                 items: {
                     id: number
                     name: string
-                    due: string
+                    due: number
                     url: string
                     grade: number
                     max: number
