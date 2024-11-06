@@ -71,9 +71,9 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     function auth() {
         if (!token) return
         window.open(
-            `https://pausd.schoology.com/oauth/authorize?oauth_token=${token}&oauth_callback=${process.env.NEXT_PUBLIC_CALLBACK_URL}`,
+            `/oauth?token=${token}`,
             "_blank",
-            `popup, noreferrer, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
+            `popup, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
         )
     }
 
