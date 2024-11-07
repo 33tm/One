@@ -1,32 +1,32 @@
-"use client"
+import Link from "next/link"
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
 
-import { ip } from "@/server/ip"
+export default async function OAuth({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+    const { token } = await searchParams
+    const { ["x-forwarded-for"]: ip } = Object.fromEntries(await headers())
 
-import { useSearchParams } from "next/navigation"
+    if (!token)
+        return redirect("/")
 
-import { useEffect } from "react"
+    if (ip.startsWith("199.80."))
+        return redirect(url("https://pausd.schoology.com"))
 
-export default function OAuth() {
-    const token = useSearchParams().get("token")!
-
-    if (!token || document.referrer !== `${document.location.origin}/communities`)
-        return window.location.replace("/")
-
-    function redirect(domain: string) {
+    function url(domain: string) {
         const params = new URLSearchParams({
             oauth_token: token,
             oauth_callback: `${process.env.NEXT_PUBLIC_CALLBACK_URL}?domain=${encodeURIComponent(domain)}`,
         })
-        window.open(`${domain}/oauth/authorize?${params}`, "_self", "noreferrer")
+        return `${domain}/oauth/authorize?${params}`
     }
-
-    useEffect(() => { ip().then(ip => ip?.startsWith("199.80.") && redirect("https://pausd.schoology.com")) }, [])
 
     return (
         <div className="h-screen">
-            <div className="bg-white h-1/2">
-                asd
-            </div>
+            <Link href={url("https://pausd.schoology.com")}>
+                <div className="bg-white h-1/2">
+                    asd
+                </div>
+            </Link>
             <div className="bg-amber-800 h-1/2">
                 adsasd
             </div>

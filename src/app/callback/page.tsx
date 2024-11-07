@@ -7,11 +7,11 @@ import { Loader } from "@/components/Loader"
 import { Error } from "@/components/Error"
 
 export default function Callback() {
-    const params = useSearchParams()
+    const {
+        oauth_token: key,
+        domain
+    } = Object.fromEntries(useSearchParams())
     const [error, setError] = useState<string>()
-
-    const key = params.get("oauth_token")
-    const domain = params.get("domain")
 
     useEffect(() => {
         if (!key || !domain) return

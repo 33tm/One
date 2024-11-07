@@ -8,7 +8,8 @@ import { SearchProvider } from "@/contexts/SearchContext"
 import "@/app/globals.css"
 
 export const metadata: Metadata = {
-    title: "Gunn One"
+    title: "Gunn One",
+    referrer: "no-referrer"
 }
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
