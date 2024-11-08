@@ -41,6 +41,7 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [user, setUser] = useState<UserType | null>(null)
     const [token, setToken] = useState<string | null>(null)
+    const [popup, setPopup] = useState<Window | null>(null)
     const [error, setError] = useState(false)
 
     function refresh() {
@@ -70,11 +71,13 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 
     function auth() {
         if (!token) return
-        window.open(
+        if (popup && !popup.closed)
+            return popup.focus()
+        setPopup(window.open(
             `/oauth?token=${token}`,
             "_blank",
             `popup, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
-        )
+        ))
     }
 
     function logout() {
