@@ -99,7 +99,7 @@ export default function Course() {
                             )
                         })}
                 </div>
-                <div className="grow max-h-[calc(100vh-196px)] m-4 ml-0 pr-4 rounded-lg space-y-2.5 overflow-y-scroll">
+                <div className="grow max-h-[calc(100vh-196px)] m-4 ml-0 rounded-lg space-y-2.5 overflow-y-auto">
                     {category.items
                         .sort((a, b) => b.due - a.due)
                         .map(item => (
@@ -122,9 +122,13 @@ export default function Course() {
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex font-bold space-x-1">
+                                <div className="flex font-bold space-x-1 font-mono">
                                     {/* <p>{item.grade}</p> */}
-                                    <Input defaultValue={item.grade} />
+                                    <Input
+                                        defaultValue={item.grade}
+                                        placeholder="(Ungraded)"
+                                        className="text-sm"
+                                    />
                                     <p>/</p>
                                     <p>{item.max}</p>
                                 </div>
