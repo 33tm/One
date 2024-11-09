@@ -1,3 +1,5 @@
+import server from "@/server"
+
 import { useState, useEffect } from "react"
 
 export function useGrades(id: string) {
@@ -24,7 +26,7 @@ export function useGrades(id: string) {
 
     function refresh() {
         setRefreshing(true)
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/sections/${id}/grades`, {
+        server(`/sections/${id}/grades`, {
             method: "POST",
             credentials: "include"
         }).then(async res => {

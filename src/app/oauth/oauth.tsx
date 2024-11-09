@@ -42,9 +42,10 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
         // To account for this very fun fact I put up a route handler at https://tttm.us/redirect
         // Which accepts a "url" query parameter in base64 and redirects to the decoded url :>>
         // Yeah I agree Schoology is pretty great
+        const decoded = encodeURIComponent(`https://${domain}`)
         const callback = process.env.NODE_ENV === "development"
-            ? `tttm.us/redirect?url=${Buffer.from(`${window.location.origin}/callback?domain=https://${domain}`).toString("base64")}`
-            : `${process.env.NEXT_PUBLIC_CALLBACK_URL}?domain=https://${domain}`
+            ? `tttm.us/redirect?url=${Buffer.from(`${window.location.origin}/callback?domain=${decoded}`).toString("base64")}`
+            : `${process.env.NEXT_PUBLIC_CALLBACK_URL}?domain=${decoded}`
         const params = new URLSearchParams({
             oauth_token: token,
             oauth_callback: callback

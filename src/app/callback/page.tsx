@@ -1,5 +1,7 @@
 "use client"
 
+import server from "@/server"
+
 import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 
@@ -16,7 +18,7 @@ export default function Callback() {
     useEffect(() => {
         if (!key || !domain) return
         new BroadcastChannel("auth").onmessage = () => window.close()
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/callback`, {
+        server("/auth/callback", {
             method: "POST",
             body: JSON.stringify({ key, domain }),
             credentials: "include"

@@ -1,5 +1,7 @@
 "use client"
 
+import server, { websocket } from "@/server"
+
 import { createContext, useEffect, useState } from "react"
 import { Error } from "@/components/Error"
 
@@ -45,7 +47,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     const [error, setError] = useState(false)
 
     function refresh() {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify`, {
+        server("/auth/verify", {
             method: "POST",
             credentials: "include"
         }).then(async res => {
@@ -55,7 +57,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             } else {
                 setUser(null)
                 if (token) return
-                const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL?.replace("http", "ws")}/auth`)
+                const ws = websocket("/auth")
                 ws.onmessage = ({ data }) => {
                     if (data !== "auth")
                         return setToken(data)
@@ -81,7 +83,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     }
 
     function logout() {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        server("/auth/logout", {
             method: "POST",
             credentials: "include"
         }).then(refresh).catch(() => setError(true))
