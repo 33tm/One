@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ChevronLeft, Circle } from "lucide-react"
 
-export function OAuth({ token }: { token: string }) {
+export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     const [query, setQuery] = useState("")
     const [schools, setSchools] = useState<School[]>()
     const [school, setSchool] = useState<School | null>(null)
@@ -37,11 +37,24 @@ export function OAuth({ token }: { token: string }) {
     }, [schools])
 
     function oauth(domain: string) {
+        // Schoology blocks any ipv4 address or anything that contains "localhost" from being a valid oauth_callback for whatever reason
+        // Love how this wouldn't be a problem if we just tested in prod
+        // To account for this very fun fact I put up a route handler at https://tttm.us/redirect
+        // Which accepts a "url" query parameter in base64 and redirects to the decoded url :>>
+        // Yeah I agree Schoology is pretty great
+        const callback = process.env.NODE_ENV === "development"
+            ? `tttm.us/redirect?url=${Buffer.from(`${window.location.origin}/callback?domain=https://${domain}`).toString("base64")}`
+            : `${process.env.NEXT_PUBLIC_CALLBACK_URL}?domain=https://${domain}`
         const params = new URLSearchParams({
             oauth_token: token,
-            oauth_callback: `${process.env.NEXT_PUBLIC_CALLBACK_URL}?domain=${encodeURIComponent(`https://${domain}`)}`
+            oauth_callback: callback
         })
         return `https://${domain}/oauth/authorize?${params}`
+    }
+
+    if (pausd) {
+        redirect(oauth("pausd.schoology.com"))
+        return <></>
     }
 
     return (
