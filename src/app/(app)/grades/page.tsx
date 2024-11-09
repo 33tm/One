@@ -18,7 +18,7 @@ export default function Grades() {
             </title>
             {user ? (
                 <div className="mb-24 md:mb-0 md:p-24 mx-3 md:mx-0 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-3">
-                    <div className="md:hidden flex h-[50vh]">
+                    <div className="md:hidden flex h-[50dvh]">
                         <p className="m-auto text-xl font-semibold">Grades</p>
                     </div>
                     {user?.sections.map((section) => (
