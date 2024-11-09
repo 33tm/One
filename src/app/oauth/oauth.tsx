@@ -47,7 +47,7 @@ export function OAuth({ token }: { token: string }) {
     return (
         <div className="overflow-hidden">
             <div className={`absolute w-screen transition-opacity duration-200 opacity-0 ${open && "opacity-100"}`}>
-                {open && (
+                {open ? (
                     <div className="flex p-4">
                         <Button
                             variant="secondary"
@@ -74,8 +74,27 @@ export function OAuth({ token }: { token: string }) {
                             Open
                         </Button>
                     </div>
+                ) : (
+                    <div className="flex p-4">
+                        <Button
+                            disabled
+                            variant="secondary"
+                            className="rounded-r-none"
+                        >
+                            <ChevronLeft />
+                        </Button>
+                        <Input
+                            disabled
+                            className="text-lg rounded-none"
+                            placeholder="Search"
+                            defaultValue={query}
+                        />
+                        <Button disabled className="rounded-l-none">
+                            Open
+                        </Button>
+                    </div>
                 )}
-                <div className="h-auto px-4 pb-4 space-y-2 overflow-y-auto overflow-x-hidden select-none">
+                <div className="h-[calc(100dvh-72px)] px-4 pb-4 space-y-2 overflow-y-auto overflow-x-hidden select-none">
                     {schools && schools[0] && schools[0].title !== "No Schools Found" ? (
                         schools.filter(({ id }) => id !== 2573996462).map(s => (
                             <div
@@ -94,7 +113,7 @@ export function OAuth({ token }: { token: string }) {
                         ) : loading ? (
                             "Loading..."
                         ) : (
-                            "No Schools"
+                            "No schools were found!"
                         )
                     )}
                 </div>
