@@ -12,7 +12,7 @@ export interface School {
 }
 
 export async function search(query: string) {
-    return await fetch(`https://app.schoology.com/register/ajax/school?jq=${query}&limit=10`)
+    return await fetch(`https://app.schoology.com/register/ajax/school?jq=${query}`)
         .then(res => res.json())
         .then(schools => schools as School[])
 }
