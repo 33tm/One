@@ -113,7 +113,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
                         schools.filter(({ id }) => id !== 2573996462).map(s => (
                             <div
                                 key={s.id + s.title}
-                                className={`p-3 rounded-lg font-bold hover:scale-[101.5%] hover:shadow-2xl hover:cursor-pointer transition duration-200 ${((s.id === school?.id || s.location === school?.location) && (s.domain === school?.domain && s.domain !== "app.schoology.com")) ? "bg-primary text-tirtiary" : "bg-tirtiary"}`}
+                                className={`p-3 rounded-lg font-bold hover:scale-[101.5%] hover:shadow-2xl hover:cursor-pointer transition duration-200 ${((s.id === school?.id || s.location === school?.location) && (s.domain === school?.domain && s.domain !== "app.schoology.com")) ? "bg-primary text-tertiary" : "bg-tertiary"}`}
                                 onClick={() => setSchool(s)}
                             >
                                 <p className="text-xl truncate">{s.title}</p>
@@ -138,14 +138,14 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
             <div className={`h-[50dvh] transition-transform duration-500 ${open && "translate-y-full"}`}>
                 <div className="absolute bottom-0 w-screen">
                     <div
-                        className="flex h-[22dvh] bg-tirtiary text-lg font-semibold rounded-t-2xl hover:cursor-pointer"
+                        className="flex h-[22dvh] bg-tertiary text-lg font-semibold rounded-t-2xl hover:cursor-pointer"
                         onClick={() => setOpen(true)}
                     >
                         <p className="m-auto">
                             Find My School
                         </p>
                     </div>
-                    <div className={`flex flex-col bg-tirtiary h-[6dvh]`}>
+                    <div className={`flex flex-col bg-tertiary h-[6dvh]`}>
                         <div className={`flex justify-between h-[100px] bg-background rounded-t-2xl`}>
                             <Separator className="my-auto w-[40vw]" />
                             <p className="my-auto text-secondary font-bold">OR</p>
@@ -154,7 +154,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
                     </div>
                     <Link
                         href={oauth("pausd.schoology.com")}
-                        className="flex h-[22dvh] bg-primary text-lg font-bold text-tirtiary rounded-t-2xl"
+                        className="flex h-[22dvh] bg-primary text-lg font-bold text-tertiary rounded-t-2xl"
                         prefetch
                     >
                         <p className="m-auto">

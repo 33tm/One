@@ -5,11 +5,11 @@
 @layer base {
     * {
         @apply border-border;
-        scrollbar-color: var(--tirtiary) var(--background);
+        scrollbar-color: var(--tertiary) var(--background);
     }
 
     *::selection {
-        background: var(--tirtiary)
+        background: var(--tertiary)
     }
 
     *:focus {
@@ -40,7 +40,7 @@
     --background: #171717;
     --primary: #FAFAFA;
     --secondary: #A3A3A3;
-    --tirtiary: #262626;
+    --tertiary: #262626;
 
     --popover: var(--background);
     --primary-foreground: var(--background);
@@ -54,10 +54,10 @@
 
     --muted-foreground: var(--secondary);
 
-    --border: var(--tirtiary);
-    --muted: var(--tirtiary);
-    --accent: var(--tirtiary);
-    --input: var(--tirtiary);
+    --border: var(--tertiary);
+    --muted: var(--tertiary);
+    --accent: var(--tertiary);
+    --input: var(--tertiary);
 
     --ring: 0 0% 83.1%;
     --destructive: #BF1D1D;

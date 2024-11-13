@@ -17,7 +17,7 @@ export default {
                     DEFAULT: "var(--secondary)",
                     foreground: "var(--secondary-foreground)"
                 },
-                tirtiary: "var(--tirtiary)",
+                tertiary: "var(--tertiary)",
                 card: {
                     DEFAULT: "var(--card)",
                     foreground: "var(--card-foreground)"

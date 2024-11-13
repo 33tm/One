@@ -79,19 +79,19 @@ export default function Course() {
                             return (
                                 <div
                                     key={c.id}
-                                    className={`flex rounded-lg ${current ? "bg-primary" : "bg-tirtiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
+                                    className={`flex rounded-lg ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
                                     onClick={() => setCategory(c)}
                                 >
                                     <div className="flex justify-between w-full p-4 select-none">
                                         <div className="flex max-w-36 xl:max-w-52 space-x-1.5">
-                                            <p className={`truncate ${current && "text-tirtiary"}`}>
+                                            <p className={`truncate ${current && "text-tertiary"}`}>
                                                 {c.name}
                                             </p>
                                             <p className="text-secondary font-medium">
                                                 ({c.weight}%)
                                             </p>
                                         </div>
-                                        <p className={`font-semibold ${current && "text-tirtiary"}`}>
+                                        <p className={`font-semibold ${current && "text-tertiary"}`}>
                                             {c.grade && `${c.grade}%`}
                                         </p>
                                     </div>
@@ -103,7 +103,7 @@ export default function Course() {
                     {category.items
                         .sort((a, b) => b.due - a.due)
                         .map(item => (
-                            <div key={item.id} className="flex justify-between rounded-lg bg-tirtiary p-4">
+                            <div key={item.id} className="flex justify-between rounded-lg bg-tertiary p-4">
                                 <div className="flex w-2/3 space-x-2 font-medium">
                                     {item.url ? (
                                         <Link

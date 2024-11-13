@@ -8,28 +8,28 @@ const themes = [
         background: "#171717",
         primary: "#FAFAFA",
         secondary: "#A3A3A3",
-        tirtiary: "#262626"
+        tertiary: "#262626"
     },
     {
         name: "Green",
         background: "#E1F0DA",
         primary: "#4F6F52",
         secondary: "#6A946E",
-        tirtiary: "#B4CAB6"
+        tertiary: "#B4CAB6"
     },
     {
         name: "Blue",
         background: "#DDE6ED",
         primary: "#526D82",
         secondary: "#6D8BA3",
-        tirtiary: "#B6C5D1"
+        tertiary: "#B6C5D1"
     },
     {
         name: "Beige",
         background: "#F3EEEA",
         primary: "#594545",
         secondary: "#816464",
-        tirtiary: "#C2B0b0"
+        tertiary: "#C2B0b0"
     }
 ]
 
@@ -45,7 +45,7 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
 
     return (
         <ThemeContext.Provider value={theme}>
-            <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))} className="absolute text-background bg-primary">rotate theme</button>
+            {/* <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))} className="absolute bottom-2 text-background bg-primary">rotate theme</button> */}
             {children}
         </ThemeContext.Provider>
     )
