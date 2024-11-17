@@ -12,7 +12,7 @@ export function Callback({ oauth_token, domain }: { oauth_token: string, domain:
 
     useEffect(() => {
         if (!oauth_token || !domain) return
-        new BroadcastChannel("auth").onmessage = () => setTimeout(() => window.close(), 100)
+        new BroadcastChannel("auth").onmessage = () => window.close()
         server("/auth/callback", {
             method: "POST",
             body: JSON.stringify({ key: oauth_token, domain }),

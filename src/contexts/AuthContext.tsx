@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             if (res.ok) {
                 setUser(await res.json())
                 setToken(null)
+                new BroadcastChannel("auth").postMessage(null)
             } else {
                 setUser(null)
                 if (token) return
@@ -63,7 +64,6 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                         return setToken(data)
                     ws.close()
                     refresh()
-                    new BroadcastChannel("auth").postMessage(null)
                 }
             }
         }).catch(() => setError(true))
