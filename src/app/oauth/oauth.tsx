@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { search, type School } from "@/server/search"
 import { redirect } from "@/server/redirect"
@@ -18,6 +18,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     const [redirecting, setRedirecting] = useState(false)
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
+    const searchBox = useRef<HTMLInputElement | undefined>()
 
     useEffect(() => {
         if (query.length < 3)
@@ -34,7 +35,12 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     useEffect(() => {
         if (!schools?.find(s => s.id === school?.id))
             setSchool(null)
-    }, [schools])
+    }, [schools, school?.id])
+
+    useEffect(() => {
+        if (!open || !searchBox.current) return
+        searchBox.current.focus()
+    }, [open])
 
     function oauth(domain: string) {
         // Schoology blocks any ipv4 address or anything that contains "localhost" from being a valid oauth_callback for whatever reason
@@ -71,7 +77,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
                             <ChevronLeft />
                         </Button>
                         <Input
-                            autoFocus
+                            ref={searchBox}
                             className="text-lg rounded-none"
                             placeholder="Search"
                             defaultValue={query}
