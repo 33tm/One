@@ -8,5 +8,5 @@ export default async ({ searchParams }: { searchParams: Promise<Record<string, s
     if (!oauth_token || !domain)
         return redirect("/")
 
-    return <Callback key={oauth_token} domain={domain} />
+    return <Callback oauth_token={oauth_token} domain={domain} />
 }
