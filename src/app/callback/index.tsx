@@ -10,10 +10,9 @@ import { Error } from "@/components/Error"
 export function Callback({ oauth_token, domain }: { oauth_token: string, domain: string }) {
     const [error, setError] = useState<string>()
 
-    console.log(oauth_token, domain)
     useEffect(() => {
         if (!oauth_token || !domain) return
-        new BroadcastChannel("auth").onmessage = () => window.close()
+        new BroadcastChannel("auth").onmessage = () => setTimeout(() => window.close(), 100)
         server("/auth/callback", {
             method: "POST",
             body: JSON.stringify({ key: oauth_token, domain }),
