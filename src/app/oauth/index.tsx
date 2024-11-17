@@ -18,7 +18,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     const [redirecting, setRedirecting] = useState(false)
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
-    const searchBox = useRef<HTMLInputElement | undefined>()
+    const searchBox = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         if (query.length < 3)
@@ -151,8 +151,8 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
                             Find My School
                         </p>
                     </div>
-                    <div className={`flex flex-col bg-tertiary h-[6dvh]`}>
-                        <div className={`flex justify-between h-[100px] bg-background rounded-t-2xl`}>
+                    <div className="flex flex-col bg-tertiary h-[6dvh]">
+                        <div className="flex justify-between h-[100px] bg-background rounded-t-2xl">
                             <Separator className="my-auto w-[40vw]" />
                             <p className="my-auto text-secondary font-bold">OR</p>
                             <Separator className="my-auto w-[40vw]" />

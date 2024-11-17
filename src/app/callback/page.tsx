@@ -1,29 +1,12 @@
-"use client"
+import { redirect } from "next/navigation"
 
-import server from "@/server"
+import { Callback } from "@/app/callback"
 
-import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+export default async ({ searchParams }: { searchParams: Promise<Record<string, string>> }) => {
+    const { oauth_token, domain } = await searchParams
 
-import { Loader } from "@/components/Loader"
-import { Error } from "@/components/Error"
+    if (!oauth_token || !domain)
+        return redirect("/")
 
-export default function Callback() {
-    const {
-        oauth_token: key,
-        domain
-    } = Object.fromEntries(useSearchParams())
-    const [error, setError] = useState<string>()
-
-    useEffect(() => {
-        if (!key || !domain) return
-        new BroadcastChannel("auth").onmessage = () => window.close()
-        server("/auth/callback", {
-            method: "POST",
-            body: JSON.stringify({ key, domain }),
-            credentials: "include"
-        }).then(async res => res.status !== 200 && setError(await res.text()))
-    }, [key, domain])
-
-    return error ? <Error>An error occurred during authentication.</Error> : <Loader />
+    return <Callback oauth_token={oauth_token} domain={domain} />
 }

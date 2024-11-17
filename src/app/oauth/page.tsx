@@ -1,7 +1,7 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { OAuth } from "@/app/oauth/oauth"
+import { OAuth } from "@/app/oauth"
 
 export default async ({ searchParams }: { searchParams: Promise<Record<string, string>> }) => {
     const { token } = await searchParams

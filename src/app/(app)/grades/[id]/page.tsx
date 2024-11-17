@@ -19,8 +19,8 @@ export default function Course() {
     const router = useRouter()
     const { id } = useParams<{ id: string }>()
     const { user, loading } = useContext(AuthContext)
-    const { grades, error, refreshing, refresh } = useGrades(id)
-    const { periods, scales } = grades.data
+    const { grades, error, refreshing } = useGrades(id)
+    const { periods } = grades.data
 
     const [period, setPeriod] = useState(periods[0])
     const [category, setCategory] = useState(periods[0]?.categories.sort((a, b) => b.weight - a.weight)[0])
@@ -33,7 +33,7 @@ export default function Course() {
     useEffect(() => {
         if (!user && !loading)
             router.push("/grades")
-    }, [user, loading])
+    }, [user, loading, router])
 
     if (error) {
         return (
