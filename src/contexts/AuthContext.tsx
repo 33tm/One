@@ -2,7 +2,7 @@
 
 import server, { websocket } from "@/server"
 
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useRef, useState } from "react"
 import { Error } from "@/components/Error"
 
 interface Section {
@@ -43,8 +43,8 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [user, setUser] = useState<UserType | null>(null)
     const [token, setToken] = useState<string | null>(null)
-    const [popup, setPopup] = useState<Window | null>(null)
     const [error, setError] = useState(false)
+    const popup = useRef<Window | null>()
 
     function refresh() {
         server("/auth/verify", {
@@ -54,7 +54,8 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             if (res.ok) {
                 setUser(await res.json())
                 setToken(null)
-                new BroadcastChannel("auth").postMessage(null)
+                popup.current?.close()
+                popup.current = null
             } else {
                 setUser(null)
                 if (token) return
@@ -73,13 +74,13 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 
     function auth() {
         if (!token) return
-        if (popup && !popup.closed)
-            return popup.focus()
-        setPopup(window.open(
+        if (popup.current && !popup.current.closed)
+            return popup.current.focus()
+        popup.current = window.open(
             `/oauth?token=${token}`,
             "_blank",
             `popup, width=480, height=697, left=${(screen.width - 480) / 2} top=${(screen.height - 697) / 2}`
-        ))
+        )
     }
 
     function logout() {
