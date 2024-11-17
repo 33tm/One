@@ -12,6 +12,7 @@ export function Callback({ oauth_token, domain }: { oauth_token: string, domain:
 
     useEffect(() => {
         if (!oauth_token || !domain) return
+        addEventListener("message", ({ data }) => data === "auth" && window.close())
         server("/auth/callback", {
             method: "POST",
             body: JSON.stringify({ key: oauth_token, domain }),
