@@ -17,7 +17,10 @@ export function Callback({ oauth_token, domain }: { oauth_token: string, domain:
             method: "POST",
             body: JSON.stringify({ key: oauth_token, domain }),
             credentials: "include"
-        }).then(async res => res.status !== 200 && setError(await res.text()))
+        }).then(async res => {
+            if (res.status !== 200) setError(await res.text())
+            else new BroadcastChannel("auth").postMessage(null)
+        })
     }, [oauth_token, domain])
 
     return error ? <Error>An error occurred during authentication.</Error> : <Loader />

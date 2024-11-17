@@ -52,29 +52,27 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             credentials: "include"
         }).then(async res => {
             if (res.ok) {
-                const user = await res.json()
-                console.log(user)
-                setUser(user)
+                setUser(await res.json())
                 setToken(null)
-                if (!popup.current) return
-                popup.current.close()
-                popup.current.postMessage("auth")
+                popup.current?.close()
+                popup.current?.postMessage("auth")
                 popup.current = null
             } else {
                 setUser(null)
                 if (token) return
                 const ws = websocket("/auth")
                 ws.onmessage = ({ data }) => {
-                    if (data !== "auth")
-                        return setToken(data)
-                    ws.close()
-                    refresh()
+                    if (data === "auth") ws.close()
+                    else setToken(data)
                 }
             }
         }).catch(() => setError(true))
     }
 
-    useEffect(refresh, [])
+    useEffect(() => {
+        refresh()
+        new BroadcastChannel("auth").onmessage = refresh
+    }, [])
 
     function auth() {
         if (!token) return
