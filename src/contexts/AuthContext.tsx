@@ -2,7 +2,7 @@
 
 import server, { websocket } from "@/server"
 
-import { createContext, useEffect, useRef, useState } from "react"
+import { createContext, useCallback, useEffect, useRef, useState } from "react"
 import { Error } from "@/components/Error"
 
 interface Section {
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     const [error, setError] = useState(false)
     const popup = useRef<Window | null>()
 
-    function refresh() {
+    const refresh = useCallback(() => {
         server("/auth/verify", {
             method: "POST",
             credentials: "include"
@@ -67,12 +67,12 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                 }
             }
         }).catch(() => setError(true))
-    }
+    }, [token])
 
     useEffect(() => {
         refresh()
         new BroadcastChannel("auth").onmessage = refresh
-    }, [])
+    }, [refresh])
 
     function auth() {
         if (!token) return

@@ -44,7 +44,7 @@ export function useGrades(id: string) {
         })
     }
 
-    useEffect(refresh, [])
+    useEffect(refresh, [id])
 
     return { grades, error, refreshing, refresh }
 }
