@@ -1,15 +1,15 @@
 "use client"
 
 import Link from "next/link"
+import NumberFlow from "@number-flow/react"
+import { DateTime } from "luxon"
+import { ArrowLeft } from "lucide-react"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { useGrades } from "@/hooks/useGrades"
 
 import { AuthContext } from "@/contexts/AuthContext"
-
-import { DateTime } from "luxon"
-import { ArrowLeft } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Loader } from "@/components/Loader"
@@ -68,7 +68,11 @@ export default function Course() {
                         <p className="md:text-2xl text-secondary">{section.section}</p>
                     </div>
                 </div>
-                <p className="text-xl md:text-3xl text-secondary font-bold">{period.grade}%</p>
+                <NumberFlow
+                    className="text-xl md:text-3xl text-secondary font-bold"
+                    value={period.grade}
+                    suffix="%"
+                />
             </div>
             <div className="flex">
                 <div className="m-4 ml-8 w-64 xl:w-80 space-y-2.5">
@@ -91,20 +95,24 @@ export default function Course() {
                                                 ({c.weight}%)
                                             </p>
                                         </div>
-                                        <p className={`font-semibold ${current && "text-tertiary"}`}>
-                                            {c.grade && `${c.grade}%`}
-                                        </p>
+                                        {c.grade && (
+                                            <NumberFlow
+                                                className={`font-semibold ${current && "text-tertiary"}`}
+                                                value={c.grade}
+                                                suffix="%"
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             )
                         })}
                 </div>
-                <div className="grow max-h-[calc(100dvh-196px)] m-4 ml-0 rounded-lg space-y-2.5 overflow-y-auto">
+                <div className="grow max-h-[calc(100dvh-196px)] my-4 pr-4 ml-0 rounded-lg space-y-2.5 overflow-y-auto">
                     {category.items
                         .sort((a, b) => b.due - a.due)
                         .map(item => (
                             <div key={item.id} className="flex justify-between rounded-lg bg-tertiary p-4">
-                                <div className="flex w-2/3 space-x-2 font-medium">
+                                <div className="flex my-auto w-2/3 space-x-2 font-medium">
                                     {item.url ? (
                                         <Link
                                             href={item.url}
@@ -122,15 +130,18 @@ export default function Course() {
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex font-bold space-x-1 font-mono">
-                                    {/* <p>{item.grade}</p> */}
-                                    <Input
-                                        defaultValue={item.grade}
-                                        placeholder="(Ungraded)"
-                                        className="text-sm"
-                                    />
-                                    <p>/</p>
-                                    <p>{item.max}</p>
+                                <div className="flex my-auto">
+                                    <div className="flex w-28 font-bold font-mono space-x-2">
+                                        <Input
+                                            defaultValue={item.grade}
+                                            placeholder="-"
+                                            className="w-16 text-center"
+                                        />
+                                        <div className="flex space-x-2 my-auto">
+                                            <p>/</p>
+                                            <p>{item.max}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ))}
