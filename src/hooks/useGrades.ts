@@ -24,8 +24,12 @@ export function useGrades(id: string) {
                     data: await res.json(),
                     timestamp: Date.now()
                 } satisfies Grades
-                setGrades(grades)
-                localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                if (validate(grades, calculate(grades))) {
+                    setGrades(grades)
+                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                } else {
+                    setError("Unable to calculate grades!")
+                }
             } else {
                 setError(await res.text())
             }
@@ -39,7 +43,12 @@ export function useGrades(id: string) {
             try {
                 const parsed = JSON.parse(cached) satisfies Grades
                 // TODO: Invalidate parsed if grades schema ever changes
-                setGrades(parsed)
+                if (validate(parsed, calculate(parsed))) {
+                    setGrades(parsed)
+                } else {
+                    localStorage.removeItem(`grades-${id}`)
+                    setError("Unable to calculate grades!")
+                }
             } catch {
                 localStorage.removeItem(`grades-${id}`)
             }
@@ -47,7 +56,47 @@ export function useGrades(id: string) {
         refresh()
     }, [id, refresh])
 
-    return { grades, error, refreshing, refresh }
+    function calculate(grades: Grades) {
+        grades.data.periods.forEach(period => {
+            period.categories.forEach(category => {
+                const [points, total] = category.items.reduce(([points, total], item) => {
+                    const grade = item.custom ?? item.grade
+                    if (!grade && grade !== 0) return [points, total]
+                    return [points + grade, total + item.max]
+                }, [0, 0])
+                const calculated = Math.round(((points / total * 100) + Number.EPSILON) * 100) / 100
+                category.calculated = isNaN(calculated) ? null : calculated
+            })
+        })
+        return grades
+    }
+
+    function validate(grades: Grades, calculated: Grades) {
+        return grades.data.periods.every((period, i) => {
+            const p = calculated.data.periods[i]
+            if (period.calculated !== p.calculated)
+                return false
+            return period.categories.every((category, j) =>
+                category.calculated === p.categories[j].calculated)
+        })
+    }
+
+    function modify(period: string, category: number, assignment: number, grade: number | null) {
+        const temp = { ...grades }
+        temp.data.periods.find(p => p.id === period)!
+            .categories.find(c => c.id === category)!
+            .items.find(a => a.id === assignment)!
+            .custom = grade
+        setGrades(calculate(temp))
+    }
+
+    return {
+        grades,
+        error,
+        modify,
+        refresh,
+        refreshing
+    }
 }
 
 interface Grades {
@@ -56,18 +105,21 @@ interface Grades {
             id: string
             name: string
             grade: number
+            calculated: number | null
             scale: string
             categories: {
                 id: number
                 name: string
                 weight: number
                 grade: number
+                calculated: number | null
                 items: {
                     id: number
                     name: string
                     due: number
                     url: string
                     grade: number
+                    custom: number | null
                     max: number
                     scale: number
                 }[]

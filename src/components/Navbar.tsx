@@ -62,7 +62,7 @@ export function Navbar() {
                         </NavigationMenuItem>
                         <Link href="/grades" legacyBehavior passHref>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                Grade Calculator
+                                Grades
                             </NavigationMenuLink>
                         </Link>
                     </NavigationMenuList>

@@ -19,7 +19,15 @@ export default function Course() {
     const router = useRouter()
     const { id } = useParams<{ id: string }>()
     const { user, loading } = useContext(AuthContext)
-    const { grades, error, refreshing } = useGrades(id)
+    const {
+        grades,
+        error,
+        modify,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        refresh,
+        refreshing
+    } = useGrades(id)
+
     const { periods } = grades.data
 
     const [period, setPeriod] = useState(periods[0])
@@ -57,7 +65,6 @@ export default function Course() {
             <title>
                 {`${section.name} | Grades | Gunn One`}
             </title>
-            {refreshing && "Refreshing..."}
             <div className="flex fixed md:relative bottom-48 md:bottom-0 mx-8">
                 <div className="space-y-1">
                     <Link href="/grades" className="flex text-sm text-secondary hover:underline">
@@ -68,11 +75,13 @@ export default function Course() {
                         <p className="md:text-2xl text-secondary">{section.section}</p>
                     </div>
                 </div>
-                <NumberFlow
-                    className="text-xl md:text-3xl text-secondary font-bold"
-                    value={period.grade}
-                    suffix="%"
-                />
+                {period.calculated && (
+                    <NumberFlow
+                        className="text-xl md:text-3xl text-secondary font-bold"
+                        value={period.calculated}
+                        suffix="%"
+                    />
+                )}
             </div>
             <div className="flex">
                 <div className="m-4 ml-8 w-64 xl:w-80 space-y-2.5">
@@ -95,10 +104,10 @@ export default function Course() {
                                                 ({c.weight}%)
                                             </p>
                                         </div>
-                                        {c.grade && (
+                                        {c.calculated && (
                                             <NumberFlow
                                                 className={`font-semibold ${current && "text-tertiary"}`}
-                                                value={c.grade}
+                                                value={c.calculated}
                                                 suffix="%"
                                             />
                                         )}
@@ -133,9 +142,13 @@ export default function Course() {
                                 <div className="flex my-auto">
                                     <div className="flex w-28 font-bold font-mono space-x-2">
                                         <Input
+                                            className="w-16 text-center"
                                             defaultValue={item.grade}
                                             placeholder="-"
-                                            className="w-16 text-center"
+                                            onChange={({ target }) => {
+                                                const grade = parseFloat(target.value) ?? null
+                                                modify(period.id, category.id, item.id, grade)
+                                            }}
                                         />
                                         <div className="flex space-x-2 my-auto">
                                             <p>/</p>
@@ -147,6 +160,7 @@ export default function Course() {
                         ))}
                 </div>
             </div>
+            {refreshing && "Refreshing..."}
         </>
     )
 }

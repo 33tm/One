@@ -41,7 +41,7 @@ export default function Grades() {
             ) : (
                 <div className="flex fixed top-0 -z-10 w-screen h-screen outline-dashed">
                     <div className="text-xl font-bold">
-                        <h1 className="font-bold text-xl">Grade Calculator</h1>
+                        <h1 className="font-bold text-xl">Grades</h1>
                         <Auth variant="link" className="text-md underline hover:opacity-75" />
                     </div>
                     <div className="m-auto">
