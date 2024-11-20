@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                 setUser(await res.json())
                 setToken(null)
                 popup.current?.close()
-                popup.current?.postMessage("auth")
                 popup.current = null
             } else {
                 setUser(null)
