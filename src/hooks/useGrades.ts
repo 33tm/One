@@ -1,30 +1,19 @@
 import server from "@/server"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
-    const [grades, setGrades] = useState<Grades>(getCached())
     const [refreshing, setRefreshing] = useState(false)
+    const [grades, setGrades] = useState<Grades>({
+        data: {
+            periods: [],
+            scales: []
+        },
+        timestamp: Date.now()
+    })
 
-    function getCached() {
-        const defaultGrades = {
-            data: {
-                periods: [],
-                scales: []
-            },
-            timestamp: 0
-        } satisfies Grades
-        try {
-            const cached = localStorage.getItem(`${id}-grades`)
-            if (!cached) return defaultGrades
-            return JSON.parse(cached)
-        } catch {
-            return defaultGrades
-        }
-    }
-
-    function refresh() {
+    const refresh = useCallback(() => {
         setRefreshing(true)
         server(`/sections/${id}/grades`, {
             method: "POST",
@@ -36,15 +25,27 @@ export function useGrades(id: string) {
                     timestamp: Date.now()
                 } satisfies Grades
                 setGrades(grades)
-                // localStorage.setItem(`${id}-grades`, JSON.stringify(grades))
+                localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
             } else {
                 setError(await res.text())
             }
             setRefreshing(false)
         })
-    }
+    }, [id])
 
-    useEffect(refresh, [id])
+    useEffect(() => {
+        const cached = localStorage.getItem(`grades-${id}`)
+        if (cached) {
+            try {
+                const parsed = JSON.parse(cached) satisfies Grades
+                // TODO: Invalidate parsed if grades schema ever changes
+                setGrades(parsed)
+            } catch {
+                localStorage.removeItem(`grades-${id}`)
+            }
+        }
+        refresh()
+    }, [id, refresh])
 
     return { grades, error, refreshing, refresh }
 }
