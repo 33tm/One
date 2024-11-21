@@ -67,24 +67,15 @@ export function useGrades(id: string) {
                 const calculated = Math.round(((points / total * 100) + Number.EPSILON) * 100) / 100
                 category.calculated = isNaN(calculated) ? null : calculated
             })
+            let total = 0
             const grade = period.categories.reduce((current, category) => {
                 const grade = category.calculated
                 if (!grade && grade !== 0) return current
                 const weight = category.weight ?? 100 / period.categories.filter(category => category.items.length).length
+                total += weight
                 return current + grade * weight
             }, 0)
-            console.log(grade / 100, period.grade)
-            // const grade = period.categories.reduce((current, category) => {
-            //     const grade = category.calculated
-            //     // if (!grade && grade !== 0) return [points, total]
-            //     if (!grade && grade !== 0) return current
-            //     const weight = (category.weight ?? 100 / period.categories.filter(category => !!category.items.length).length) / 100
-            //     // console.log(grade, weight)
-            //     return current + grade * weight
-            //     // return [points + grade * weight, total + weight]
-            // }, 0)
-            // console.log(grade, period.grade)
-            // period.calculated = Math.round(((points / total) + Number.EPSILON) * 100) / 100
+            period.calculated = Math.round(((grade / total) + Number.EPSILON) * 100) / 100
         })
         return grades
     }
