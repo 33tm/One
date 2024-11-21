@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import NumberFlow from "@number-flow/react"
 import { DateTime } from "luxon"
 import { ArrowLeft } from "lucide-react"
@@ -67,9 +68,12 @@ export default function Course() {
     return (
         <>
             <title>
-                {`${section.name} | Grades | Gunn One`}
+                {`${section.name} | Gunn One`}
             </title>
-            <div className="flex md:relative bottom-48 md:bottom-0 px-8">
+            <div
+                style={{ background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--background) 100%)" }}
+                className="flex md:relative bottom-48 md:bottom-0 px-8 py-4"
+            >
                 <div className="space-y-1">
                     <Link href="/grades" className="flex text-sm text-secondary hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
@@ -92,6 +96,12 @@ export default function Course() {
                         suffix="%"
                     />
                 )}
+                <Image
+                    fill
+                    className="-z-10 object-cover opacity-20"
+                    src={section.image}
+                    alt={section.name}
+                />
             </div>
             <div className="flex my-4">
                 <div className="ml-8 mr-4 min-w-64 xl:min-w-80 space-y-2.5">
