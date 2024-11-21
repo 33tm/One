@@ -60,13 +60,31 @@ export function useGrades(id: string) {
         grades.data.periods.forEach(period => {
             period.categories.forEach(category => {
                 const [points, total] = category.items.reduce(([points, total], item) => {
-                    const grade = item.custom ?? item.grade
+                    const grade = item.custom === null ? item.grade : item.custom
                     if (!grade && grade !== 0) return [points, total]
                     return [points + grade, total + item.max]
                 }, [0, 0])
                 const calculated = Math.round(((points / total * 100) + Number.EPSILON) * 100) / 100
                 category.calculated = isNaN(calculated) ? null : calculated
             })
+            const grade = period.categories.reduce((current, category) => {
+                const grade = category.calculated
+                if (!grade && grade !== 0) return current
+                const weight = category.weight ?? 100 / period.categories.filter(category => category.items.length).length
+                return current + grade * weight
+            }, 0)
+            console.log(grade / 100, period.grade)
+            // const grade = period.categories.reduce((current, category) => {
+            //     const grade = category.calculated
+            //     // if (!grade && grade !== 0) return [points, total]
+            //     if (!grade && grade !== 0) return current
+            //     const weight = (category.weight ?? 100 / period.categories.filter(category => !!category.items.length).length) / 100
+            //     // console.log(grade, weight)
+            //     return current + grade * weight
+            //     // return [points + grade * weight, total + weight]
+            // }, 0)
+            // console.log(grade, period.grade)
+            // period.calculated = Math.round(((points / total) + Number.EPSILON) * 100) / 100
         })
         return grades
     }
@@ -74,14 +92,14 @@ export function useGrades(id: string) {
     function validate(grades: Grades, calculated: Grades) {
         return grades.data.periods.every((period, i) => {
             const p = calculated.data.periods[i]
-            if (period.calculated !== p.calculated)
+            if (period.grade !== p.calculated)
                 return false
             return period.categories.every((category, j) =>
                 category.calculated === p.categories[j].calculated)
         })
     }
 
-    function modify(period: string, category: number, assignment: number, grade: number | null) {
+    function modify(period: string, category: number, assignment: number, grade: number | null | undefined) {
         const temp = { ...grades }
         temp.data.periods.find(p => p.id === period)!
             .categories.find(c => c.id === category)!
@@ -119,7 +137,7 @@ interface Grades {
                     due: number
                     url: string
                     grade: number
-                    custom: number | null
+                    custom: number | null | undefined
                     max: number
                     scale: number
                 }[]

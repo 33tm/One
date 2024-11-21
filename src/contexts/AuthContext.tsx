@@ -21,6 +21,7 @@ export interface UserType {
     gunn: boolean
     pausd: boolean
     class: number | null
+    domain: string
     sections: Section[]
 }
 
