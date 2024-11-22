@@ -72,7 +72,7 @@ export default function Course() {
             </title>
             <div
                 style={{ background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--background) 100%)" }}
-                className="flex md:relative bottom-48 md:bottom-0 px-8 py-4"
+                className="flex md:relative bottom-48 md:bottom-0 mx-8 my-4 px-8 py-4 outline outline-2 outline-tertiary rounded-lg"
             >
                 <div className="space-y-1">
                     <Link href="/grades" className="flex text-sm text-secondary hover:underline">
@@ -98,7 +98,7 @@ export default function Course() {
                 )}
                 <Image
                     fill
-                    className="-z-10 object-cover opacity-20"
+                    className="-z-10 object-cover opacity-20 rounded-lg"
                     src={section.image}
                     alt={section.name}
                 />
@@ -140,7 +140,7 @@ export default function Course() {
                     {category.items
                         .sort((a, b) => b.due - a.due)
                         .map(item => {
-                            const custom = (item.custom === null ? item.grade : item.custom) !== item.grade
+                            const custom = item.custom !== item.grade
                             return (
                                 <div key={item.id} className="flex justify-between rounded-lg bg-tertiary p-4">
                                     <div className="flex my-auto w-2/3 space-x-2 font-medium">
@@ -186,7 +186,7 @@ export default function Course() {
                                                 }}
                                                 onChange={({ target }) => {
                                                     const grade = parseFloat(target.value)
-                                                    modify(period.id, category.id, item.id, isNaN(grade) ? undefined : grade)
+                                                    modify(period.id, category.id, item.id, isNaN(grade) ? null : grade)
                                                 }}
                                             />
                                             <div className="flex space-x-2 my-auto">

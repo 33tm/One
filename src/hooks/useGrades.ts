@@ -90,7 +90,7 @@ export function useGrades(id: string) {
         })
     }
 
-    function modify(period: string, category: number, assignment: number, grade: number | null | undefined) {
+    function modify(period: string, category: number, assignment: number, grade: number | null) {
         const temp = { ...grades }
         temp.data.periods.find(p => p.id === period)!
             .categories.find(c => c.id === category)!
@@ -128,7 +128,7 @@ interface Grades {
                     due: number
                     url: string
                     grade: number
-                    custom: number | null | undefined
+                    custom: number | null
                     max: number
                     scale: number
                 }[]
