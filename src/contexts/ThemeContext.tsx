@@ -39,13 +39,24 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
     const [theme, setTheme] = useState(themes[0])
 
     useEffect(() => {
+        const raw = localStorage.getItem("theme")
+        if (!raw) return
+        try {
+            setTheme(JSON.parse(raw))
+        } catch {
+            localStorage.removeItem("theme")
+        }
+    }, [])
+
+    useEffect(() => {
+        localStorage.setItem("theme", JSON.stringify(theme))
         for (const [variable, value] of Object.entries(theme).slice(1))
             document.documentElement.style.setProperty(`--${variable}`, value)
     }, [theme])
 
     return (
         <ThemeContext.Provider value={theme}>
-            <button onClick={(() => setTheme(themes[themes.indexOf(theme) + 1] || themes[0]))} className="absolute bottom-2 text-background bg-primary">rotate theme</button>
+            <button onClick={(() => setTheme(themes[themes.findIndex(t => t.name === theme.name) + 1] || themes[0]))} className="absolute bottom-2 text-background bg-primary">rotate theme</button>
             {children}
         </ThemeContext.Provider>
     )
