@@ -3,7 +3,6 @@
 import Link from "next/link"
 import Image from "next/image"
 import NumberFlow from "@number-flow/react"
-import { DateTime } from "luxon"
 import { ArrowLeft } from "lucide-react"
 
 import { useParams, useRouter } from "next/navigation"
@@ -16,6 +15,8 @@ import { Input } from "@/components/ui/input"
 import { Loader } from "@/components/Loader"
 import { Error } from "@/components/Error"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
 
 export default function Course() {
     const router = useRouter()
@@ -25,6 +26,7 @@ export default function Course() {
         grades,
         error,
         modify,
+        drop,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         refresh,
         refreshing
@@ -32,6 +34,7 @@ export default function Course() {
 
     const { periods } = grades.data
 
+    const [dismiss, setDismiss] = useState(false)
     const [period, setPeriod] = useState(periods[0])
     const [category, setCategory] = useState(periods[0]?.categories.sort((a, b) => b.weight - a.weight)[0])
     const inputs = useRef(new Map<number, HTMLInputElement>())
@@ -46,24 +49,64 @@ export default function Course() {
             router.push("/grades")
     }, [user, loading, router])
 
-    if (error) {
-        return (
-            <>
-                <Link href="/grades" className="flex text-sm text-secondary hover:underline">
-                    <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
-                </Link>
-                <Error>{error}</Error>
-            </>
-        )
-    }
+    if (!period) return <Loader />
 
     if (!user) return <Error>Invalid user!</Error>
-
-    if (!period) return <Loader />
 
     const section = user.sections.find(section => section.id === id)
 
     if (!section) return <Error>Invalid state!</Error>
+
+    if (error && !dismiss) {
+        if (error === "calc") {
+            return (
+                <>
+                    <Link href="/grades" className="flex ml-8 text-sm text-secondary hover:underline">
+                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
+                    </Link>
+                    <Error>
+                        <p className="font-bold mb-4">Failed to calculate grades!</p>
+                        <div className="">
+                            <div className="rounded-t-lg bg-tertiary font-mono p-4">
+                                <div className="flex justify-between font-black">
+                                    <p>{section.name}</p>
+                                    <p>{period.name}</p>
+                                </div>
+                                <Separator className="bg-secondary my-1 rounded" />
+                                {period.categories.map(category => (
+                                    <div key={category.id} className={`flex justify-between space-x-16 ${category.grade !== category.calculated && "font-bold underline"}`}>
+                                        <p>{category.name}</p>
+                                        <div className="flex space-x-2">
+                                            <p>{category.grade}%</p>
+                                            <p>{category.calculated}%</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <Button
+                                onClick={() => setDismiss(true)}
+                                className="w-full rounded-t-none"
+                            >
+                                Ignore
+                            </Button>
+                            <p className="mt-4 text-secondary font-bold italic opacity-80">
+                                Ignoring will make grade calculations innaccurate.
+                            </p>
+                        </div>
+                    </Error>
+                </>
+            )
+        } else {
+            return (
+                <>
+                    <Link href="/grades" className="flex ml-8 text-sm text-secondary hover:underline">
+                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
+                    </Link>
+                    <Error>{error}</Error>
+                </>
+            )
+        }
+    }
 
     return (
         <>
@@ -72,7 +115,7 @@ export default function Course() {
             </title>
             <div
                 style={{ background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--background) 100%)" }}
-                className="flex md:relative bottom-48 md:bottom-0 mx-8 my-4 px-8 py-4 outline outline-2 outline-tertiary rounded-lg"
+                className="flex md:relative bottom-48 md:bottom-0 mx-8 mb-4 px-8 py-4 outline outline-2 outline-tertiary rounded-lg"
             >
                 <div className="space-y-1">
                     <Link href="/grades" className="flex text-sm text-secondary hover:underline">
@@ -89,9 +132,10 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
+                {refreshing && "Refreshing..."}
                 {period.calculated && (
                     <NumberFlow
-                        className="ml-auto mt-auto text-2xl md:text-3xl text-secondary font-bold"
+                        className="text-secondary ml-auto mt-auto text-2xl md:text-3xl font-bold"
                         value={period.calculated}
                         suffix="%"
                     />
@@ -136,7 +180,7 @@ export default function Course() {
                             )
                         })}
                 </div>
-                <div className="grow max-h-[calc(100dvh-196px)] pr-8 rounded-lg space-y-2.5 overflow-y-auto">
+                <div className="grow h-[calc(100dvh-224px)] pr-8 rounded-lg space-y-2.5 overflow-y-auto">
                     {category.items
                         .sort((a, b) => b.due - a.due)
                         .map(item => {
@@ -144,22 +188,29 @@ export default function Course() {
                             return (
                                 <div key={item.id} className="flex justify-between rounded-lg bg-tertiary p-4">
                                     <div className="flex my-auto w-2/3 space-x-2 font-medium">
-                                        {item.url ? (
-                                            <Link
-                                                href={item.url}
-                                                target="_blank"
-                                                className="hover:underline truncate"
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        ) : (
-                                            <p className="hover:cursor-default truncate">{item.name}</p>
-                                        )}
-                                        {item.due && (
+                                        <Checkbox
+                                            className="my-auto mx-2"
+                                            checked={item.drop}
+                                            onCheckedChange={() => drop(period.id, category.id, item.id)}
+                                        />
+                                        <div className={`${!item.drop && "line-through text-secondary"} transition-all duration-200`}>
+                                            {item.url ? (
+                                                <Link
+                                                    href={item.url}
+                                                    target="_blank"
+                                                    className="hover:underline truncate"
+                                                >
+                                                    {item.name}
+                                                </Link>
+                                            ) : (
+                                                <p className="hover:cursor-default truncate">{item.name}</p>
+                                            )}
+                                        </div>
+                                        {/* {item.due && (
                                             <p className="text-secondary">
                                                 {DateTime.fromMillis(item.due).toFormat("yyyy.MM.dd")}
                                             </p>
-                                        )}
+                                        )} */}
                                     </div>
                                     <div className="flex my-auto">
                                         {custom && (
@@ -201,7 +252,6 @@ export default function Course() {
                     }
                 </div>
             </div>
-            {refreshing && "Refreshing..."}
         </>
     )
 }

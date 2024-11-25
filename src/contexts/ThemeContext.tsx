@@ -58,6 +58,6 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
         <ThemeContext.Provider value={theme}>
             <button onClick={(() => setTheme(themes[themes.findIndex(t => t.name === theme.name) + 1] || themes[0]))} className="absolute bottom-2 text-background bg-primary">rotate theme</button>
             {children}
-        </ThemeContext.Provider>
+        </ThemeContext.Provider >
     )
 }

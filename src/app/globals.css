@@ -12,11 +12,11 @@
         background: var(--tertiary)
     }
 
-    *:focus {
+    /* *:focus {
         outline: none;
-    }
+    } */
 
-    button,
+    /* button,
     a,
     kbd,
     #border {
@@ -29,7 +29,7 @@
 
     svg {
         transition: stroke 0.2s !important;
-    }
+    } */
 }
 
 :root {
