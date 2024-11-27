@@ -29,7 +29,7 @@ const themes = [
         background: "#F3EEEA",
         primary: "#594545",
         secondary: "#816464",
-        tertiary: "#C2B0b0"
+        tertiary: "#C0B0B0"
     }
 ]
 
