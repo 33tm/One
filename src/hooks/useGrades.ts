@@ -49,7 +49,8 @@ export function useGrades(id: string) {
             try {
                 const parsed = JSON.parse(cached) satisfies Grades
                 const calculated = calculate(parsed)
-                if (!validate(parsed, calculated)) setError("calc")
+                if (!validate(parsed, calculated))
+                    setError("calc")
                 setGrades(calculated)
             } catch {
                 localStorage.removeItem(`grades-${id}`)
@@ -59,22 +60,19 @@ export function useGrades(id: string) {
     }, [id, refresh])
 
     useEffect(() => {
-        if (error && validate(grades, calculate(grades)))
-            setError(undefined)
-    }, [error, grades])
-
-    useEffect(() => {
         if (!promise || open) return
         setOpen(true)
         toast.promise(promise, {
             loading: "Refreshing grades...",
             success: grades => {
-                setGrades(grades)
                 if (error) {
+                    const calculated = calculate(grades)
+                    if (validate(grades, calculated))
+                        setError(undefined)
+                    setGrades(calculated)
                     return "Fetched new grades."
                 }
                 return "No new grades were found."
-                console.log(toast)
                 toast("New grades available!", {
                     action: {
                         label: "Update",
@@ -85,10 +83,12 @@ export function useGrades(id: string) {
                     },
                     duration: Infinity
                 })
-                // setGrades(grades)
                 return "Successfully refreshed grades!"
             },
-            error: error => error
+            error: error => {
+                setError(error)
+                return error
+            }
         })
     }, [promise, open, error])
 

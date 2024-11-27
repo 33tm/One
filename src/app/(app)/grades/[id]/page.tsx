@@ -49,13 +49,13 @@ export default function Course() {
             router.push("/grades")
     }, [user, loading, router])
 
-    if (!period) return <Loader />
-
     if (!user) return <Error>Invalid user!</Error>
 
     const section = user.sections.find(section => section.id === id)
 
     if (!section) return <Error>Invalid state!</Error>
+
+    if (!period) return <Loader />
 
     if (error && !dismiss) {
         if (error === "calc") {
@@ -69,18 +69,33 @@ export default function Course() {
                         <div className="rounded-t-lg bg-tertiary font-mono p-4">
                             <div className="flex justify-between font-black">
                                 <p>{section.name}</p>
-                                <p>{period.name}</p>
+                                <p>{section.section}</p>
+                            </div>
+                            <div className="flex">
+                                <p className="text-left truncate w-1/2">{period.name}</p>
+                                <div className="flex w-1/2 space-x-3">
+                                    <p className="text-right w-1/2">calc%</p>
+                                    <p className="text-right w-1/2">grade%</p>
+                                </div>
                             </div>
                             <Separator className="bg-secondary my-1 rounded" />
                             {period.categories.map(category => (
-                                <div key={category.id} className={`flex justify-between space-x-16 ${category.grade !== category.calculated && "font-bold underline"}`}>
-                                    <p>{category.name}</p>
-                                    <div className="flex space-x-2">
-                                        <p>{category.grade}%</p>
-                                        <p>{category.calculated}%</p>
+                                <div key={category.id} className={`flex ${category.grade !== category.calculated && "font-bold underline"}`}>
+                                    <p className="text-left truncate w-1/2">{category.name}</p>
+                                    <div className="flex w-1/2 space-x-3">
+                                        <p className="text-right w-1/2">{category.calculated}%</p>
+                                        <p className="text-right w-1/2">{category.grade}%</p>
                                     </div>
                                 </div>
                             ))}
+                            <Separator className="bg-secondary my-1 rounded" />
+                            <div className="flex font-black">
+                                <p className="text-left truncate w-1/2">Total</p>
+                                <div className={`ml-auto flex w-1/2 space-x-3 ${period.grade !== period.calculated && "underline"}`}>
+                                    <p className="text-right w-1/2">{period.calculated}%</p>
+                                    <p className="text-right w-1/2">{period.grade}%</p>
+                                </div>
+                            </div>
                         </div>
                         <Button
                             onClick={() => setDismiss(true)}
@@ -96,12 +111,12 @@ export default function Course() {
             )
         } else {
             return (
-                <>
-                    <Link href="/grades" className="flex ml-8 text-sm text-secondary hover:underline">
+                <Error>
+                    <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                     </Link>
-                    <Error>{error}</Error>
-                </>
+                    {error}
+                </Error>
             )
         }
     }
