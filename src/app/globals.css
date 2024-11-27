@@ -12,24 +12,9 @@
         background: var(--tertiary)
     }
 
-    /* *:focus {
+    *:focus {
         outline: none;
-    } */
-
-    /* button,
-    a,
-    kbd,
-    #border {
-        transition:
-            background-color 0.2s,
-            border-color 0.2s,
-            opacity 0.2s,
-            stroke 0.2s !important;
     }
-
-    svg {
-        transition: stroke 0.2s !important;
-    } */
 }
 
 :root {

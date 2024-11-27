@@ -60,41 +60,39 @@ export default function Course() {
     if (error && !dismiss) {
         if (error === "calc") {
             return (
-                <>
-                    <Link href="/grades" className="flex ml-8 text-sm text-secondary hover:underline">
+                <Error>
+                    <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-16 text-sm text-secondary hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                     </Link>
-                    <Error>
-                        <p className="font-bold mb-4">Failed to calculate grades!</p>
-                        <div className="">
-                            <div className="rounded-t-lg bg-tertiary font-mono p-4">
-                                <div className="flex justify-between font-black">
-                                    <p>{section.name}</p>
-                                    <p>{period.name}</p>
-                                </div>
-                                <Separator className="bg-secondary my-1 rounded" />
-                                {period.categories.map(category => (
-                                    <div key={category.id} className={`flex justify-between space-x-16 ${category.grade !== category.calculated && "font-bold underline"}`}>
-                                        <p>{category.name}</p>
-                                        <div className="flex space-x-2">
-                                            <p>{category.grade}%</p>
-                                            <p>{category.calculated}%</p>
-                                        </div>
-                                    </div>
-                                ))}
+                    <p className="font-bold mb-4">Failed to calculate grades!</p>
+                    <div className="mx-4">
+                        <div className="rounded-t-lg bg-tertiary font-mono p-4">
+                            <div className="flex justify-between font-black">
+                                <p>{section.name}</p>
+                                <p>{period.name}</p>
                             </div>
-                            <Button
-                                onClick={() => setDismiss(true)}
-                                className="w-full rounded-t-none"
-                            >
-                                Ignore
-                            </Button>
-                            <p className="mt-4 text-secondary font-bold italic opacity-80">
-                                Ignoring will make grade calculations innaccurate.
-                            </p>
+                            <Separator className="bg-secondary my-1 rounded" />
+                            {period.categories.map(category => (
+                                <div key={category.id} className={`flex justify-between space-x-16 ${category.grade !== category.calculated && "font-bold underline"}`}>
+                                    <p>{category.name}</p>
+                                    <div className="flex space-x-2">
+                                        <p>{category.grade}%</p>
+                                        <p>{category.calculated}%</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </Error>
-                </>
+                        <Button
+                            onClick={() => setDismiss(true)}
+                            className="w-full rounded-t-none"
+                        >
+                            Ignore
+                        </Button>
+                        <p className="mt-4 text-secondary text-sm font-bold opacity-80">
+                            Ignoring will make calculations innaccurate.
+                        </p>
+                    </div>
+                </Error>
             )
         } else {
             return (
@@ -180,7 +178,7 @@ export default function Course() {
                             )
                         })}
                 </div>
-                <div className="grow h-[calc(100dvh-224px)] pr-8 rounded-lg space-y-2.5 overflow-y-auto">
+                <div className="grow h-[calc(100dvh-224px)] pr-8 mr-0 rounded-lg space-y-2.5 overflow-y-auto">
                     {category.items
                         .sort((a, b) => b.due - a.due)
                         .map(item => {

@@ -30,7 +30,6 @@ export function useGrades(id: string) {
                         timestamp: Date.now()
                     } satisfies Grades
                     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
-                    setGrades(grades)
                     resolve(grades)
                 } else {
                     const error = await res.text()
@@ -70,7 +69,11 @@ export function useGrades(id: string) {
         toast.promise(promise, {
             loading: "Refreshing grades...",
             success: grades => {
-                if (true) return "No new grades were found."
+                setGrades(grades)
+                if (error) {
+                    return "Fetched new grades."
+                }
+                return "No new grades were found."
                 console.log(toast)
                 toast("New grades available!", {
                     action: {
@@ -87,7 +90,7 @@ export function useGrades(id: string) {
             },
             error: error => error
         })
-    }, [promise, open])
+    }, [promise, open, error])
 
     function drop(period: string, category: number, assignment: number) {
         const temp = { ...grades }

@@ -19,7 +19,6 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    NavigationMenuTrigger,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu"
 
@@ -55,7 +54,6 @@ export function Navbar() {
                 <NavigationMenu>
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>Communities</NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <NavigationMenuLink>Link</NavigationMenuLink>
                             </NavigationMenuContent>
@@ -75,43 +73,45 @@ export function Navbar() {
                     >
                         <Schedule />
                     </Link>
-                    <Button
-                        variant="outline"
-                        onClick={toggle}
-                    >
-                        <Search />
-                        Search
-                        <kbd className="[&_svg]:size-auto flex gap-1 rounded bg-primary text-background transition-colors duration-200 px-1.5 font-mono">
-                            <Command size={12} />
-                            K
-                        </kbd>
-                    </Button>
                     {user ? (
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost">
-                                    {user.name}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="flex flex-col bg-background space-y-2 p-2 w-44 mr-4 mt-0.5">
-                                <Link href={`/user/${user.id}`}>
-                                    <Button variant="ghost" className="flex w-40">
-                                        Profile
-                                        <User className="ml-auto" />
+                        <>
+                            <Button
+                                variant="outline"
+                                onClick={toggle}
+                            >
+                                <Search />
+                                Search
+                                <kbd className="[&_svg]:size-auto flex gap-1 rounded bg-primary text-background transition-colors duration-200 px-1.5 font-mono">
+                                    <Command size={12} />
+                                    K
+                                </kbd>
+                            </Button>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="ghost">
+                                        {user.name}
                                     </Button>
-                                </Link>
-                                <Link href="/settings">
-                                    <Button variant="ghost" className="flex w-40">
-                                        Settings
-                                        <Wrench className="ml-auto" />
+                                </PopoverTrigger>
+                                <PopoverContent className="flex flex-col bg-background space-y-2 p-2 w-44 mr-4 mt-0.5">
+                                    <Link href={`/user/${user.id}`}>
+                                        <Button variant="ghost" className="flex w-40">
+                                            Profile
+                                            <User className="ml-auto" />
+                                        </Button>
+                                    </Link>
+                                    <Link href="/settings">
+                                        <Button variant="ghost" className="flex w-40">
+                                            Settings
+                                            <Wrench className="ml-auto" />
+                                        </Button>
+                                    </Link>
+                                    <Button className="flex w-40" onClick={logout}>
+                                        Log Out
+                                        <LogOut className="ml-auto" />
                                     </Button>
-                                </Link>
-                                <Button className="flex w-40" onClick={logout}>
-                                    Log Out
-                                    <LogOut className="ml-auto" />
-                                </Button>
-                            </PopoverContent>
-                        </Popover>
+                                </PopoverContent>
+                            </Popover>
+                        </>
                     ) : <Auth />}
                 </div>
             </div>
