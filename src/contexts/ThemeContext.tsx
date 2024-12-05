@@ -2,6 +2,14 @@
 
 import { createContext, useEffect, useState } from "react"
 
+interface Theme {
+    name: string
+    background: string
+    primary: string
+    secondary: string
+    tertiary: string
+}
+
 const themes = [
     {
         name: "Default",
@@ -31,22 +39,23 @@ const themes = [
         secondary: "#816464",
         tertiary: "#C0B0B0"
     }
-]
+] satisfies Theme[]
 
 export const ThemeContext = createContext<typeof themes[0]>(themes[0])
 
 export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    const [theme, setTheme] = useState(themes[0])
+    const [theme, setTheme] = useState<Theme>(getTheme())
 
-    useEffect(() => {
+    function getTheme() {
         const raw = localStorage.getItem("theme")
-        if (!raw) return
+        if (!raw) return themes[0]
         try {
-            setTheme(JSON.parse(raw))
+            return JSON.parse(raw) as Theme
         } catch {
-            localStorage.removeItem("theme")
+            localStorage.setItem("theme", JSON.stringify(themes[0]))
+            return themes[0]
         }
-    }, [])
+    }
 
     useEffect(() => {
         localStorage.setItem("theme", JSON.stringify(theme))
