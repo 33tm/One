@@ -64,11 +64,10 @@ export function useGrades(id: string) {
         setOpen(true)
         toast.promise(promise, {
             loading: "Refreshing grades...",
-            success: grades => {
-                if (error) {
-                    const calculated = calculate(grades)
-                    if (validate(grades, calculated))
-                        setError(undefined)
+            success: g => {
+                if (error || !grades.data.periods.length) {
+                    const calculated = calculate(g)
+                    setError(validate(g, calculated) ? undefined : "calc")
                     setGrades(calculated)
                     return "Fetched new grades."
                 }
@@ -78,7 +77,7 @@ export function useGrades(id: string) {
                         label: "Update",
                         onClick: () => {
                             toast.dismiss()
-                            setGrades(grades)
+                            setGrades(g)
                         }
                     },
                     duration: Infinity

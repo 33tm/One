@@ -47,7 +47,7 @@ export function Navbar() {
 
     if (useMediaQuery("(min-width: 768px)")) {
         return (
-            <div className="flex w-screen p-4">
+            <div className="relative flex w-screen p-4 z-10">
                 <Link href="/" className="my-auto px-4">
                     <Circle strokeWidth={4} />
                 </Link>

@@ -60,63 +60,73 @@ export default function Course() {
     if (error && !dismiss) {
         if (error === "calc") {
             return (
-                <Error>
-                    <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-16 text-sm text-secondary hover:underline">
-                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
-                    </Link>
-                    <p className="font-bold mb-4">Failed to calculate grades!</p>
-                    <div className="mx-4">
-                        <div className="rounded-t-lg bg-tertiary font-mono p-4">
-                            <div className="flex justify-between font-black">
-                                <p>{section.name}</p>
-                                <p>{section.section}</p>
-                            </div>
-                            <div className="flex">
-                                <p className="text-left truncate w-1/2">{period.name}</p>
-                                <div className="flex w-1/2 space-x-3">
-                                    <p className="text-right w-1/2">calc%</p>
-                                    <p className="text-right w-1/2">grade%</p>
+                <>
+                    <title>
+                        {`${section.name} | Gunn One`}
+                    </title>
+                    <Error>
+                        <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
+                            <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
+                        </Link>
+                        <p className="font-bold mb-4">Failed to calculate grades!</p>
+                        <div className="mx-4">
+                            <div className="rounded-t-lg bg-tertiary font-mono p-4">
+                                <div className="flex justify-between font-black">
+                                    <p>{section.name}</p>
+                                    <p>{section.section}</p>
                                 </div>
-                            </div>
-                            <Separator className="bg-secondary my-1 rounded" />
-                            {period.categories.map(category => (
-                                <div key={category.id} className={`flex ${category.grade !== category.calculated && "font-bold underline"}`}>
-                                    <p className="text-left truncate w-1/2">{category.name}</p>
+                                <div className="flex">
+                                    <p className="text-left truncate w-1/2">{period.name}</p>
                                     <div className="flex w-1/2 space-x-3">
-                                        <p className="text-right w-1/2">{category.calculated}%</p>
-                                        <p className="text-right w-1/2">{category.grade}%</p>
+                                        <p className="text-right w-1/2">calc%</p>
+                                        <p className="text-right w-1/2">grade%</p>
                                     </div>
                                 </div>
-                            ))}
-                            <Separator className="bg-secondary my-1 rounded" />
-                            <div className="flex font-black">
-                                <p className="text-left truncate w-1/2">Total</p>
-                                <div className={`ml-auto flex w-1/2 space-x-3 ${period.grade !== period.calculated && "underline"}`}>
-                                    <p className="text-right w-1/2">{period.calculated}%</p>
-                                    <p className="text-right w-1/2">{period.grade}%</p>
+                                <Separator className="bg-secondary my-1 rounded" />
+                                {period.categories.map(category => (
+                                    <div key={category.id} className={`flex ${category.grade !== category.calculated && "font-bold underline"}`}>
+                                        <p className="text-left truncate w-1/2">{category.name}</p>
+                                        <div className="flex w-1/2 space-x-3">
+                                            <p className="text-right w-1/2">{category.calculated}%</p>
+                                            <p className="text-right w-1/2">{category.grade}%</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                <Separator className="bg-secondary my-1 rounded" />
+                                <div className="flex font-black">
+                                    <p className="text-left truncate w-1/2">Total</p>
+                                    <div className={`ml-auto flex w-1/2 space-x-3 ${period.grade !== period.calculated && "underline"}`}>
+                                        <p className="text-right w-1/2">{period.calculated}%</p>
+                                        <p className="text-right w-1/2">{period.grade}%</p>
+                                    </div>
                                 </div>
                             </div>
+                            <Button
+                                onClick={() => setDismiss(true)}
+                                className="w-full rounded-t-none"
+                            >
+                                Ignore
+                            </Button>
+                            <p className="mt-4 text-secondary text-sm font-bold opacity-80">
+                                Ignoring will make calculations innaccurate.
+                            </p>
                         </div>
-                        <Button
-                            onClick={() => setDismiss(true)}
-                            className="w-full rounded-t-none"
-                        >
-                            Ignore
-                        </Button>
-                        <p className="mt-4 text-secondary text-sm font-bold opacity-80">
-                            Ignoring will make calculations innaccurate.
-                        </p>
-                    </div>
-                </Error>
+                    </Error>
+                </>
             )
         } else {
             return (
-                <Error>
-                    <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
-                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
-                    </Link>
-                    {error}
-                </Error>
+                <>
+                    <title>
+                        {`${section.name} | Gunn One`}
+                    </title>
+                    <Error>
+                        <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
+                            <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
+                        </Link>
+                        {error}
+                    </Error>
+                </>
             )
         }
     }
@@ -151,6 +161,7 @@ export default function Course() {
                         className="text-secondary ml-auto mt-auto text-2xl md:text-3xl font-bold"
                         value={period.calculated}
                         suffix="%"
+                        continuous
                     />
                 )}
                 <Image
@@ -186,6 +197,7 @@ export default function Course() {
                                                 className={`font-semibold ${current && "text-tertiary"}`}
                                                 value={c.calculated}
                                                 suffix="%"
+                                                continuous
                                             />
                                         )}
                                     </div>

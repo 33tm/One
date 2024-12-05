@@ -18,7 +18,7 @@ export default function Grades() {
             </title>
             {user ? (
                 <div className="h-full w-full overflow-y-auto overflow-x-hidden">
-                    <div className="m-4 md:m-8 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-3">
+                    <div className="m-4 md:m-8 md:mt-2 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-3">
                         {user?.sections.map((section) => (
                             <Link key={section.id} href={`/grades/${section.id}`}>
                                 <div className="relative group text-center text-lg py-8 rounded-xl hover:scale-105 hover:shadow-2xl transition ease-out duration-200">
