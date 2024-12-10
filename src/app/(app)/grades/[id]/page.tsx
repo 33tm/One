@@ -102,13 +102,14 @@ export default function Course() {
                                 </div>
                             </div>
                             <Button
+                                disabled={refreshing}
                                 onClick={() => setDismiss(true)}
-                                className="w-full rounded-t-none"
+                                className="w-full rounded-t-none transition-all duration-200"
                             >
-                                Ignore
+                                {refreshing ? "Refreshing..." : "Ignore"}
                             </Button>
-                            <p className="mt-4 text-secondary text-sm font-bold opacity-80">
-                                Ignoring will make calculations innaccurate.
+                            <p className="mt-4 text-secondary text-sm font-semibold">
+                                Ignoring will make grade calculations innaccurate.
                             </p>
                         </div>
                     </Error>
@@ -188,9 +189,11 @@ export default function Course() {
                                             <p className={`truncate ${current && "text-tertiary"}`}>
                                                 {c.name}
                                             </p>
-                                            <p className="text-secondary font-medium">
-                                                ({c.weight ?? (100 / period.categories.length).toFixed(2)}%)
-                                            </p>
+                                            {c.weight && (
+                                                <p className="text-secondary font-medium">
+                                                    ({c.weight}%)
+                                                </p>
+                                            )}
                                         </div>
                                         {c.calculated && (
                                             <NumberFlow
@@ -215,10 +218,10 @@ export default function Course() {
                                     <div className="flex my-auto w-2/3 space-x-2 font-medium">
                                         <Checkbox
                                             className="my-auto mx-2"
-                                            checked={item.drop}
+                                            checked={!item.drop || item.custom === undefined}
                                             onCheckedChange={() => drop(period.id, category.id, item.id)}
                                         />
-                                        <div className={`${!item.drop && "line-through text-secondary"} transition-all duration-200`}>
+                                        <div className={`${item.drop && "line-through text-secondary"} transition-all duration-200`}>
                                             {item.url ? (
                                                 <Link
                                                     href={item.url}

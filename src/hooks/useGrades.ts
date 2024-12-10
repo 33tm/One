@@ -8,6 +8,7 @@ export function useGrades(id: string) {
     const [refreshing, setRefreshing] = useState(false)
     const [grades, setGrades] = useState<Grades>({
         data: {
+            weighted: false,
             periods: [],
             scales: []
         },
@@ -70,29 +71,25 @@ export function useGrades(id: string) {
                     setError(validate(g, calculated) ? undefined : "calc")
                     setGrades(calculated)
                 }
-                let isNew = false
-                if (grades.data.periods.length !== g.data.periods.length)
-                    isNew = true
-                else {
-                    grades.data.periods.forEach(period => {
-                        const p = g.data.periods.find(p => p.id === period.id)
-                        if (!p || period.grade !== p.grade || period.categories.length !== p.categories.length)
+                let isNew = grades.data.periods.length !== g.data.periods.length
+                grades.data.periods.forEach(period => {
+                    const p = g.data.periods.find(p => p.id === period.id)
+                    if (!p || period.grade !== p.grade || period.categories.length !== p.categories.length)
+                        return isNew = true
+                    period.categories.forEach(category => {
+                        const c = p.categories.find(c => c.id === category.id)
+                        if (!c || category.grade !== c.grade || category.items.length !== c.items.length)
                             return isNew = true
-                        period.categories.forEach(category => {
-                            const c = p.categories.find(c => c.id === category.id)
-                            if (!c || category.grade !== c.grade || category.items.length !== c.items.length)
+                        category.items.forEach(item => {
+                            const i = c.items.find(i => i.id === item.id)
+                            if (!i || item.grade !== i.grade)
                                 return isNew = true
-                            category.items.forEach(item => {
-                                const i = c.items.find(i => i.id === item.id)
-                                if (!i || item.grade !== i.grade)
-                                    return isNew = true
-                            })
                         })
                     })
-                }
+                })
                 if (error || !grades.data.periods.length) {
                     set()
-                    return "Fetched new grades."
+                    return isNew ? "Fetched new grades." : "No new grades were found."
                 } else if (isNew) {
                     toast("New grades available!", {
                         action: {
@@ -142,25 +139,38 @@ export function useGrades(id: string) {
 }
 
 function calculate(grades: Grades) {
+    const round = (grade: number) => Math.round((grade + Number.EPSILON) * 100) / 100
+    // console.clear()
     grades.data.periods.forEach(period => {
-        period.categories.forEach(category => {
+        const [numerator, denominator] = period.categories.reduce(([numerator, denominator], category) => {
             const [points, total] = category.items.reduce(([points, total], item) => {
+                // if (category.name === "Quizzes") {
+                //     console.log(item.name.slice(0, 10), item.grade, item.max, item.drop)
+                // }
+                if (item.drop) return [points + item.max, total + item.max]
                 const grade = item.custom === null ? item.grade : item.custom
                 if (!grade && grade !== 0) return [points, total]
                 return [points + grade, total + item.max]
             }, [0, 0])
-            const calculated = Math.round(((points / total * 100) + Number.EPSILON) * 100) / 100
+            const calculated = round(points / total * 100)
             category.calculated = isNaN(calculated) ? null : calculated
-        })
-        let total = 0
-        const grade = period.categories.reduce((current, category) => {
-            const grade = category.calculated
-            if (!grade && grade !== 0) return current
-            const weight = category.weight ?? 100 / period.categories.filter(category => category.items.length).length
-            total += weight
-            return current + grade * weight
-        }, 0)
-        period.calculated = Math.round(((grade / total) + Number.EPSILON) * 100) / 100
+            return [numerator + points, denominator + total]
+        }, [0, 0])
+        if (grades.data.weighted) {
+            let total = 0
+            const grade = period.categories.reduce((current, category) => {
+                const grade = category.calculated
+                if (!grade && grade !== 0) return current
+                total += category.weight
+                return current + grade * category.weight
+            }, 0)
+            period.calculated = round(grade / total)
+        } else {
+            // Points based grading
+            // Category weights are undefined, period grades are calculated as if it was a giant category
+            // This is totally not misleading at all thank you Schoology
+            period.calculated = round(numerator / denominator * 100)
+        }
     })
     return grades
 }
@@ -178,6 +188,7 @@ function validate(grades: Grades, calculated: Grades) {
 
 interface Grades {
     data: {
+        weighted: boolean
         periods: {
             id: string
             name: string
