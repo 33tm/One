@@ -65,31 +65,53 @@ export function useGrades(id: string) {
         toast.promise(promise, {
             loading: "Refreshing grades...",
             success: g => {
-                if (error || !grades.data.periods.length) {
+                function set() {
                     const calculated = calculate(g)
                     setError(validate(g, calculated) ? undefined : "calc")
                     setGrades(calculated)
-                    return "Fetched new grades."
                 }
-                return "No new grades were found."
-                toast("New grades available!", {
-                    action: {
-                        label: "Update",
-                        onClick: () => {
-                            toast.dismiss()
-                            setGrades(g)
-                        }
-                    },
-                    duration: Infinity
-                })
-                return "Successfully refreshed grades!"
+                let isNew = false
+                if (grades.data.periods.length !== g.data.periods.length)
+                    isNew = true
+                else {
+                    grades.data.periods.forEach(period => {
+                        const p = g.data.periods.find(p => p.id === period.id)
+                        if (!p || period.grade !== p.grade || period.categories.length !== p.categories.length)
+                            return isNew = true
+                        period.categories.forEach(category => {
+                            const c = p.categories.find(c => c.id === category.id)
+                            if (!c || category.grade !== c.grade || category.items.length !== c.items.length)
+                                return isNew = true
+                            category.items.forEach(item => {
+                                const i = c.items.find(i => i.id === item.id)
+                                if (!i || item.grade !== i.grade)
+                                    return isNew = true
+                            })
+                        })
+                    })
+                }
+                if (error || !grades.data.periods.length) {
+                    set()
+                    return "Fetched new grades."
+                } else if (isNew) {
+                    toast("New grades available!", {
+                        action: {
+                            label: "Update",
+                            onClick: () => {
+                                toast.dismiss()
+                                set()
+                            }
+                        },
+                        duration: Infinity
+                    })
+                    return "Fetched new grades."
+                } else {
+                    return "No new grades were found."
+                }
             },
-            error: error => {
-                setError(error)
-                return error
-            }
+            error: () => "Failed to refresh grades!"
         })
-    }, [promise, open, error])
+    }, [promise, open, error, grades])
 
     function drop(period: string, category: number, assignment: number) {
         const temp = { ...grades }
