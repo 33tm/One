@@ -44,25 +44,23 @@ const themes = [
 export const ThemeContext = createContext<typeof themes[0]>(themes[0])
 
 export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    const [theme, setTheme] = useState<Theme>(getTheme())
+    const [theme, setTheme] = useState<Theme>(themes[0])
 
-    function getTheme() {
+    useEffect(() => {
         const raw = localStorage.getItem("theme")
-        if (!raw) return themes[0]
+        if (!raw) return
         try {
-            return JSON.parse(raw) as Theme
+            setTheme(JSON.parse(raw))
         } catch {
-            localStorage.setItem("theme", JSON.stringify(themes[0]))
-            return themes[0]
+            localStorage.removeItem("theme")
         }
-    }
+    }, [])
 
     useEffect(() => {
         localStorage.setItem("theme", JSON.stringify(theme))
         for (const [variable, value] of Object.entries(theme).slice(1))
             document.documentElement.style.setProperty(`--${variable}`, value)
     }, [theme])
-
 
     return (
         <ThemeContext.Provider value={theme}>

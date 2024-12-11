@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     const [user, setUser] = useState<UserType | null>(null)
     const [token, setToken] = useState<string | null>(null)
     const [error, setError] = useState(false)
-    const popup = useRef<Window | null>()
+    const popup = useRef<Window | null>(null)
 
     const refresh = useCallback(() => {
         server("/auth/verify", {
