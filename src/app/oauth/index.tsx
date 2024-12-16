@@ -43,19 +43,28 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     }, [open])
 
     function oauth(domain: string) {
+        const url = `${window.location.origin}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
+
         // Schoology blocks any ipv4 address or anything that contains "localhost" from being a valid oauth_callback for whatever reason
-        // Love how this wouldn't be a problem if we just tested in prod
-        // To account for this very fun fact I put up a route handler at https://tttm.us/redirect
-        // Which accepts a "url" query parameter in base64 and redirects to the decoded url :>>
+        // (Love how this wouldn't be a problem if we just tested in production !!)
+
+        // To account for this very fun fact I put up a route handler at https://tttm.us/redirect,
+        // which accepts a "url" query parameter in base64 and redirects to the decoded url :>>
+
         // Yeah I agree Schoology is pretty great
-        const decoded = encodeURIComponent(`https://${domain}`)
+
+        // In a development environment, the callback will be set to the aforementioned handler; otherwise, it will redirect to /callback.
+        // Previously (up until e57e882) the NEXT_PUBLIC_CALLBACK_URL variable was used, but it was removed since it didn't work across domains.
+
         const callback = process.env.NODE_ENV === "development"
-            ? `tttm.us/redirect?url=${Buffer.from(`${window.location.origin}/callback?domain=${decoded}`).toString("base64")}`
-            : `${process.env.NEXT_PUBLIC_CALLBACK_URL}?domain=${decoded}`
+            ? `tttm.us/redirect?url=${Buffer.from(url).toString("base64")}`
+            : url
+
         const params = new URLSearchParams({
             oauth_token: token,
             oauth_callback: callback
         })
+
         return `https://${domain}/oauth/authorize?${params}`
     }
 
