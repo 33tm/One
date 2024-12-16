@@ -1,7 +1,7 @@
 import server from "@/server"
 
 import { useState, useEffect, useCallback } from "react"
-import { toast } from "sonner"
+// import { toast } from "sonner"
 
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
@@ -12,103 +12,117 @@ export function useGrades(id: string) {
             periods: [],
             scales: []
         },
-        timestamp: Date.now()
+        timestamp: 0
     })
 
-    const [open, setOpen] = useState(false)
-    const [promise, setPromise] = useState<Promise<Grades>>()
+    // const [open, setOpen] = useState(false)
+    // const [promise, setPromise] = useState<Promise<Grades>>()
 
-    const refresh = useCallback(() => {
+    const reset = useCallback(() => {
         setRefreshing(true)
-        const promise = new Promise<Grades>((resolve, reject) => {
-            server(`/sections/${id}/grades`, {
-                method: "POST",
-                credentials: "include"
-            }).then(async res => {
-                if (res.status === 200) {
-                    const grades = {
-                        data: await res.json(),
-                        timestamp: Date.now()
-                    } satisfies Grades
-                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
-                    resolve(grades)
-                } else {
-                    const error = await res.text()
-                    setError(error)
-                    reject(error)
-                }
-                setRefreshing(false)
-            })
+        server(`/sections/${id}/grades/reset`, {
+            method: "POST",
+            credentials: "include"
+        }).then(async res => {
+            setRefreshing(false)
+            if (res.status !== 200) {
+                const error = await res.text()
+                setError(error)
+                return
+            }
+
+            const grades = await res.json()
+            const calculated = calculate(grades)
+
+            if (!validate(grades, calculated))
+                setError("calc")
+
+            setGrades(calculated)
+            localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
         })
-        setPromise(promise)
+    }, [id])
+
+    const refresh = useCallback((timestamp: number) => {
+        setRefreshing(true)
+        server(`/sections/${id}/grades/refresh`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify({ timestamp })
+        }).then(async res => {
+            console.log(await res.json())
+            setRefreshing(false)
+        })
     }, [id])
 
     useEffect(() => {
         if (!id) return
-        const cached = localStorage.getItem(`grades-${id}`)
-        if (cached) {
-            try {
-                const parsed = JSON.parse(cached) satisfies Grades
-                const calculated = calculate(parsed)
-                if (!validate(parsed, calculated))
-                    setError("calc")
-                setGrades(calculated)
-            } catch {
-                localStorage.removeItem(`grades-${id}`)
+        const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
+        if (grades) {
+            const calculated = calculate(grades)
+            if (!validate(grades, calculated)) {
+                setError("calc")
+                reset()
+            } else if (true || grades.timestamp < Date.now() - 1000 * 60) {
+                refresh(grades.timestamp)
             }
+            setGrades(calculated)
+        } else {
+            localStorage.removeItem(`grades-${id}`)
+            reset()
         }
-        refresh()
-    }, [id, refresh])
+    }, [id, reset, refresh])
 
-    useEffect(() => {
-        if (!promise || open) return
-        setOpen(true)
-        toast.promise(promise, {
-            loading: "Refreshing grades...",
-            success: g => {
-                function set() {
-                    const calculated = calculate(g)
-                    setError(validate(g, calculated) ? undefined : "calc")
-                    setGrades(calculated)
-                }
-                let isNew = grades.data.periods.length !== g.data.periods.length
-                grades.data.periods.forEach(period => {
-                    const p = g.data.periods.find(p => p.id === period.id)
-                    if (!p || period.grade !== p.grade || period.categories.length !== p.categories.length)
-                        return isNew = true
-                    period.categories.forEach(category => {
-                        const c = p.categories.find(c => c.id === category.id)
-                        if (!c || category.grade !== c.grade || category.items.length !== c.items.length)
-                            return isNew = true
-                        category.items.forEach(item => {
-                            const i = c.items.find(i => i.id === item.id)
-                            if (!i || item.grade !== i.grade)
-                                return isNew = true
-                        })
-                    })
-                })
-                if (error || !grades.data.periods.length) {
-                    set()
-                    return isNew ? "Fetched new grades." : "No new grades were found."
-                } else if (isNew) {
-                    toast("New grades available!", {
-                        action: {
-                            label: "Update",
-                            onClick: () => {
-                                toast.dismiss()
-                                set()
-                            }
-                        },
-                        duration: Infinity
-                    })
-                    return "Fetched new grades."
-                } else {
-                    return "No new grades were found."
-                }
-            },
-            error: () => "Failed to refresh grades!"
-        })
-    }, [promise, open, error, grades])
+    // useEffect(() => {
+    //     if (!promise || open) return
+    //     setOpen(true)
+    //     toast.promise(promise, {
+    //         loading: "Refreshing grades...",
+    //         success: g => {
+    //             console.log(g)
+    //             return "a"
+    // function set() {
+    //     const calculated = calculate(g)
+    //     setError(validate(g, calculated) ? undefined : "calc")
+    //     setGrades(calculated)
+    // }
+    // let isNew = grades.data.periods.length !== g.data.periods.length
+    // grades.data.periods.forEach(period => {
+    //     const p = g.data.periods.find(p => p.id === period.id)
+    //     if (!p || period.grade !== p.grade || period.categories.length !== p.categories.length)
+    //         return isNew = true
+    //     period.categories.forEach(category => {
+    //         const c = p.categories.find(c => c.id === category.id)
+    //         if (!c || category.grade !== c.grade || category.items.length !== c.items.length)
+    //             return isNew = true
+    //         category.items.forEach(item => {
+    //             const i = c.items.find(i => i.id === item.id)
+    //             if (!i || item.grade !== i.grade)
+    //                 return isNew = true
+    //         })
+    //     })
+    // })
+    // if (error || !grades.data.periods.length) {
+    //     set()
+    //     return isNew ? "Fetched new grades." : "No new grades were found."
+    // } else if (isNew) {
+    //     toast("New grades available!", {
+    //         action: {
+    //             label: "Update",
+    //             onClick: () => {
+    //                 toast.dismiss()
+    //                 set()
+    //             }
+    //         },
+    //         duration: Infinity
+    //     })
+    //     return "Fetched new grades."
+    // } else {
+    //     return "No new grades were found."
+    // }
+    //         },
+    //         error: () => "Failed to refresh grades!"
+    //     })
+    // }, [promise, open, error, grades])
 
     function drop(period: string, category: number, assignment: number) {
         const temp = { ...grades }
@@ -133,6 +147,7 @@ export function useGrades(id: string) {
         error,
         modify,
         drop,
+        reset,
         refresh,
         refreshing
     }
@@ -140,13 +155,10 @@ export function useGrades(id: string) {
 
 function calculate(grades: Grades) {
     const round = (grade: number) => Math.round((grade + Number.EPSILON) * 100) / 100
-    // console.clear()
+
     grades.data.periods.forEach(period => {
         const [numerator, denominator] = period.categories.reduce(([numerator, denominator], category) => {
             const [points, total] = category.items.reduce(([points, total], item) => {
-                // if (category.name === "Quizzes") {
-                //     console.log(item.name.slice(0, 10), item.grade, item.max, item.drop)
-                // }
                 if (item.drop) return [points + item.max, total + item.max]
                 const grade = item.custom === null ? item.grade : item.custom
                 if (!grade && grade !== 0) return [points, total]
@@ -156,6 +168,7 @@ function calculate(grades: Grades) {
             category.calculated = isNaN(calculated) ? null : calculated
             return [numerator + points, denominator + total]
         }, [0, 0])
+
         if (grades.data.weighted) {
             let total = 0
             const grade = period.categories.reduce((current, category) => {
