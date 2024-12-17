@@ -7,11 +7,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useRef, useState } from "react"
-import {
-    useGrades,
-    type Category,
-    type Period
-} from "@/hooks/useGrades"
+import { useGrades } from "@/hooks/useGrades"
 
 import { AuthContext } from "@/contexts/AuthContext"
 
@@ -39,24 +35,23 @@ export default function Course() {
     const [dismiss, setDismiss] = useState(false)
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [period, setPeriod] = useState<Period>()
-    const [category, setCategory] = useState<Category>()
+    const [periodId, setPeriod] = useState<string>()
+    const [categoryId, setCategory] = useState<string>()
 
     const inputs = useRef(new Map<number, HTMLInputElement>())
 
     useEffect(() => {
         if (!grades.periods) return
 
-        const [period] = Object.values(grades.periods)
-        if (!period) return
-        setPeriod(period)
+        const periods = Object.values(grades.periods)
+        if (!periods.length) return
+        if (!periodId) setPeriod(periods[0].id)
 
-        const [category] = Object
-            .values(period.categories)
+        const categories = Object
+            .values(periods[0].categories)
             .sort((a, b) => b.weight - a.weight)
-        if (!category) return
-        setCategory(category)
-    }, [grades])
+        if (!categoryId) setCategory(categories[0].id)
+    }, [grades, periodId, categoryId])
 
     useEffect(() => {
         if (!user && !loading)
@@ -69,11 +64,12 @@ export default function Course() {
 
     if (!section) return <Error>Invalid state!</Error>
 
-    if (!period) return <Loader />
+    if (!periodId) return <Loader />
 
-    if (!period || !category) return <Error>No grades found!</Error>
+    if (!categoryId) return <Error>No categories found!</Error>
 
-    const categories = Object.values(period.categories)
+    const period = grades.periods[periodId]
+    const categories = Object.values(grades.periods[periodId].categories)
     const assignments = Object.values(grades.assignments)
 
     if (error && !dismiss) {
@@ -196,12 +192,12 @@ export default function Course() {
                     {period && categories
                         .sort((a, b) => b.weight - a.weight)
                         .map(c => {
-                            const current = c.id == category.id
+                            const current = c.id == categoryId
                             return (
                                 <div
                                     key={c.id}
                                     className={`flex rounded-lg ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
-                                    onClick={() => setCategory(c)}
+                                    onClick={() => setCategory(c.id)}
                                 >
                                     <div className="flex justify-between w-full p-4 select-none">
                                         <div className="flex max-w-36 xl:max-w-52 space-x-1.5">
@@ -229,7 +225,7 @@ export default function Course() {
                 </div>
                 <div className="grow h-[calc(100dvh-224px)] pr-8 mr-0 rounded-lg space-y-2.5 overflow-y-auto">
                     {assignments
-                        .filter(item => item.period === period.id && item.category === category.id)
+                        .filter(item => item.period === period.id && item.category === categoryId)
                         .map(item => {
                             const id = parseInt(item.id)
                             const custom = item.custom !== item.grade
@@ -254,11 +250,6 @@ export default function Course() {
                                                 <p className="hover:cursor-default truncate">{item.name}</p>
                                             )}
                                         </div>
-                                        {/* {item.due && (
-                                            <p className="text-secondary">
-                                                {DateTime.fromMillis(item.due).toFormat("yyyy.MM.dd")}
-                                            </p>
-                                        )} */}
                                     </div>
                                     <div className="flex my-auto">
                                         {custom && (
