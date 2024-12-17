@@ -136,14 +136,30 @@ function calculate(grades: Grades) {
                 .values(grades.assignments)
                 .filter(item => item.period === period.id && item.category === category.id)
 
+            let totalPercent = 0
+            let assignments = 0
             const [points, total] = items.reduce(([points, total], item) => {
                 if (item.drop) return [points + item.max, total + item.max]
                 const grade = item.custom === null ? item.grade : item.custom
                 if (!grade && grade !== 0) return [points, total]
+                totalPercent += grade / item.max
+                assignments++
                 return [points + grade, total + item.max]
             }, [0, 0])
-            const calculated = round(points / total * 100)
-            category.calculated = isNaN(calculated) ? null : calculated
+
+            // Determine if the category is calculated by average or points
+            // Thank you Schoology for not providing this information
+            const average = round(totalPercent / assignments * 100)
+            console.log(average)
+            if (category.calculation === "average" || (!category.calculation && category.grade === average)) {
+                category.calculation = "average"
+                category.calculated = isNaN(average) ? null : average
+            } else {
+                category.calculation = "points"
+                const calculated = round(points / total * 100)
+                category.calculated = isNaN(calculated) ? null : calculated
+            }
+
             return [numerator + points, denominator + total]
         }, [0, 0])
 
@@ -194,6 +210,7 @@ export interface Category {
     grade: number
     calculated: number | null
     weight: number
+    calculation: "points" | "average" | null
 }
 
 interface Assignment {
