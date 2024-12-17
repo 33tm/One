@@ -7,7 +7,11 @@ import { ArrowLeft } from "lucide-react"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useRef, useState } from "react"
-import { useGrades } from "@/hooks/useGrades"
+import {
+    useGrades,
+    type Category,
+    type Period
+} from "@/hooks/useGrades"
 
 import { AuthContext } from "@/contexts/AuthContext"
 
@@ -32,17 +36,27 @@ export default function Course() {
         refreshing
     } = useGrades(id)
 
-    const { periods } = grades.data
-
     const [dismiss, setDismiss] = useState(false)
-    const [period, setPeriod] = useState(periods[0])
-    const [category, setCategory] = useState(periods[0]?.categories.sort((a, b) => b.weight - a.weight)[0])
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [period, setPeriod] = useState<Period>()
+    const [category, setCategory] = useState<Category>()
+
     const inputs = useRef(new Map<number, HTMLInputElement>())
 
     useEffect(() => {
-        setPeriod(periods[0] || null)
-        setCategory(periods[0]?.categories.sort((a, b) => b.weight - a.weight)[0] || null)
-    }, [periods])
+        if (!grades.periods) return
+
+        const [period] = Object.values(grades.periods)
+        if (!period) return
+        setPeriod(period)
+
+        const [category] = Object
+            .values(period.categories)
+            .sort((a, b) => b.weight - a.weight)
+        if (!category) return
+        setCategory(category)
+    }, [grades])
 
     useEffect(() => {
         if (!user && !loading)
@@ -56,6 +70,11 @@ export default function Course() {
     if (!section) return <Error>Invalid state!</Error>
 
     if (!period) return <Loader />
+
+    if (!period || !category) return <Error>No grades found!</Error>
+
+    const categories = Object.values(period.categories)
+    const assignments = Object.values(grades.assignments)
 
     if (error && !dismiss) {
         if (error === "calc") {
@@ -83,7 +102,7 @@ export default function Course() {
                                     </div>
                                 </div>
                                 <Separator className="bg-secondary my-1 rounded" />
-                                {period.categories.map(category => (
+                                {categories.map(category => (
                                     <div key={category.id} className={`flex ${category.grade !== category.calculated && "font-bold underline"}`}>
                                         <p className="text-left truncate w-1/2">{category.name}</p>
                                         <div className="flex w-1/2 space-x-3">
@@ -174,7 +193,7 @@ export default function Course() {
             </div>
             <div className="flex my-4">
                 <div className="ml-8 mr-4 min-w-64 xl:min-w-80 space-y-2.5">
-                    {period && period.categories
+                    {period && categories
                         .sort((a, b) => b.weight - a.weight)
                         .map(c => {
                             const current = c.id == category.id
@@ -189,7 +208,7 @@ export default function Course() {
                                             <p className={`truncate ${current && "text-tertiary"}`}>
                                                 {c.name}
                                             </p>
-                                            {c.weight && (
+                                            {!!c.weight && (
                                                 <p className="text-secondary font-medium">
                                                     ({c.weight}%)
                                                 </p>
@@ -209,9 +228,10 @@ export default function Course() {
                         })}
                 </div>
                 <div className="grow h-[calc(100dvh-224px)] pr-8 mr-0 rounded-lg space-y-2.5 overflow-y-auto">
-                    {category.items
-                        .sort((a, b) => b.due - a.due)
+                    {assignments
+                        .filter(item => item.period === period.id && item.category === category.id)
                         .map(item => {
+                            const id = parseInt(item.id)
                             const custom = item.custom !== item.grade
                             return (
                                 <div key={item.id} className="flex justify-between rounded-lg bg-tertiary p-4">
@@ -219,7 +239,7 @@ export default function Course() {
                                         <Checkbox
                                             className="my-auto mx-2"
                                             checked={!item.drop || item.custom === undefined}
-                                            onCheckedChange={() => drop(period.id, category.id, item.id)}
+                                            onCheckedChange={() => drop(item.id)}
                                         />
                                         <div className={`${item.drop && "line-through text-secondary"} transition-all duration-200`}>
                                             {item.url ? (
@@ -245,10 +265,10 @@ export default function Course() {
                                             <Button
                                                 className="hover:underline mr-2 h-8 text-sm"
                                                 onClick={() => {
-                                                    const input = inputs.current.get(item.id)
+                                                    const input = inputs.current.get(id)
                                                     if (!input) return
                                                     input.value = item.grade ? item.grade.toString() : ""
-                                                    modify(period.id, category.id, item.id, item.grade)
+                                                    modify(item.id, item.grade)
                                                 }}
                                             >
                                                 Reset
@@ -260,12 +280,12 @@ export default function Course() {
                                                 defaultValue={item.grade}
                                                 placeholder="-"
                                                 ref={input => {
-                                                    if (input) inputs.current.set(item.id, input)
-                                                    else inputs.current.delete(item.id)
+                                                    if (input) inputs.current.set(id, input)
+                                                    else inputs.current.delete(id)
                                                 }}
                                                 onChange={({ target }) => {
                                                     const grade = parseFloat(target.value)
-                                                    modify(period.id, category.id, item.id, isNaN(grade) ? null : grade)
+                                                    modify(item.id, isNaN(grade) ? null : grade)
                                                 }}
                                             />
                                             <div className="flex space-x-2 my-auto">

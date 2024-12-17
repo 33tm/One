@@ -1,24 +1,20 @@
 import server from "@/server"
 
 import { useState, useEffect, useCallback } from "react"
-// import { toast } from "sonner"
 
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
     const [refreshing, setRefreshing] = useState(false)
     const [grades, setGrades] = useState<Grades>({
-        data: {
-            weighted: false,
-            periods: [],
-            scales: []
-        },
+        weighted: false,
+        periods: {},
+        assignments: {},
+        scales: {},
         timestamp: 0
     })
 
-    // const [open, setOpen] = useState(false)
-    // const [promise, setPromise] = useState<Promise<Grades>>()
-
     const reset = useCallback(() => {
+        console.log("reset")
         setRefreshing(true)
         server(`/sections/${id}/grades/reset`, {
             method: "POST",
@@ -43,13 +39,40 @@ export function useGrades(id: string) {
     }, [id])
 
     const refresh = useCallback((timestamp: number) => {
+        timestamp = 1733771543
+        console.log("refresh")
         setRefreshing(true)
         server(`/sections/${id}/grades/refresh`, {
             method: "POST",
             credentials: "include",
             body: JSON.stringify({ timestamp })
         }).then(async res => {
-            console.log(await res.json())
+            if (res.status === 204) {
+                setRefreshing(false)
+                return
+            }
+
+            const updated = await res.json() as Refreshed
+            setGrades(g => {
+                const grades = {
+                    ...g,
+                    ...updated,
+                    periods: {
+                        ...g.periods,
+                        ...updated.periods
+                    },
+                    assignments: {
+                        ...g.assignments,
+                        ...updated.assignments
+                    }
+                }
+                const calculated = calculate(grades)
+                if (!validate(grades, calculated))
+                    setError("calc")
+                else
+                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                return calculated
+            })
             setRefreshing(false)
         })
     }, [id])
@@ -72,74 +95,21 @@ export function useGrades(id: string) {
         }
     }, [id, reset, refresh])
 
-    // useEffect(() => {
-    //     if (!promise || open) return
-    //     setOpen(true)
-    //     toast.promise(promise, {
-    //         loading: "Refreshing grades...",
-    //         success: g => {
-    //             console.log(g)
-    //             return "a"
-    // function set() {
-    //     const calculated = calculate(g)
-    //     setError(validate(g, calculated) ? undefined : "calc")
-    //     setGrades(calculated)
-    // }
-    // let isNew = grades.data.periods.length !== g.data.periods.length
-    // grades.data.periods.forEach(period => {
-    //     const p = g.data.periods.find(p => p.id === period.id)
-    //     if (!p || period.grade !== p.grade || period.categories.length !== p.categories.length)
-    //         return isNew = true
-    //     period.categories.forEach(category => {
-    //         const c = p.categories.find(c => c.id === category.id)
-    //         if (!c || category.grade !== c.grade || category.items.length !== c.items.length)
-    //             return isNew = true
-    //         category.items.forEach(item => {
-    //             const i = c.items.find(i => i.id === item.id)
-    //             if (!i || item.grade !== i.grade)
-    //                 return isNew = true
-    //         })
-    //     })
-    // })
-    // if (error || !grades.data.periods.length) {
-    //     set()
-    //     return isNew ? "Fetched new grades." : "No new grades were found."
-    // } else if (isNew) {
-    //     toast("New grades available!", {
-    //         action: {
-    //             label: "Update",
-    //             onClick: () => {
-    //                 toast.dismiss()
-    //                 set()
-    //             }
-    //         },
-    //         duration: Infinity
-    //     })
-    //     return "Fetched new grades."
-    // } else {
-    //     return "No new grades were found."
-    // }
-    //         },
-    //         error: () => "Failed to refresh grades!"
-    //     })
-    // }, [promise, open, error, grades])
-
-    function drop(period: string, category: number, assignment: number) {
-        const temp = { ...grades }
-        const item = temp.data.periods.find(p => p.id === period)!
-            .categories.find(c => c.id === category)!
-            .items.find(a => a.id === assignment)!
-        item.drop = !item.drop
-        setGrades(calculate(temp))
+    function drop(assignment: string) {
+        setGrades(g => {
+            const grades = { ...g }
+            const item = grades.assignments[assignment]
+            item.drop = !item.drop
+            return calculate(grades)
+        })
     }
 
-    function modify(period: string, category: number, assignment: number, grade: number | null) {
-        const temp = { ...grades }
-        temp.data.periods.find(p => p.id === period)!
-            .categories.find(c => c.id === category)!
-            .items.find(a => a.id === assignment)!
-            .custom = grade
-        setGrades(calculate(temp))
+    function modify(assignment: string, grade: number | null) {
+        setGrades(g => {
+            const grades = { ...g }
+            grades.assignments[assignment].custom = grade
+            return calculate(grades)
+        })
     }
 
     return {
@@ -156,9 +126,17 @@ export function useGrades(id: string) {
 function calculate(grades: Grades) {
     const round = (grade: number) => Math.round((grade + Number.EPSILON) * 100) / 100
 
-    grades.data.periods.forEach(period => {
-        const [numerator, denominator] = period.categories.reduce(([numerator, denominator], category) => {
-            const [points, total] = category.items.reduce(([points, total], item) => {
+    const periods = Object.values(grades.periods)
+
+    periods.forEach(period => {
+        const categories = Object.values(period.categories)
+
+        const [numerator, denominator] = categories.reduce(([numerator, denominator], category) => {
+            const items = Object
+                .values(grades.assignments)
+                .filter(item => item.period === period.id && item.category === category.id)
+
+            const [points, total] = items.reduce(([points, total], item) => {
                 if (item.drop) return [points + item.max, total + item.max]
                 const grade = item.custom === null ? item.grade : item.custom
                 if (!grade && grade !== 0) return [points, total]
@@ -169,9 +147,9 @@ function calculate(grades: Grades) {
             return [numerator + points, denominator + total]
         }, [0, 0])
 
-        if (grades.data.weighted) {
+        if (grades.weighted) {
             let total = 0
-            const grade = period.categories.reduce((current, category) => {
+            const grade = categories.reduce((current, category) => {
                 const grade = category.calculated
                 if (!grade && grade !== 0) return current
                 total += category.weight
@@ -185,59 +163,72 @@ function calculate(grades: Grades) {
             period.calculated = round(numerator / denominator * 100)
         }
     })
+
     return grades
 }
 
 function validate(grades: Grades, calculated: Grades) {
-    return grades.data.periods.every((period, i) => {
-        const p = calculated.data.periods[i]
-        console.log(period.grade, p.calculated)
+    const periods = Object.values(grades.periods)
+
+    return periods.every(period => {
+        const p = calculated.periods[period.id]
         if (period.grade !== p.calculated)
             return false
-        return period.categories.every((category, j) =>
-            category.calculated === p.categories[j].calculated)
+        return Object.values(period.categories).every(category =>
+            category.calculated === p.categories[category.id].calculated)
     })
 }
 
+export interface Period {
+    id: string
+    name: string
+    grade: number
+    calculated: number
+    scale: number
+    categories: { [id: string]: Category }
+}
+
+export interface Category {
+    id: string
+    name: string
+    grade: number
+    calculated: number | null
+    weight: number
+}
+
+interface Assignment {
+    id: string
+    name: string
+    category: string
+    period: string
+    due: number
+    updated: number
+    url: string | null
+    drop: boolean
+    grade: number
+    custom: number | null
+    max: number
+    scale: string
+}
+
+interface Scale {
+    id: string
+    name: string
+    type: number
+    average: boolean
+    numeric: boolean
+    scale: {
+        grade: string
+        ceiling: number
+    }[]
+}
+
 interface Grades {
-    data: {
-        weighted: boolean
-        periods: {
-            id: string
-            name: string
-            grade: number
-            calculated: number | null
-            scale: string
-            categories: {
-                id: number
-                name: string
-                weight: number
-                grade: number
-                calculated: number | null
-                items: {
-                    id: number
-                    name: string
-                    due: number
-                    url: string
-                    drop: boolean
-                    grade: number
-                    custom: number | null
-                    max: number
-                    scale: number
-                }[]
-            }[]
-        }[]
-        scales: {
-            id: number
-            name: string
-            type: number
-            average: boolean
-            numeric: boolean
-            scale: {
-                grade: string
-                ceiling: number
-            }[]
-        }[]
-    }
+    weighted: boolean
+    periods: { [id: string]: Period }
+    assignments: { [id: string]: Assignment }
+    scales: { [id: string]: Scale },
     timestamp: number
 }
+
+type Refreshed = Omit<Grades, "weighted" | "scales">
