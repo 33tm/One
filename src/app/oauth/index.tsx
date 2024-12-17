@@ -43,7 +43,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     }, [open])
 
     function oauth(domain: string) {
-        const url = `${window.location.origin}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
+        const url = `${window.location.origin.replace("https://", "")}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
 
         // Schoology blocks any ipv4 address or anything that contains "localhost" from being a valid oauth_callback for whatever reason
         // (Love how this wouldn't be a problem if we just tested in production !!)
