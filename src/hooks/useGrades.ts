@@ -139,9 +139,9 @@ function calculate(grades: Grades) {
             let totalPercent = 0
             let assignments = 0
             const [points, total] = items.reduce(([points, total], item) => {
-                if (item.drop) return [points + item.max, total + item.max]
                 const grade = item.custom === null ? item.grade : item.custom
-                if (!grade && grade !== 0) return [points, total]
+                if (item.drop || (!grade && grade !== 0))
+                    return [points, total]
                 totalPercent += grade / item.max
                 assignments++
                 return [points + grade, total + item.max]
