@@ -4,8 +4,6 @@ import Link from "next/link"
 import Image from "next/image"
 import NumberFlow from "@number-flow/react"
 
-import { DateTime } from "luxon"
-
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useGrades } from "@/hooks/useGrades"
@@ -20,7 +18,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 
 import { ArrowLeft } from "lucide-react"
-import { CgSpinner } from "react-icons/cg"
 
 export default function Course() {
     const router = useRouter()
@@ -175,14 +172,13 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
-                {/* <div>
-                    <p className="text-sm font-bold">Fetched</p>
-                    <p className="text-sm">{DateTime.fromMillis(grades.timestamp).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}</p>
-                    {refreshing && (
-                        <div className="flex my-auto ml-8">
-                            <CgSpinner className="animate-spin text-2xl" />
-                        </div>
-                    )}
+                {/* <div className="flex space-x-1.5 my-auto ml-8 p-2 rounded-lg outline outline-tertiary">
+                    <p className="text-sm">
+                        Updated
+                    </p>
+                    <p className="text-sm font-bold">
+                        {DateTime.fromMillis(grades.timestamp).toRelative()}
+                    </p>
                 </div> */}
                 {period.calculated && (
                     <NumberFlow
