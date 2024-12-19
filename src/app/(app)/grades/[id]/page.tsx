@@ -59,15 +59,18 @@ export default function Course() {
             router.push("/grades")
     }, [user, loading, router])
 
+
     if (!user) return <Error>Invalid user!</Error>
 
     const section = user.sections.find(section => section.id === id)
 
     if (!section) return <Error>Invalid state!</Error>
 
-    if (!periodId) return <Loader />
+    const title = `${section.name} | One`
 
-    if (!categoryId) return <Error>No categories found!</Error>
+    if (!periodId) return <Loader title={title} />
+
+    if (!categoryId) return <Error title={title}>No categories found!</Error>
 
     const period = grades.periods[periodId]
     const categories = Object.values(grades.periods[periodId].categories)

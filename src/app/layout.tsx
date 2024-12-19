@@ -11,6 +11,7 @@ import "@/app/globals.css"
 
 export const metadata: Metadata = {
     title: "One",
+    description: "Schoology Grade Calculator",
     referrer: "no-referrer"
 }
 
