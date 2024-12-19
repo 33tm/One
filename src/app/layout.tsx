@@ -10,7 +10,7 @@ import { SearchProvider } from "@/contexts/SearchContext"
 import "@/app/globals.css"
 
 export const metadata: Metadata = {
-    title: "Gunn One",
+    title: "One",
     referrer: "no-referrer"
 }
 

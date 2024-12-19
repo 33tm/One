@@ -6,6 +6,11 @@
     * {
         @apply border-border;
         scrollbar-color: var(--tertiary) var(--background);
+        scrollbar-width: none;
+    }
+
+    *::-webkit-scrollbar {
+        display: none;
     }
 
     *::selection {

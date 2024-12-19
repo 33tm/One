@@ -3,7 +3,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import NumberFlow from "@number-flow/react"
-import { ArrowLeft } from "lucide-react"
+
+import { DateTime } from "luxon"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -17,6 +18,9 @@ import { Error } from "@/components/Error"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+
+import { ArrowLeft } from "lucide-react"
+import { CgSpinner } from "react-icons/cg"
 
 export default function Course() {
     const router = useRouter()
@@ -77,7 +81,7 @@ export default function Course() {
             return (
                 <>
                     <title>
-                        {`${section.name} | Gunn One`}
+                        {`${section.name} | One`}
                     </title>
                     <Error>
                         <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
@@ -134,7 +138,7 @@ export default function Course() {
             return (
                 <>
                     <title>
-                        {`${section.name} | Gunn One`}
+                        {`${section.name} | One`}
                     </title>
                     <Error>
                         <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
@@ -150,7 +154,7 @@ export default function Course() {
     return (
         <>
             <title>
-                {`${section.name} | Gunn One`}
+                {`${section.name} | One`}
             </title>
             <div
                 style={{ background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--background) 100%)" }}
@@ -171,11 +175,19 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
-                {refreshing && "Refreshing..."}
+                {/* <div>
+                    <p className="text-sm font-bold">Fetched</p>
+                    <p className="text-sm">{DateTime.fromMillis(grades.timestamp).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}</p>
+                    {refreshing && (
+                        <div className="flex my-auto ml-8">
+                            <CgSpinner className="animate-spin text-2xl" />
+                        </div>
+                    )}
+                </div> */}
                 {period.calculated && (
                     <NumberFlow
                         className="text-secondary ml-auto mt-auto text-2xl md:text-3xl font-bold"
-                        value={period.calculated}
+                        value={period.calculated > 9999 ? Infinity : period.calculated}
                         suffix="%"
                         continuous
                     />
@@ -196,7 +208,7 @@ export default function Course() {
                             return (
                                 <div
                                     key={c.id}
-                                    className={`flex rounded-lg ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
+                                    className={`flex rounded-lg max-w-full ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
                                     onClick={() => setCategory(c.id)}
                                 >
                                     <div className="flex justify-between w-full p-4 select-none">
@@ -213,7 +225,7 @@ export default function Course() {
                                         {c.calculated && (
                                             <NumberFlow
                                                 className={`font-semibold ${current && "text-tertiary"}`}
-                                                value={c.calculated}
+                                                value={c.calculated > 9999 ? Infinity : c.calculated}
                                                 suffix="%"
                                                 continuous
                                             />
@@ -228,16 +240,16 @@ export default function Course() {
                         .filter(item => item.period === period.id && item.category === categoryId)
                         .map(item => {
                             const id = parseInt(item.id)
-                            const custom = item.custom !== item.grade
+                            const custom = item.custom && item.custom !== item.grade
                             return (
-                                <div key={item.id} className="flex justify-between rounded-lg bg-tertiary p-4">
-                                    <div className="flex my-auto w-2/3 space-x-2 font-medium">
+                                <div key={item.id} className="flex justify-between rounded-lg bg-tertiary">
+                                    <div className="flex my-auto w-7/12 space-x-2 font-medium p-4">
                                         <Checkbox
                                             className="my-auto mx-2"
                                             checked={!item.drop || item.custom === undefined}
                                             onCheckedChange={() => drop(item.id)}
                                         />
-                                        <div className={`${item.drop && "line-through text-secondary"} transition-all duration-200`}>
+                                        <div className={`${custom && "font-bold"} ${item.drop && "line-through text-secondary"} w-full truncate transition-all duration-200`}>
                                             {item.url ? (
                                                 <Link
                                                     href={item.url}
@@ -247,29 +259,17 @@ export default function Course() {
                                                     {item.name}
                                                 </Link>
                                             ) : (
-                                                <p className="hover:cursor-default truncate">{item.name}</p>
+                                                <p className="hover:cursor-default truncate">
+                                                    {item.name}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex my-auto">
-                                        {custom && (
-                                            <Button
-                                                className="hover:underline mr-2 h-8 text-sm"
-                                                onClick={() => {
-                                                    const input = inputs.current.get(id)
-                                                    if (!input) return
-                                                    input.value = item.grade ? item.grade.toString() : ""
-                                                    modify(item.id, item.grade)
-                                                }}
-                                            >
-                                                Reset
-                                            </Button>
-                                        )}
-                                        <div className="flex w-36 font-bold font-mono space-x-2">
+                                    <div className="flex my-auto ml-4 mr-4 outline outline-secondary rounded-md">
+                                        <div className={`flex w-36 font-bold font-mono ${item.drop && "text-secondary"}`}>
                                             <Input
-                                                className="w-20 text-center h-8 text-sm"
-                                                defaultValue={item.grade}
-                                                placeholder="-"
+                                                className={`w-20 border-none text-center h-8 text-sm font-black ${item.drop && "line-through"}`}
+                                                placeholder={item.grade ? item.grade.toString() : "-"}
                                                 ref={input => {
                                                     if (input) inputs.current.set(id, input)
                                                     else inputs.current.delete(id)
@@ -279,10 +279,9 @@ export default function Course() {
                                                     modify(item.id, isNaN(grade) ? null : grade)
                                                 }}
                                             />
-                                            <div className="flex space-x-2 my-auto">
-                                                <p>/</p>
-                                                <p>{item.max}</p>
-                                            </div>
+                                            <p className={`w-20 my-auto text-center ${item.drop ? "line-through" : ""}`}>
+                                                {item.max}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

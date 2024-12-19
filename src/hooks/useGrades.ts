@@ -34,7 +34,7 @@ export function useGrades(id: string) {
                 setError("calc")
 
             setGrades(calculated)
-            localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+            // localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
         })
     }, [id])
 
@@ -69,8 +69,8 @@ export function useGrades(id: string) {
                 const calculated = calculate(grades)
                 if (!validate(grades, calculated))
                     setError("calc")
-                else
-                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                // else
+                //     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
                 return calculated
             })
             setRefreshing(false)
@@ -150,7 +150,6 @@ function calculate(grades: Grades) {
             // Determine if the category is calculated by average or points
             // Thank you Schoology for not providing this information
             const average = round(totalPercent / assignments * 100)
-            console.log(average)
             if (category.calculation === "average" || (!category.calculation && category.grade === average)) {
                 category.calculation = "average"
                 category.calculated = isNaN(average) ? null : average

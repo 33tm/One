@@ -14,7 +14,7 @@ export default function Grades() {
     return (
         <>
             <title>
-                Grades | Gunn One
+                Grades | One
             </title>
             {user ? (
                 <div className="h-full w-full overflow-y-auto overflow-x-hidden">
