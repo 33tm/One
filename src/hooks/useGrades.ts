@@ -2,6 +2,15 @@ import server from "@/server"
 
 import { useState, useEffect, useCallback } from "react"
 
+function round(grade: number) {
+    const rounded = Math.round((grade + Number.EPSILON) * 100) / 100
+    if (rounded > 9999)
+        return Infinity
+    else if (rounded < -9999)
+        return -Infinity
+    return rounded
+}
+
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
     const [refreshing, setRefreshing] = useState(false)
@@ -112,11 +121,31 @@ export function useGrades(id: string) {
         })
     }
 
+    function weight(assignment: string) {
+        const g = { ...grades }
+        const a = g.assignments[assignment]
+        const original = g.periods[a.period].calculated
+        calculate({
+            ...g,
+            assignments: {
+                ...g.assignments,
+                [assignment]: {
+                    ...g.assignments[assignment],
+                    drop: true
+                }
+            }
+        })
+        const modified = g.periods[a.period].calculated
+        calculate(g)
+        return round(original - modified)
+    }
+
     return {
         grades,
         error,
         modify,
         drop,
+        weight,
         reset,
         refresh,
         refreshing
@@ -124,8 +153,6 @@ export function useGrades(id: string) {
 }
 
 function calculate(grades: Grades) {
-    const round = (grade: number) => Math.round((grade + Number.EPSILON) * 100) / 100
-
     const periods = Object.values(grades.periods)
 
     periods.forEach(period => {
@@ -150,13 +177,16 @@ function calculate(grades: Grades) {
             // Determine if the category is calculated by average or points
             // Thank you Schoology for not providing this information
             const average = round(totalPercent / assignments * 100)
-            if (category.calculation === "average" || (!category.calculation && category.grade === average)) {
+            const totalPoints = round(points / total * 100)
+            if (category.calculation === "average"
+                || (category.grade !== totalPoints
+                    && !category.calculation
+                    && category.grade === average)) {
                 category.calculation = "average"
                 category.calculated = isNaN(average) ? null : average
             } else {
                 category.calculation = "points"
-                const calculated = round(points / total * 100)
-                category.calculated = isNaN(calculated) ? null : calculated
+                category.calculated = isNaN(totalPoints) ? null : totalPoints
             }
 
             return [numerator + points, denominator + total]
@@ -212,7 +242,7 @@ export interface Category {
     calculation: "points" | "average" | null
 }
 
-interface Assignment {
+export interface Assignment {
     id: string
     name: string
     category: string
@@ -225,9 +255,10 @@ interface Assignment {
     custom: number | null
     max: number
     scale: string
+    new: boolean
 }
 
-interface Scale {
+export interface Scale {
     id: string
     name: string
     type: number
@@ -239,7 +270,7 @@ interface Scale {
     }[]
 }
 
-interface Grades {
+export interface Grades {
     weighted: boolean
     periods: { [id: string]: Period }
     assignments: { [id: string]: Assignment }

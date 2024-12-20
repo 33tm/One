@@ -11,13 +11,13 @@ interface Theme {
 }
 
 const themes = [
-    {
-        name: "Default",
-        background: "#171717",
-        primary: "#FAFAFA",
-        secondary: "#A3A3A3",
-        tertiary: "#262626"
-    },
+    // {
+    //     name: "Default",
+    //     background: "#171717",
+    //     primary: "#FAFAFA",
+    //     secondary: "#A3A3A3",
+    //     tertiary: "#262626"
+    // },
     {
         name: "Green",
         background: "#E1F0DA",

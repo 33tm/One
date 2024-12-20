@@ -4,7 +4,7 @@ import { ArrowRight, Circle } from "lucide-react"
 export default function Home() {
     return (
         <div className="flex w-screen h-dvh">
-            <div className="m-auto text-center">
+            <div className="m-auto text-center select-none">
                 <p className="font-mono text-secondary">Welcome to</p>
                 <div className="flex text-4xl space-x-2">
                     <p className="font-bold">One</p>

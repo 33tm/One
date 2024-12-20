@@ -5,29 +5,32 @@ import Image from "next/image"
 import NumberFlow from "@number-flow/react"
 
 import { useParams, useRouter } from "next/navigation"
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useGrades } from "@/hooks/useGrades"
 
 import { AuthContext } from "@/contexts/AuthContext"
 
-import { Input } from "@/components/ui/input"
+import Categories from "./layout/Categories"
+
 import { Loader } from "@/components/Loader"
 import { Error } from "@/components/Error"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 
 import { ArrowLeft } from "lucide-react"
+import Assignments from "./layout/Assignments"
 
 export default function Course() {
     const router = useRouter()
     const { id } = useParams<{ id: string }>()
     const { user, loading } = useContext(AuthContext)
+
     const {
         grades,
         error,
         modify,
         drop,
+        weight,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         refresh,
         refreshing
@@ -37,9 +40,7 @@ export default function Course() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [periodId, setPeriod] = useState<string>()
-    const [categoryId, setCategory] = useState<string>()
-
-    const inputs = useRef(new Map<number, HTMLInputElement>())
+    const [category, setCategory] = useState<string>()
 
     useEffect(() => {
         if (!grades.periods) return
@@ -51,8 +52,8 @@ export default function Course() {
         const categories = Object
             .values(periods[0].categories)
             .sort((a, b) => b.weight - a.weight)
-        if (!categoryId) setCategory(categories[0].id)
-    }, [grades, periodId, categoryId])
+        if (!category) setCategory(categories[0].id)
+    }, [grades, periodId, category])
 
     useEffect(() => {
         if (!user && !loading)
@@ -70,11 +71,13 @@ export default function Course() {
 
     if (!periodId) return <Loader title={title} />
 
-    if (!categoryId) return <Error title={title}>No categories found!</Error>
+    if (!category) return <Error title={title}>No categories found!</Error>
 
     const period = grades.periods[periodId]
     const categories = Object.values(grades.periods[periodId].categories)
-    const assignments = Object.values(grades.assignments)
+    const assignments = Object
+        .values(grades.assignments)
+        .filter(item => item.period === period.id && item.category === category)
 
     if (error && !dismiss) {
         if (error === "calc") {
@@ -175,18 +178,10 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
-                {/* <div className="flex space-x-1.5 my-auto ml-8 p-2 rounded-lg outline outline-tertiary">
-                    <p className="text-sm">
-                        Updated
-                    </p>
-                    <p className="text-sm font-bold">
-                        {DateTime.fromMillis(grades.timestamp).toRelative()}
-                    </p>
-                </div> */}
                 {period.calculated && (
                     <NumberFlow
                         className="text-secondary ml-auto mt-auto text-2xl md:text-3xl font-bold"
-                        value={period.calculated > 9999 ? Infinity : period.calculated}
+                        value={period.calculated}
                         suffix="%"
                         continuous
                     />
@@ -198,96 +193,18 @@ export default function Course() {
                     alt={section.name}
                 />
             </div>
-            <div className="flex my-4">
-                <div className="ml-8 mr-4 min-w-64 xl:min-w-80 space-y-2.5">
-                    {period && categories
-                        .sort((a, b) => b.weight - a.weight)
-                        .map(c => {
-                            const current = c.id == categoryId
-                            return (
-                                <div
-                                    key={c.id}
-                                    className={`flex rounded-lg max-w-full ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
-                                    onClick={() => setCategory(c.id)}
-                                >
-                                    <div className="flex justify-between w-full p-4 select-none">
-                                        <div className="flex max-w-36 xl:max-w-52 space-x-1.5">
-                                            <p className={`truncate ${current && "text-tertiary"}`}>
-                                                {c.name}
-                                            </p>
-                                            {!!c.weight && (
-                                                <p className="text-secondary font-medium">
-                                                    ({c.weight}%)
-                                                </p>
-                                            )}
-                                        </div>
-                                        {c.calculated && (
-                                            <NumberFlow
-                                                className={`font-semibold ${current && "text-tertiary"}`}
-                                                value={c.calculated > 9999 ? Infinity : c.calculated}
-                                                suffix="%"
-                                                continuous
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            )
-                        })}
-                </div>
-                <div className="grow h-[calc(100dvh-224px)] pr-8 mr-0 rounded-lg space-y-2.5 overflow-y-auto">
-                    {assignments
-                        .filter(item => item.period === period.id && item.category === categoryId)
-                        .map(item => {
-                            const id = parseInt(item.id)
-                            const custom = item.custom && item.custom !== item.grade
-                            return (
-                                <div key={item.id} className="flex justify-between rounded-lg bg-tertiary">
-                                    <div className="flex my-auto w-7/12 space-x-2 font-medium p-4">
-                                        <Checkbox
-                                            className="my-auto mx-2"
-                                            checked={!item.drop || item.custom === undefined}
-                                            onCheckedChange={() => drop(item.id)}
-                                        />
-                                        <div className={`${custom && "font-bold"} ${item.drop && "line-through text-secondary"} w-full truncate transition-all duration-200`}>
-                                            {item.url ? (
-                                                <Link
-                                                    href={item.url}
-                                                    target="_blank"
-                                                    className="hover:underline truncate"
-                                                >
-                                                    {item.name}
-                                                </Link>
-                                            ) : (
-                                                <p className="hover:cursor-default truncate">
-                                                    {item.name}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex my-auto ml-4 mr-4 outline outline-secondary rounded-md">
-                                        <div className={`flex w-36 font-bold font-mono ${item.drop && "text-secondary"}`}>
-                                            <Input
-                                                className={`w-20 border-none text-center h-8 text-sm font-black ${item.drop && "line-through"}`}
-                                                placeholder={item.grade ? item.grade.toString() : "-"}
-                                                ref={input => {
-                                                    if (input) inputs.current.set(id, input)
-                                                    else inputs.current.delete(id)
-                                                }}
-                                                onChange={({ target }) => {
-                                                    const grade = parseFloat(target.value)
-                                                    modify(item.id, isNaN(grade) ? null : grade)
-                                                }}
-                                            />
-                                            <p className={`w-20 my-auto text-center ${item.drop ? "line-through" : ""}`}>
-                                                {item.max}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
+            <div className="flex mx-8 my-4 h-[calc(100dvh-224px)]">
+                <Categories
+                    category={category}
+                    categories={categories}
+                    setCategory={setCategory}
+                />
+                <Assignments
+                    assignments={assignments}
+                    drop={drop}
+                    modify={modify}
+                    weight={weight}
+                />
             </div>
         </>
     )
