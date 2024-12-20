@@ -178,7 +178,7 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
-                {period.calculated && (
+                {!!period.calculated && (
                     <NumberFlow
                         className="text-secondary ml-auto mt-auto text-2xl md:text-3xl font-bold"
                         value={period.calculated}

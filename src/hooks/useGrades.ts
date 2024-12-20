@@ -43,7 +43,7 @@ export function useGrades(id: string) {
                 setError("calc")
 
             setGrades(calculated)
-            // localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+            localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
         })
     }, [id])
 
@@ -78,8 +78,8 @@ export function useGrades(id: string) {
                 const calculated = calculate(grades)
                 if (!validate(grades, calculated))
                     setError("calc")
-                // else
-                //     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                else
+                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
                 return calculated
             })
             setRefreshing(false)

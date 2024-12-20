@@ -11,13 +11,20 @@ interface Theme {
 }
 
 const themes = [
-    // {
-    //     name: "Default",
-    //     background: "#171717",
-    //     primary: "#FAFAFA",
-    //     secondary: "#A3A3A3",
-    //     tertiary: "#262626"
-    // },
+    {
+        name: "Dark",
+        background: "#171717",
+        primary: "#FAFAFA",
+        secondary: "#A3A3A3",
+        tertiary: "#262626"
+    },
+    {
+        name: "Light",
+        background: "#F2F2F2",
+        primary: "#3A3A3A",
+        secondary: "#6E6E6E",
+        tertiary: "#BFBFBF"
+    },
     {
         name: "Green",
         background: "#E1F0DA",
@@ -38,10 +45,43 @@ const themes = [
         primary: "#594545",
         secondary: "#816464",
         tertiary: "#C0B0B0"
+    },
+    {
+        name: "Mint",
+        background: "#EAF9F3",
+        primary: "#4D8076",
+        secondary: "#79A69A",
+        tertiary: "#CDE5DC"
+    },
+    {
+        name: "Lavender",
+        background: "#F6F0FA",
+        primary: "#6A5B8E",
+        secondary: "#9C88B2",
+        tertiary: "#D8C8E3"
+    },
+    {
+        name: "Pink",
+        background: "#FFF0F3",
+        primary: "#9E4F64",
+        secondary: "#C9798F",
+        tertiary: "#EBD0D8"
     }
 ] satisfies Theme[]
 
-export const ThemeContext = createContext<typeof themes[0]>(themes[0])
+interface ThemeContextType {
+    themes: Theme[]
+    theme: Theme
+    setTheme: (theme: Theme) => void
+}
+
+const defaultThemeContext = {
+    themes,
+    theme: themes[0],
+    setTheme: () => { }
+} satisfies ThemeContextType
+
+export const ThemeContext = createContext<ThemeContextType>(defaultThemeContext)
 
 export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [theme, setTheme] = useState<Theme>(themes[0])
@@ -63,8 +103,7 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
     }, [theme])
 
     return (
-        <ThemeContext.Provider value={theme}>
-            <button onClick={(() => setTheme(themes[themes.findIndex(t => t.name === theme.name) + 1] || themes[0]))} className="z-50 absolute bottom-2 text-background bg-primary">rotate theme</button>
+        <ThemeContext.Provider value={{ themes, theme, setTheme }}>
             {children}
         </ThemeContext.Provider >
     )

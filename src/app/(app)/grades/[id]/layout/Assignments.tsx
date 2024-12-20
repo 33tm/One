@@ -1,13 +1,14 @@
 import Link from "next/link"
 
+import NumberFlow from "@number-flow/react"
+
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 
 import type { Assignment } from "@/hooks/useGrades"
 
 import { Plus } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import NumberFlow from "@number-flow/react"
 
 interface AssignmentProps {
     assignment: Assignment
@@ -52,10 +53,10 @@ function Assignment(props: AssignmentProps) {
             </div>
             <div className="flex my-auto mr-2 space-x-3 font-bold">
                 <NumberFlow
-                    value={weight}
+                    value={weight || 0}
                     prefix={weight > 0 ? "+" : ""}
                     suffix="%"
-                    className={`my-auto w-24 rounded-lg text-center bg-primary text-tertiary p-2 opacity-0 ${!dropped && "opacity-100"} transition-opacity duration-200`}
+                    className={`my-auto w-24 select-none rounded-lg text-center bg-primary text-tertiary p-2 opacity-0 ${!dropped && !isNaN(weight) && "opacity-100"} transition-opacity duration-200`}
                     continuous
                 />
                 <div className={`flex font-mono outline outline-secondary rounded-lg ${dropped && "text-secondary"}`}>
@@ -86,11 +87,11 @@ export default function Assignments(props: AssignmentsProps) {
     const { assignments, drop, modify, weight } = props
     return (
         <div className="w-3/4 h-full pl-3 space-y-2.5">
-            <div className="flex h-14 px-2 justify-between bg-secondary text-background rounded-lg shadow-md shadow-secondary">
+            <div className="flex h-14 px-2 justify-between bg-primary text-background rounded-lg shadow-md shadow-secondary">
                 <p className="my-auto ml-4 text-background font-semibold">
                     New Assignment
                 </p>
-                <Button className="my-auto w-10 h-10 rounded-lg">
+                <Button className="my-auto w-10 h-10 rounded-lg outline outline-secondary hover:scale-105 transition-transform duration-200">
                     <Plus size={24} />
                 </Button>
             </div>
