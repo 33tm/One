@@ -2,11 +2,14 @@
 
 import Link from "next/link"
 import { useContext } from "react"
+
 import { ThemeContext } from "@/contexts/ThemeContext"
+
 import { ArrowRight, Circle } from "lucide-react"
 
 export default function Page() {
-    const { themes, setTheme } = useContext(ThemeContext)
+    const { setTheme, themes } = useContext(ThemeContext)
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 w-screen h-dvh">
             <div className="mx-auto mt-auto md:m-auto text-center select-none">

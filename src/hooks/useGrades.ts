@@ -48,7 +48,6 @@ export function useGrades(id: string) {
     }, [id])
 
     const refresh = useCallback((timestamp: number) => {
-        timestamp = 1733771543
         console.log("refresh")
         setRefreshing(true)
         server(`/sections/${id}/grades/refresh`, {
@@ -176,17 +175,21 @@ function calculate(grades: Grades) {
 
             // Determine if the category is calculated by average or points
             // Thank you Schoology for not providing this information
-            const average = round(totalPercent / assignments * 100)
-            const totalPoints = round(points / total * 100)
+            const average = totalPercent / assignments * 100
+            const totalPoints = points / total * 100
             if (category.calculation === "average"
                 || (category.grade !== totalPoints
                     && !category.calculation
                     && category.grade === average)) {
+                const rounded = round(average)
                 category.calculation = "average"
-                category.calculated = isNaN(average) ? null : average
+                category.calculated = isNaN(rounded) ? null : round(rounded)
+                category.unrounded = isNaN(average) ? null : average
             } else {
+                const rounded = round(totalPoints)
                 category.calculation = "points"
-                category.calculated = isNaN(totalPoints) ? null : totalPoints
+                category.calculated = isNaN(rounded) ? null : rounded
+                category.unrounded = isNaN(totalPoints) ? null : totalPoints
             }
 
             return [numerator + points, denominator + total]
@@ -195,7 +198,7 @@ function calculate(grades: Grades) {
         if (grades.weighted) {
             let total = 0
             const grade = categories.reduce((current, category) => {
-                const grade = category.calculated
+                const grade = category.unrounded
                 if (!grade && grade !== 0) return current
                 total += category.weight
                 return current + grade * category.weight
@@ -238,6 +241,7 @@ export interface Category {
     name: string
     grade: number
     calculated: number | null
+    unrounded: number | null
     weight: number
     calculation: "points" | "average" | null
 }

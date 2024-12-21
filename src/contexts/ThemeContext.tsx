@@ -1,5 +1,6 @@
 "use client"
 
+import { useFavicon } from "@/hooks/useFavicon"
 import { createContext, useEffect, useState } from "react"
 
 interface Theme {
@@ -70,27 +71,29 @@ const themes = [
 ] satisfies Theme[]
 
 interface ThemeContextType {
-    themes: Theme[]
     theme: Theme
+    themes: Theme[]
     setTheme: (theme: Theme) => void
 }
 
 const defaultThemeContext = {
-    themes,
     theme: themes[0],
+    themes,
     setTheme: () => { }
 } satisfies ThemeContextType
 
 export const ThemeContext = createContext<ThemeContextType>(defaultThemeContext)
 
 export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    const [theme, setTheme] = useState<Theme>(themes[0])
+    const [theme, setTheme] = useState<Theme>(themes[4])
+    const favicon = useFavicon()
 
     useEffect(() => {
-        const raw = localStorage.getItem("theme")
-        if (!raw) return
+        const theme = localStorage.getItem("theme")
+        if (!theme) return
+
         try {
-            setTheme(JSON.parse(raw))
+            setTheme(JSON.parse(theme))
         } catch {
             localStorage.removeItem("theme")
         }
@@ -98,12 +101,42 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
 
     useEffect(() => {
         localStorage.setItem("theme", JSON.stringify(theme))
+
         for (const [variable, value] of Object.entries(theme).slice(1))
             document.documentElement.style.setProperty(`--${variable}`, value)
-    }, [theme])
+
+        if (!favicon) return
+
+        const canvas = document.createElement("canvas")
+        canvas.width = 64
+        canvas.height = 64
+
+        const context = canvas.getContext("2d")
+        if (!context) return
+
+        context.fillStyle = theme.background
+        context.beginPath()
+        context.arc(32, 32, 32, 0, 2 * Math.PI)
+        context.closePath()
+        context.fill()
+
+        context.fillStyle = theme.primary
+        context.beginPath()
+        context.arc(32, 32, 18, 0, 2 * Math.PI)
+        context.closePath()
+        context.fill()
+
+        context.fillStyle = theme.background
+        context.beginPath()
+        context.arc(32, 32, 12, 0, 2 * Math.PI)
+        context.closePath()
+        context.fill()
+
+        favicon.href = canvas.toDataURL()
+    }, [theme, favicon])
 
     return (
-        <ThemeContext.Provider value={{ themes, theme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, themes, setTheme }}>
             {children}
         </ThemeContext.Provider >
     )
