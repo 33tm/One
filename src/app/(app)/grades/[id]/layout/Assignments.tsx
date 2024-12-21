@@ -34,17 +34,17 @@ function Assignment(props: AssignmentProps) {
                 checked={!dropped || custom === undefined}
                 onCheckedChange={drop}
             />
-            <div className={`my-auto w-full ${isCustom && "font-bold"} ${dropped && "line-through text-secondary"} transition-all duration-200`}>
+            <div className={`my-auto w-full truncate ${isCustom && "font-bold"} ${dropped && "line-through text-secondary"} transition-all duration-200`}>
                 {url ? (
                     <Link
                         href={url}
                         target="_blank"
-                        className="w-full truncate hover:underline"
+                        className="truncate hover:underline"
                     >
                         {name}
                     </Link>
                 ) : (
-                    <p className="w-full truncate hover:cursor-not-allowed">
+                    <p className="truncate hover:cursor-not-allowed">
                         {name}
                     </p>
                 )}
