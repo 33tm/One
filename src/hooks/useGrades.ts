@@ -87,20 +87,21 @@ export function useGrades(id: string) {
 
     useEffect(() => {
         if (!id) return
-        const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
-        if (grades) {
-            const calculated = calculate(grades)
-            if (!validate(grades, calculated)) {
-                setError("calc")
-                reset()
-            } else if (true || grades.timestamp < Date.now() - 1000 * 60) {
-                refresh(grades.timestamp)
-            }
-            setGrades(calculated)
-        } else {
-            localStorage.removeItem(`grades-${id}`)
-            reset()
-        }
+        reset()
+        // const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
+        // if (grades) {
+        //     const calculated = calculate(grades)
+        //     if (!validate(grades, calculated)) {
+        //         setError("calc")
+        //         reset()
+        //     } else if (true || grades.timestamp < Date.now() - 1000 * 60) {
+        //         refresh(grades.timestamp)
+        //     }
+        //     setGrades(calculated)
+        // } else {
+        //     localStorage.removeItem(`grades-${id}`)
+        //     reset()
+        // }
     }, [id, reset, refresh])
 
     function drop(assignment: string) {
@@ -139,12 +140,21 @@ export function useGrades(id: string) {
         return round(original - modified)
     }
 
+    function create(assignment: Assignment) {
+        setGrades(g => {
+            const grades = { ...g }
+            grades.assignments[assignment.id] = assignment
+            return calculate(grades)
+        })
+    }
+
     return {
         grades,
         error,
         modify,
         drop,
         weight,
+        create,
         reset,
         refresh,
         refreshing
@@ -157,58 +167,105 @@ function calculate(grades: Grades) {
     periods.forEach(period => {
         const categories = Object.values(period.categories)
 
-        const [numerator, denominator] = categories.reduce(([numerator, denominator], category) => {
+        const [
+            totalPoints,
+            totalTotal,
+            totalPercentage,
+            totalCount
+        ] = categories.reduce(([totalPoints, totalTotal, totalPercentage, totalCount], category) => {
             const items = Object
                 .values(grades.assignments)
                 .filter(item => item.period === period.id && item.category === category.id)
 
-            let totalPercent = 0
-            let assignments = 0
-            const [points, total] = items.reduce(([points, total], item) => {
+            const [
+                points,
+                total,
+                percentage,
+                count
+            ] = items.reduce(([points, total, percentage, count], item) => {
                 const grade = item.custom === null ? item.grade : item.custom
                 if (item.drop || (!grade && grade !== 0))
-                    return [points, total]
-                totalPercent += grade / item.max
-                assignments++
-                return [points + grade, total + item.max]
-            }, [0, 0])
+                    return [points, total, percentage, count]
+                return [
+                    points + grade * item.weight,
+                    total + item.max * item.weight,
+                    percentage + (grade / item.max) * item.weight,
+                    count + item.weight
+                ]
+            }, [0, 0, 0, 0])
 
             // Determine if the category is calculated by average or points
             // Thank you Schoology for not providing this information
-            const average = totalPercent / assignments * 100
-            const totalPoints = points / total * 100
-            if (category.calculation === "average"
-                || (category.grade !== totalPoints
-                    && !category.calculation
-                    && category.grade === average)) {
-                const rounded = round(average)
-                category.calculation = "average"
-                category.calculated = isNaN(rounded) ? null : round(rounded)
-                category.unrounded = isNaN(average) ? null : average
-            } else {
-                const rounded = round(totalPoints)
+            // Checks and prefers points first since it's the default
+
+            const unroundedAverage = percentage / count * 100
+            const roundedAverage = round(unroundedAverage) || null
+            const unroundedtotalPoints = points / total * 100
+            const roundedTotalPoints = round(unroundedtotalPoints) || null
+
+            // Two different calculation methods yet Schoology API doesn't provide this information
+            // If you have 100% in a category, it's calculated by average percentage even if it may not be such a category.
+            if (category.calculation === "points"
+                || (!category.calculation && category.grade === roundedTotalPoints)) {
                 category.calculation = "points"
-                category.calculated = isNaN(rounded) ? null : rounded
-                category.unrounded = isNaN(totalPoints) ? null : totalPoints
+                category.calculated = roundedTotalPoints
+                category.unrounded = unroundedtotalPoints || null
+            } else if (category.calculation === "average"
+                || (!category.calculation && category.grade === roundedAverage)) {
+                category.calculation = "average"
+                category.calculated = roundedAverage
+                category.unrounded = unroundedAverage || null
+            } else {
+                const pointsDiff = Math.abs(category.grade - (roundedTotalPoints || 0))
+                const averageDiff = Math.abs(category.grade - (roundedAverage || 0))
+                if (roundedAverage !== null && pointsDiff < averageDiff) {
+                    category.calculation = "points"
+                    category.calculated = roundedTotalPoints
+                    category.unrounded = unroundedtotalPoints
+                } else {
+                    category.calculation = "average"
+                    category.calculated = roundedAverage
+                    category.unrounded = unroundedAverage
+                }
             }
 
-            return [numerator + points, denominator + total]
-        }, [0, 0])
+            return [
+                totalPoints + points,
+                totalTotal + total,
+                totalPercentage + percentage,
+                totalCount + count
+            ]
+        }, [0, 0, 0, 0])
 
         if (grades.weighted) {
-            let total = 0
-            const grade = categories.reduce((current, category) => {
-                const grade = category.unrounded
-                if (!grade && grade !== 0) return current
-                total += category.weight
-                return current + grade * category.weight
-            }, 0)
+            const [grade, total] = categories.reduce(([grade, total], category) => {
+                if (category.unrounded === null) return [grade, total]
+                return [grade + category.unrounded * category.weight, total + category.weight]
+            }, [0, 0])
             period.calculated = round(grade / total)
         } else {
-            // Points based grading
-            // Category weights are undefined, period grades are calculated as if it was a giant category
+            // Unweighted grading
+            // Period grades are calculated as if they were a giant category
             // This is totally not misleading at all thank you Schoology
-            period.calculated = round(numerator / denominator * 100)
+
+            const average = round(totalPercentage / totalCount * 100)
+            const points = round(totalPoints / totalTotal * 100)
+
+            // Yes again two different calculation methods yet no information provided from the API
+            // There most likely very much is some undocumented endpoint with this information nicely presented
+            if (period.calculation === "points"
+                || (!period.calculation && period.grade === points)) {
+                period.calculation = "points"
+                period.calculated = points
+            } else if (period.calculation === "average"
+                || (!period.calculation && period.grade === average)) {
+                period.calculation = "average"
+                period.calculated = average
+            } else {
+                // Hope this doesn't happen ...
+                // tbh shouldn't cause it'd would have happened above with the categories
+                period.calculated = Infinity
+            }
         }
     })
 
@@ -232,6 +289,7 @@ export interface Period {
     name: string
     grade: number
     calculated: number
+    calculation: "points" | "average" | null
     scale: number
     categories: { [id: string]: Category }
 }
@@ -258,6 +316,7 @@ export interface Assignment {
     grade: number
     custom: number | null
     max: number
+    weight: number
     scale: string
     new: boolean
 }
