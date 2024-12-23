@@ -26,7 +26,9 @@ export default function Page() {
             </div>
             <div className="flex flex-col m-auto text-center">
                 <div className="m-auto">
-                    <p className="font-bold font-mono mb-2">Choose a color theme:</p>
+                    <p className="select-none font-semibold font-mono mb-2">
+                        Select a color theme:
+                    </p>
                     <div className="grid grid-cols-4 gap-3 p-2 rounded-md bg-tertiary outline outline-4 outline-secondary">
                         {themes.map(theme => (
                             <div

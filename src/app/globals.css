@@ -13,10 +13,6 @@
         display: none;
     }
 
-    *::selection {
-        background: var(--secondary)
-    }
-
     *:focus {
         outline: none;
     }
