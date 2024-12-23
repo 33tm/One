@@ -82,16 +82,20 @@ interface AssignmentsProps {
     drop: (id: string) => void
     modify: (id: string, grade: number | null) => void
     weight: (assignment: string) => number
+    // create: () => void
 }
 export default function Assignments(props: AssignmentsProps) {
     const { assignments, drop, modify, weight } = props
     return (
-        <div className="w-3/4 min-w-0 h-full pl-3 space-y-2.5">
-            <div className="flex h-14 pr-2 pl-5 justify-between bg-primary text-background rounded-lg shadow-md shadow-primary">
+        <div className="w-3/4 pr-3 pt-3 min-w-0 h-full space-y-2.5">
+            <div className="flex h-14 pr-2 pl-5 justify-between bg-primary text-background rounded-lg shadow-md shadow-secondary">
                 <p className="my-auto text-background font-semibold">
                     New Assignment
                 </p>
-                <Button className="my-auto w-10 h-10 rounded-lg outline outline-secondary hover:scale-105 transition-transform duration-200">
+                <Button
+                    className="my-auto w-10 h-10 rounded-lg outline outline-secondary hover:scale-105 transition-transform duration-200"
+                // onClick={() =>}
+                >
                     <Plus size={24} />
                 </Button>
             </div>
@@ -101,7 +105,7 @@ export default function Assignments(props: AssignmentsProps) {
                         key={item.id}
                         assignment={item}
                         drop={() => drop(item.id)}
-                        modify={(grade: number | null) => modify(item.id, grade)}
+                        modify={grade => modify(item.id, grade)}
                         weight={weight(item.id)}
                     />
                 ))}

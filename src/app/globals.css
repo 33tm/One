@@ -5,7 +5,7 @@
 @layer base {
     * {
         @apply border-border;
-        scrollbar-color: var(--tertiary) var(--background);
+        scrollbar-color: var(--secondary) var(--tertiary);
         scrollbar-width: none;
     }
 
@@ -14,7 +14,7 @@
     }
 
     *::selection {
-        background: var(--tertiary)
+        background: var(--secondary)
     }
 
     *:focus {
