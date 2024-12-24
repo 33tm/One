@@ -33,7 +33,7 @@ export default function Grades() {
                                 <div
                                     className="relative group text-center text-lg py-8 rounded-xl hover:scale-105 hover:shadow-2xl transition ease-out duration-200"
                                     style={{
-                                        backgroundImage: `linear-gradient(rgba(${background}, 0.8), rgba(${background}, 0.8)), url('${section.image}')`,
+                                        backgroundImage: `linear-gradient(rgba(${background}, 0.7), rgba(${background}, 0.7)), url('${section.image}')`,
                                         backgroundSize: "cover"
                                     }}
                                 >
