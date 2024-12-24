@@ -36,15 +36,47 @@ export function useGrades(id: string) {
                 return
             }
 
-            const grades = await res.json()
+            const grades = await res.json() as Grades
             const calculated = calculate(grades)
 
-            if (!validate(grades, calculated))
+            if (validate(grades, calculated)) {
+                localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+            } else {
+                localStorage.removeItem(`grades-${id}`)
                 setError("calc")
 
+                // Attempt to calculate unpublished assignments
+                // Only functional for one unpublished assignment per category
+                // Just don't question why Schoology calculates grades with unpublished assignments
+                const assignments = Object.values(grades.assignments)
+
+                // Arguably this a terrible way to do it
+                // Uh rewrite someday I guess :'D
+                Object.values(grades.periods).forEach(period => {
+                    Object.values(period.categories).forEach(category => {
+                        const unpublished = assignments.filter(item => item.category === category.id && !item.publish)
+                        if (unpublished.length !== 1) return
+                        const g = { ...grades }
+                        const item = g.assignments[unpublished[0].id]
+                        item.publish = true
+                        item.drop = false
+                        setGrades(calculated)
+                        while (Math.abs(period.grade - g.periods[period.id].calculated) > 0.05) {
+                            item.grade = Math.round((item.grade + 0.1) * 100) / 100
+                            const calculated = calculate(g)
+                            setGrades(g)
+                            if (validate(g, calculated)) {
+                                localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                                setError(undefined)
+                                break
+                            }
+                        }
+                    })
+                })
+            }
+
             setGrades(calculated)
-            localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
-        })
+        }).catch(() => setError("An error occurred!"))
     }, [id])
 
     const refresh = useCallback((timestamp: number) => {
@@ -74,34 +106,41 @@ export function useGrades(id: string) {
                         ...updated.assignments
                     }
                 }
+
                 const calculated = calculate(grades)
-                if (!validate(grades, calculated))
-                    setError("calc")
-                else
+
+                if (validate(grades, calculated)) {
                     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                } else {
+                    localStorage.removeItem(`grades-${id}`)
+                    setError("calc")
+                }
+
                 return calculated
             })
+
             setRefreshing(false)
         })
     }, [id])
 
     useEffect(() => {
         if (!id) return
-        reset()
-        // const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
-        // if (grades) {
-        //     const calculated = calculate(grades)
-        //     if (!validate(grades, calculated)) {
-        //         setError("calc")
-        //         reset()
-        //     } else if (true || grades.timestamp < Date.now() - 1000 * 60) {
-        //         refresh(grades.timestamp)
-        //     }
-        //     setGrades(calculated)
-        // } else {
-        //     localStorage.removeItem(`grades-${id}`)
-        //     reset()
-        // }
+        const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
+        if (grades) {
+            const calculated = calculate(grades)
+            if (validate(grades, calculated)) {
+                setGrades(calculated)
+            } else {
+                setError("calc")
+            }
+            reset()
+            // else if (true || grades.timestamp < Date.now() - 1000 * 60) {
+            //     refresh(grades.timestamp)
+            // }
+        } else {
+            localStorage.removeItem(`grades-${id}`)
+            reset()
+        }
     }, [id, reset, refresh])
 
     function drop(assignment: string) {
@@ -205,6 +244,7 @@ function calculate(grades: Grades) {
 
             // Two different calculation methods yet Schoology API doesn't provide this information
             // If you have 100% in a category, it's calculated by average percentage even if it may not be such a category.
+
             if (category.calculation === "points"
                 || (!category.calculation && category.grade === roundedTotalPoints)) {
                 category.calculation = "points"
@@ -253,6 +293,7 @@ function calculate(grades: Grades) {
 
             // Yes again two different calculation methods yet no information provided from the API
             // There most likely very much is some undocumented endpoint with this information nicely presented
+
             if (period.calculation === "points"
                 || (!period.calculation && period.grade === points)) {
                 period.calculation = "points"
@@ -274,10 +315,11 @@ function calculate(grades: Grades) {
 
 function validate(grades: Grades, calculated: Grades) {
     const periods = Object.values(grades.periods)
-
     return periods.every(period => {
         const p = calculated.periods[period.id]
-        if (period.grade !== p.calculated)
+        // Schoology API's category weights are not precise enough,
+        // So we have to set an arbitrary threshold of error we are fine with.
+        if (Math.abs(period.grade - p.calculated) > 0.05)
             return false
         return Object.values(period.categories).every(category =>
             category.calculated === p.categories[category.id].calculated)
@@ -313,6 +355,7 @@ export interface Assignment {
     updated: number
     url: string | null
     drop: boolean
+    publish: boolean
     grade: number
     custom: number | null
     max: number
