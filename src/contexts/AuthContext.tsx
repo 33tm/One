@@ -86,6 +86,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     }
 
     function logout() {
+        user?.sections.forEach(section => localStorage.removeItem(`grades-${section.id}`))
         server("/auth/logout", {
             method: "POST",
             credentials: "include"
