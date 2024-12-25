@@ -123,7 +123,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
                         </Button>
                     </div>
                 )}
-                <div className="h-[calc(100dvh-72px)] px-4 pb-4 space-y-2 overflow-y-auto overflow-x-hidden select-none">
+                <div className="h-[calc(100dvh-72px)] px-4 pb-4 space-y-2 overflow-y-auto overflow-x-hidden">
                     {schools && schools[0] && schools[0].title !== "No Schools Found" ? (
                         schools.filter(({ id }) => id !== 2573996462).map(s => (
                             <div

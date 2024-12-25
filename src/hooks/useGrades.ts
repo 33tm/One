@@ -128,11 +128,8 @@ export function useGrades(id: string) {
         const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
         if (grades) {
             const calculated = calculate(grades)
-            if (validate(grades, calculated)) {
-                setGrades(calculated)
-            } else {
-                setError("calc")
-            }
+            if (validate(grades, calculated)) setGrades(calculated)
+            else setError("calc")
             reset()
             // else if (true || grades.timestamp < Date.now() - 1000 * 60) {
             //     refresh(grades.timestamp)
@@ -148,14 +145,17 @@ export function useGrades(id: string) {
             const grades = { ...g }
             const item = grades.assignments[assignment]
             item.drop = !item.drop
+            if (item.new)
+                delete grades.assignments[assignment]
             return calculate(grades)
         })
     }
 
-    function modify(assignment: string, grade: number | null) {
+    function modify(assignment: string, value: number | null, type: "grade" | "max") {
         setGrades(g => {
             const grades = { ...g }
-            grades.assignments[assignment].custom = grade
+            if (type === "grade") grades.assignments[assignment].custom = value
+            else grades.assignments[assignment].max = value || 0
             return calculate(grades)
         })
     }
@@ -179,10 +179,30 @@ export function useGrades(id: string) {
         return round(original - modified)
     }
 
-    function create(assignment: Assignment) {
+    function create(period: string, category: string) {
+        let id
+        do id = Math.random().toString(36).substring(2)
+        while (grades.assignments[id])
+
         setGrades(g => {
             const grades = { ...g }
-            grades.assignments[assignment.id] = assignment
+            grades.assignments[id] = {
+                id,
+                name: "Custom Assignment",
+                category,
+                period,
+                due: Date.now(),
+                updated: Date.now(),
+                url: null,
+                drop: false,
+                publish: false,
+                grade: 0,
+                custom: 0,
+                max: 10,
+                weight: 1,
+                scale: "0",
+                new: true
+            }
             return calculate(grades)
         })
     }

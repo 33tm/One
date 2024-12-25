@@ -16,7 +16,7 @@ const themes = [
         name: "Dark",
         background: "#171717",
         primary: "#FAFAFA",
-        secondary: "#A3A3A3",
+        secondary: "#999999",
         tertiary: "#262626"
     },
     {
@@ -44,7 +44,7 @@ const themes = [
         name: "Beige",
         background: "#F3EEEA",
         primary: "#594545",
-        secondary: "#816464",
+        secondary: "#756464",
         tertiary: "#C0B0B0"
     },
     {
@@ -132,7 +132,9 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
         context.closePath()
         context.fill()
 
-        favicon.href = canvas.toDataURL()
+        const url = canvas.toDataURL()
+        favicon.href = url
+        localStorage.setItem("favicon", url)
     }, [theme, favicon])
 
     return (

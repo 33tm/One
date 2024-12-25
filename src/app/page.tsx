@@ -12,7 +12,7 @@ export default function Page() {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 w-screen h-dvh">
-            <div className="mx-auto mt-auto md:m-auto text-center select-none">
+            <div className="mx-auto mt-auto md:m-auto text-center">
                 <p className="font-mono text-secondary">Welcome to</p>
                 <div className="flex text-4xl space-x-2">
                     <p className="font-bold">One</p>
@@ -26,7 +26,7 @@ export default function Page() {
             </div>
             <div className="flex flex-col m-auto text-center">
                 <div className="m-auto">
-                    <p className="select-none font-semibold font-mono mb-2">
+                    <p className="font-semibold font-mono mb-2">
                         Select a color theme:
                     </p>
                     <div className="grid grid-cols-4 gap-3 p-2 rounded-md bg-tertiary outline outline-4 outline-secondary">

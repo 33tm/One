@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
-            <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased font-sans text-foreground bg-background`}>
+            <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased font-sans select-none text-foreground bg-background`}>
                 <ThemeProvider>
                     {children}
                 </ThemeProvider>

@@ -14,7 +14,7 @@ function Category(props: CategoryProps) {
             className={`flex -z-10 rounded-lg ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
             onClick={set}
         >
-            <div className={`flex w-full p-4 select-none ${current && "text-tertiary"}`}>
+            <div className={`flex w-full p-4 ${current && "text-tertiary"}`}>
                 <div className="flex space-x-1.5 w-2/3 pr-2">
                     <p className="truncate">
                         {name}

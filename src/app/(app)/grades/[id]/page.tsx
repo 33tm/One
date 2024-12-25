@@ -32,7 +32,6 @@ export default function Course() {
         modify,
         drop,
         weight,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         create,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         refresh,
@@ -108,10 +107,10 @@ export default function Course() {
                     <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                     </Link>
-                    <p className="select-none font-bold mb-2">Failed to calculate grades!</p>
-                    <p className="select-none text-xs mb-1">This is likely caused by an assignment with unpublished grades.</p>
-                    <p className="select-none text-xs mb-4">Would you like to ignore this and continue?</p>
-                    <div className="select-none mx-4 w-auto">
+                    <p className="font-bold mb-2">Failed to calculate grades!</p>
+                    <p className="text-xs mb-1">This is likely caused by an assignment with unpublished grades.</p>
+                    <p className="text-xs mb-4">Would you like to ignore this and continue?</p>
+                    <div className="mx-4 w-auto">
                         <div className="rounded-t-lg bg-tertiary font-mono p-4">
                             <div className="flex justify-between font-black">
                                 <p>{section.name}</p>
@@ -150,7 +149,7 @@ export default function Course() {
                         >
                             {refreshing ? "Refreshing..." : "Ignore"}
                         </Button>
-                        <p className="select-none mt-4 text-secondary text-xs">
+                        <p className="mt-4 text-secondary text-xs">
                             Grade calculations will be inaccurate.
                         </p>
                     </div>
@@ -209,7 +208,7 @@ export default function Course() {
                     drop={drop}
                     modify={modify}
                     weight={weight}
-                // create={create}
+                    create={() => create(period.id, category)}
                 />
             </div>
         </>
