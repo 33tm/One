@@ -3,7 +3,7 @@
 import server, { websocket } from "@/server"
 
 import { createContext, useCallback, useEffect, useRef, useState } from "react"
-import { Error } from "@/components/Error"
+import Error from "@/components/Error"
 
 interface Section {
     id: string

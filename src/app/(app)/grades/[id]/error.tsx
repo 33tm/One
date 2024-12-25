@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation"
 import { useEffect } from "react"
 
-import { Error } from "@/components/Error"
+import Error from "@/components/Error"
 
 export default () => {
     const { id } = useParams<{ id: string }>()

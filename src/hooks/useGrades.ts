@@ -22,10 +22,10 @@ export function useGrades(id: string) {
         timestamp: 0
     })
 
-    const reset = useCallback(() => {
-        console.log("reset")
+    const refresh = useCallback(() => {
+        console.log("refresh")
         setRefreshing(true)
-        server(`/sections/${id}/grades/reset`, {
+        server(`/sections/${id}/grades`, {
             method: "POST",
             credentials: "include"
         }).then(async res => {
@@ -79,50 +79,6 @@ export function useGrades(id: string) {
         }).catch(() => setError("An error occurred!"))
     }, [id])
 
-    const refresh = useCallback((timestamp: number) => {
-        console.log("refresh")
-        setRefreshing(true)
-        server(`/sections/${id}/grades/refresh`, {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify({ timestamp })
-        }).then(async res => {
-            if (res.status === 204) {
-                setRefreshing(false)
-                return
-            }
-
-            const updated = await res.json() as Refreshed
-            setGrades(g => {
-                const grades = {
-                    ...g,
-                    ...updated,
-                    periods: {
-                        ...g.periods,
-                        ...updated.periods
-                    },
-                    assignments: {
-                        ...g.assignments,
-                        ...updated.assignments
-                    }
-                }
-
-                const calculated = calculate(grades)
-
-                if (validate(grades, calculated)) {
-                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
-                } else {
-                    localStorage.removeItem(`grades-${id}`)
-                    setError("calc")
-                }
-
-                return calculated
-            })
-
-            setRefreshing(false)
-        })
-    }, [id])
-
     useEffect(() => {
         if (!id) return
         const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
@@ -130,15 +86,15 @@ export function useGrades(id: string) {
             const calculated = calculate(grades)
             if (validate(grades, calculated)) setGrades(calculated)
             else setError("calc")
-            reset()
+            refresh()
             // else if (true || grades.timestamp < Date.now() - 1000 * 60) {
             //     refresh(grades.timestamp)
             // }
         } else {
             localStorage.removeItem(`grades-${id}`)
-            reset()
+            refresh()
         }
-    }, [id, reset, refresh])
+    }, [id, refresh])
 
     function drop(assignment: string) {
         setGrades(g => {
@@ -214,7 +170,6 @@ export function useGrades(id: string) {
         drop,
         weight,
         create,
-        reset,
         refresh,
         refreshing
     }
@@ -349,6 +304,8 @@ function validate(grades: Grades, calculated: Grades) {
 export interface Period {
     id: string
     name: string
+    start: number
+    end: number
     grade: number
     calculated: number
     calculation: "points" | "average" | null
@@ -403,5 +360,3 @@ export interface Grades {
     scales: { [id: string]: Scale },
     timestamp: number
 }
-
-type Refreshed = Omit<Grades, "weighted" | "scales">

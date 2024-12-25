@@ -4,8 +4,8 @@ import server from "@/server"
 
 import { useEffect, useState } from "react"
 
-import { Loader } from "@/components/Loader"
-import { Error } from "@/components/Error"
+import Loader from "@/components/Loader"
+import Error from "@/components/Error"
 
 export function Callback({ oauth_token, domain }: { oauth_token: string, domain: string }) {
     const [error, setError] = useState<string>()

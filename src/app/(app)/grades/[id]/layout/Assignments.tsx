@@ -15,9 +15,16 @@ interface AssignmentProps {
     drop: () => void
     modify: (grade: number | null, type: "grade" | "max") => void
     weight: number
+    animate: boolean
 }
 function Assignment(props: AssignmentProps) {
-    const { assignment, drop, modify, weight } = props
+    const {
+        assignment,
+        drop,
+        modify,
+        weight,
+        animate
+    } = props
     const {
         custom,
         grade,
@@ -65,7 +72,8 @@ function Assignment(props: AssignmentProps) {
                     value={weight}
                     prefix={weight > 0 ? "+" : ""}
                     suffix="%"
-                    className={`min-w-28 ml-auto rounded-lg text-center bg-primary text-tertiary p-2 opacity-0 ${!dropped && !isNaN(weight) && "opacity-100"} transition-opacity duration-200`}
+                    className={`min-w-28 ml-auto rounded-lg text-center ${weight > 0 ? "bg-primary" : "bg-secondary"} text-background p-2 opacity-0 ${!dropped && !isNaN(weight) && "opacity-100"} transition-all duration-200`}
+                    animated={animate}
                     continuous
                 />
                 <div className={`flex outline outline-secondary rounded-md ${dropped && "text-secondary line-through"} transition-all duration-200`}>
@@ -84,7 +92,7 @@ function Assignment(props: AssignmentProps) {
                             disabled={dropped}
                             className="w-20 text-center  rounded-l-none"
                             placeholder={max ? max.toString() : "10"}
-                            defaultValue={max ? max.toString() : "10"}
+                            defaultValue={max === 10 ? "" : max.toString()}
                             onChange={({ target }) => {
                                 const grade = parseFloat(target.value)
                                 modify(isNaN(grade) ? 10 : grade, "max")
@@ -110,6 +118,7 @@ interface AssignmentsProps {
 }
 export default function Assignments(props: AssignmentsProps) {
     const { assignments, drop, modify, weight, create } = props
+    const animate = assignments.length < 10
     return (
         <div className="w-3/4 pr-3 pt-3 min-w-0 h-full space-y-2.5">
             <div className="flex h-14 pr-2 pl-5 justify-between bg-primary text-background rounded-lg shadow-md shadow-secondary">
@@ -133,6 +142,7 @@ export default function Assignments(props: AssignmentsProps) {
                             drop={() => drop(item.id)}
                             modify={(grade, type) => modify(item.id, grade, type)}
                             weight={weight(item.id)}
+                            animate={animate}
                         />
                     ))}
             </div>

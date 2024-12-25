@@ -3,6 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import NumberFlow from "@number-flow/react"
+import { toast } from "sonner"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
@@ -12,11 +13,11 @@ import { AuthContext } from "@/contexts/AuthContext"
 
 import Categories from "./layout/Categories"
 import Assignments from "./layout/Assignments"
+import CalculationError from "./layout/CalculationError"
+import PeriodSelect from "./layout/PeriodSelect"
 
-import { Loader } from "@/components/Loader"
-import { Error } from "@/components/Error"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import Loader from "@/components/Loader"
+import Error from "@/components/Error"
 
 import { ArrowLeft } from "lucide-react"
 
@@ -24,7 +25,6 @@ export default function Course() {
     const router = useRouter()
     const { id } = useParams<{ id: string }>()
     const { user, loading } = useContext(AuthContext)
-
 
     const {
         grades,
@@ -40,28 +40,38 @@ export default function Course() {
 
     const [dismiss, setDismiss] = useState(false)
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [periodId, setPeriod] = useState<string>()
-    const [category, setCategory] = useState<string>()
+    const [categoryId, setCategoryId] = useState<string>()
+    const [warningCategoryId, setWarningCategoryId] = useState<string>()
+
+    const periods = Object.values(grades.periods)
 
     useEffect(() => {
-        if (!grades.periods) return
+        if (!grades.periods || !periods.length)
+            return
 
-        const periods = Object.values(grades.periods)
-        if (!periods.length) return
-        if (!periodId) setPeriod(periods[0].id)
+        if (!periodId) {
+            const now = Date.now() / 1000
+            const period = periods.find(period => {
+                const start = period.start
+                const end = period.end
+                return start <= now && now <= end
+            })
+            setPeriod(period?.id || periods[0].id)
+        }
 
         const categories = Object
             .values(periods[0].categories)
             .sort((a, b) => b.weight - a.weight)
-        if (!category) setCategory(categories[0].id)
-    }, [grades, periodId, category])
+
+        if (!categoryId)
+            setCategoryId(categories[0].id)
+    }, [grades, periods, periodId, categoryId])
 
     useEffect(() => {
         if (!user && !loading)
             router.push("/grades")
     }, [user, loading, router])
-
 
     if (!user) return <Error>Invalid user!</Error>
 
@@ -73,89 +83,46 @@ export default function Course() {
 
     if (error && error !== "calc") {
         return (
-            <>
-                <title>
-                    {`${section.name} | One`}
-                </title>
-                <Error>
-                    <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
-                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
-                    </Link>
-                    {error}
-                </Error>
-            </>
+            <Error title={title}>
+                <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
+                    <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
+                </Link>
+                {error}
+            </Error>
         )
     }
 
-    if (!periodId) return <Loader title={title} />
+    if (!periodId)
+        return <Loader title={title} />
 
-    if (!category) return <Error title={title}>No categories found!</Error>
+    if (!categoryId)
+        return <Error title={title}>No categories found!</Error>
 
     const period = grades.periods[periodId]
-    const categories = Object.values(grades.periods[periodId].categories)
+
+    const categories = Object
+        .values(period.categories)
+        .sort((a, b) => b.weight - a.weight)
+
     const assignments = Object
         .values(grades.assignments)
-        .filter(item => item.period === period.id && item.category === category)
+        .filter(item => item.period === period.id && item.category === categoryId)
 
     if (error && error === "calc" && !dismiss) {
         return (
-            <>
-                <title>
-                    {`${section.name} | One`}
-                </title>
-                <Error>
-                    <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
-                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
-                    </Link>
-                    <p className="font-bold mb-2">Failed to calculate grades!</p>
-                    <p className="text-xs mb-1">This is likely caused by an assignment with unpublished grades.</p>
-                    <p className="text-xs mb-4">Would you like to ignore this and continue?</p>
-                    <div className="mx-4 w-auto">
-                        <div className="rounded-t-lg bg-tertiary font-mono p-4">
-                            <div className="flex justify-between font-black">
-                                <p>{section.name}</p>
-                                <p>{section.section}</p>
-                            </div>
-                            <div className="flex">
-                                <p className="text-left truncate w-1/2">{period.name}</p>
-                                <div className="flex w-1/2 space-x-3">
-                                    <p className="text-right w-1/2">calc%</p>
-                                    <p className="text-right w-1/2">grade%</p>
-                                </div>
-                            </div>
-                            <Separator className="bg-secondary my-1 rounded" />
-                            {categories.map(category => (
-                                <div key={category.id} className={`flex ${category.grade !== category.calculated && "font-bold underline"}`}>
-                                    <p className="text-left truncate w-1/2">{category.name}</p>
-                                    <div className="flex w-1/2 space-x-3">
-                                        <p className="text-right w-1/2">{category.calculated}%</p>
-                                        <p className="text-right w-1/2">{category.grade}%</p>
-                                    </div>
-                                </div>
-                            ))}
-                            <Separator className="bg-secondary my-1 rounded" />
-                            <div className="flex font-black">
-                                <p className="text-left truncate w-1/2">Total</p>
-                                <div className={`ml-auto flex w-1/2 space-x-3 ${period.grade !== period.calculated && "underline"}`}>
-                                    <p className="text-right w-1/2">{period.calculated}%</p>
-                                    <p className="text-right w-1/2">{period.grade}%</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Button
-                            disabled={refreshing}
-                            onClick={() => setDismiss(true)}
-                            className="w-full rounded-t-none transition-all duration-200"
-                        >
-                            {refreshing ? "Refreshing..." : "Ignore"}
-                        </Button>
-                        <p className="mt-4 text-secondary text-xs">
-                            Grade calculations will be inaccurate.
-                        </p>
-                    </div>
-                </Error>
-            </>
+            <CalculationError
+                section={section}
+                period={period}
+                categories={categories}
+                dismiss={() => setDismiss(true)}
+                refreshing={refreshing}
+            />
         )
+    }
+
+    if (assignments.length > 10 && warningCategoryId !== categoryId) {
+        setWarningCategoryId(categoryId)
+        toast.info("Animations disabled for performance.")
     }
 
     return (
@@ -182,33 +149,51 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
+                <PeriodSelect
+                    period={period}
+                    periods={periods}
+                    setPeriod={setPeriod}
+                    className="my-auto ml-8"
+                />
                 {!!period.calculated && (
-                    <NumberFlow
-                        className="text-secondary ml-auto mt-auto text-2xl md:text-3xl font-bold"
-                        value={period.calculated}
-                        suffix="%"
-                        continuous
-                    />
+                    <div className="ml-auto mt-auto text-right">
+                        <div className={`flex ml-auto w-20 bg-primary rounded-lg text-tertiary ${period.calculated === period.grade && "opacity-0"} ${period.calculated > period.grade ? "bg-primary" : "bg-secondary"} transition-all duration-200`}>
+                            <NumberFlow
+                                className="m-auto py-1 font-bold text-xs text-background"
+                                value={Math.round((period.calculated - period.grade + Number.EPSILON) * 100) / 100}
+                                prefix={period.calculated > period.grade ? "+" : ""}
+                                suffix="%"
+                                continuous
+                            />
+                        </div>
+                        <NumberFlow
+                            className="text-3xl pt-2 font-bold"
+                            value={period.calculated}
+                            suffix="%"
+                            continuous
+                        />
+                    </div>
                 )}
                 <Image
                     fill
+                    priority
                     className="-z-10 object-cover opacity-20 rounded-lg"
                     src={section.image}
                     alt={section.name}
                 />
-            </div>
+            </div >
             <div className="flex mx-5 h-[calc(100dvh-204px)]">
                 <Categories
-                    category={category}
+                    category={categoryId}
                     categories={categories}
-                    setCategory={setCategory}
+                    setCategory={setCategoryId}
                 />
                 <Assignments
                     assignments={assignments}
                     drop={drop}
                     modify={modify}
                     weight={weight}
-                    create={() => create(period.id, category)}
+                    create={() => create(period.id, categoryId)}
                 />
             </div>
         </>

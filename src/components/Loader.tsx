@@ -1,6 +1,6 @@
 import { CgSpinner } from "react-icons/cg"
 
-export function Loader({ title }: Readonly<{ title?: string }>) {
+export default function Loader({ title }: Readonly<{ title?: string }>) {
     return (
         <>
             {title && <title>{title}</title>}

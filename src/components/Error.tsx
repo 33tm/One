@@ -1,6 +1,6 @@
 import { TriangleAlert } from "lucide-react"
 
-export function Error({ children, title }: Readonly<{ children: React.ReactNode, title?: string }>) {
+export default function Error({ children, title }: Readonly<{ children: React.ReactNode, title?: string }>) {
     return (
         <>
             {title && <title>{title}</title>}
