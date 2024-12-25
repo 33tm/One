@@ -1,7 +1,10 @@
 import type { Period } from "@/hooks/useGrades"
+
 import { DateTime } from "luxon"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface PeriodSelectProps {
     period: Period
@@ -12,20 +15,17 @@ interface PeriodSelectProps {
 export default function PeriodSelect(props: PeriodSelectProps) {
     const { period, periods, setPeriod, className } = props
 
-    const start = DateTime.fromSeconds(period.start).toFormat("yyyy.M.d")
-    const end = DateTime.fromSeconds(period.end).toFormat("yyyy.M.d")
+    const start = DateTime.fromSeconds(period.start).toFormat("DDD")
+    const end = DateTime.fromSeconds(period.end).toFormat("DDD")
 
     return (
         <div className={`${className}`}>
-            <p className="text-xs">
-                Grading Period
-            </p>
             <div className="flex">
                 <Select
                     value={period.id}
                     onValueChange={setPeriod}
                 >
-                    <SelectTrigger className="w-24 rounded-r-none">
+                    <SelectTrigger className="w-32 text-xs rounded-r-none">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -40,8 +40,12 @@ export default function PeriodSelect(props: PeriodSelectProps) {
                         ))}
                     </SelectContent>
                 </Select>
-                <Button className="text-xs rounded-l-none hover:cursor-default">
-                    {start} - {end}
+                <Button className="w-32 text-xs text-center rounded-l-none hover:cursor-default">
+                    <div>
+                        <p>{start}</p>
+                        <Separator className="opacity-10 rounded w-24" />
+                        <p>{end}</p>
+                    </div>
                 </Button>
             </div>
         </div>

@@ -20,6 +20,7 @@ import Loader from "@/components/Loader"
 import Error from "@/components/Error"
 
 import { ArrowLeft } from "lucide-react"
+import DataControl from "./layout/DataControl"
 
 export default function Course() {
     const router = useRouter()
@@ -63,7 +64,6 @@ export default function Course() {
         const categories = Object
             .values(periods[0].categories)
             .sort((a, b) => b.weight - a.weight)
-
         if (!categoryId)
             setCategoryId(categories[0].id)
     }, [grades, periods, periodId, categoryId])
@@ -149,12 +149,18 @@ export default function Course() {
                         </div>
                     </Link>
                 </div>
-                <PeriodSelect
-                    period={period}
-                    periods={periods}
-                    setPeriod={setPeriod}
-                    className="my-auto ml-8"
-                />
+                <div className="my-auto ml-8 space-y-2">
+                    <DataControl
+                        timestamp={grades.timestamp}
+                        refresh={refresh}
+                        refreshing={refreshing}
+                    />
+                    <PeriodSelect
+                        period={period}
+                        periods={periods}
+                        setPeriod={setPeriod}
+                    />
+                </div>
                 {!!period.calculated && (
                     <div className="ml-auto mt-auto text-right">
                         <div className={`flex ml-auto w-20 bg-primary rounded-lg text-tertiary ${period.calculated === period.grade && "opacity-0"} ${period.calculated > period.grade ? "bg-primary" : "bg-secondary"} transition-all duration-200`}>

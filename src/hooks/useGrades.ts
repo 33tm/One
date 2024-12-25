@@ -1,6 +1,7 @@
 import server from "@/server"
 
 import { useState, useEffect, useCallback } from "react"
+import { toast } from "sonner"
 
 function round(grade: number) {
     const rounded = Math.round((grade + Number.EPSILON) * 100) / 100
@@ -14,6 +15,7 @@ function round(grade: number) {
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
     const [refreshing, setRefreshing] = useState(false)
+    const [promise, setPromise] = useState<Promise<void>>()
     const [grades, setGrades] = useState<Grades>({
         weighted: false,
         periods: {},
@@ -23,9 +25,8 @@ export function useGrades(id: string) {
     })
 
     const refresh = useCallback(() => {
-        console.log("refresh")
         setRefreshing(true)
-        server(`/sections/${id}/grades`, {
+        const promise = server(`/sections/${id}/grades`, {
             method: "POST",
             credentials: "include"
         }).then(async res => {
@@ -77,24 +78,33 @@ export function useGrades(id: string) {
 
             setGrades(calculated)
         }).catch(() => setError("An error occurred!"))
+        setPromise(promise)
     }, [id])
 
     useEffect(() => {
         if (!id) return
-        const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!)
+        const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!) as Grades | null
         if (grades) {
             const calculated = calculate(grades)
             if (validate(grades, calculated)) setGrades(calculated)
             else setError("calc")
-            refresh()
-            // else if (true || grades.timestamp < Date.now() - 1000 * 60) {
-            //     refresh(grades.timestamp)
-            // }
+            // Refresh if grades are older than 10 minutes
+            if (grades.timestamp < Date.now() - 1000 * 60 * 10)
+                refresh()
         } else {
             localStorage.removeItem(`grades-${id}`)
             refresh()
         }
     }, [id, refresh])
+
+    useEffect(() => {
+        if (!promise) return
+        toast.promise(promise, {
+            loading: "Refreshing grades...",
+            success: "Grades refreshed!",
+            error: "Failed to refresh grades!"
+        })
+    }, [promise])
 
     function drop(assignment: string) {
         setGrades(g => {
