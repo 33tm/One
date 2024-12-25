@@ -21,7 +21,7 @@ export default function DataControl(props: DataControlProps) {
 
     return (
         <div className={`flex items-center ${className}`}>
-            <Button className="w-52 text-center text-xs rounded-r-none bg-background text-primary hover:cursor-default">
+            <Button className="w-52 text-center text-xs rounded-r-none bg-background border text-primary hover:cursor-default">
                 Updated {DateTime.fromMillis(timestamp).toRelative()}
             </Button>
             <Button

@@ -123,6 +123,8 @@ export default function Course() {
     if (assignments.length > 10 && warningCategoryId !== categoryId) {
         setWarningCategoryId(categoryId)
         toast.info("Animations disabled for performance.")
+    } else if (assignments.length <= 10 && warningCategoryId === categoryId) {
+        setWarningCategoryId(undefined)
     }
 
     return (

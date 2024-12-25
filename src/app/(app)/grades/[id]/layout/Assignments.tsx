@@ -72,7 +72,7 @@ function Assignment(props: AssignmentProps) {
                     value={weight}
                     prefix={weight > 0 ? "+" : ""}
                     suffix="%"
-                    className={`min-w-28 ml-auto rounded-lg text-center ${weight > 0 ? "bg-primary" : "bg-secondary"} text-background p-2 opacity-0 ${!dropped && !isNaN(weight) && "opacity-100"} transition-all duration-200`}
+                    className={`min-w-28 ml-auto rounded-lg text-center text-background ${weight > 0 ? "bg-primary" : (isNew ? "text-primary bg-background" : "bg-secondary")} p-2 opacity-0 ${!dropped && !isNaN(weight) && "opacity-100"} transition-all duration-200`}
                     animated={animate}
                     continuous
                 />
