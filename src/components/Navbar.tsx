@@ -3,6 +3,7 @@
 import Link from "next/link"
 
 import { useContext, useState } from "react"
+import { motion } from "motion/react"
 
 import { AuthContext } from "@/contexts/AuthContext"
 import { SearchContext } from "@/contexts/SearchContext"
@@ -48,8 +49,16 @@ export function Navbar() {
     if (useMediaQuery("(min-width: 768px)")) {
         return (
             <div className="relative flex w-screen p-4 z-10">
-                <Link href="/" className="my-auto px-4">
-                    <Circle strokeWidth={4} />
+                <Link href="/" className="flex my-auto px-4">
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="my-auto"
+                    >
+                        <Circle strokeWidth={4} />
+
+                    </motion.button>
                 </Link>
                 <NavigationMenu>
                     <NavigationMenuList>

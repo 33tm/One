@@ -1,9 +1,11 @@
+import Link from "next/link"
+
 import Error from "@/components/Error"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
-import { Link, ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 import type { Category, Period } from "@/hooks/useGrades"
 

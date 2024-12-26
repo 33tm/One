@@ -1,4 +1,5 @@
 import type { Category } from "@/hooks/useGrades"
+import { motion } from "motion/react"
 import NumberFlow from "@number-flow/react"
 
 interface CategoryProps {
@@ -10,8 +11,11 @@ function Category(props: CategoryProps) {
     const { category, current, set } = props
     const { name, weight, calculated } = category
     return (
-        <div
-            className={`flex -z-10 rounded-lg ${current ? "bg-primary" : "bg-tertiary"} hover:scale-105 hover:shadow-2xl hover:cursor-pointer transition ease-out duration-200`}
+        <motion.button
+            className={`flex w-full rounded-lg ${current ? "bg-primary" : "bg-tertiary"} transition-colors duration-200`}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 300 }}
             onClick={set}
         >
             <div className={`flex w-full p-4 ${current && "text-tertiary"}`}>
@@ -25,16 +29,14 @@ function Category(props: CategoryProps) {
                         </p>
                     )}
                 </div>
-                {calculated && (
-                    <NumberFlow
-                        className="font-semibold w-1/3 text-right"
-                        value={calculated}
-                        suffix="%"
-                        continuous
-                    />
-                )}
+                <NumberFlow
+                    className={`font-semibold w-1/3 text-right ${calculated || "opacity-0"} transiiton-opacity duration-200`}
+                    value={calculated || 0}
+                    suffix="%"
+                    continuous
+                />
             </div>
-        </div>
+        </motion.button>
     )
 }
 

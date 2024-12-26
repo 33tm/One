@@ -140,18 +140,18 @@ export default function Course() {
                     <Link href="/grades" className="flex text-sm text-secondary hover:underline">
                         <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                     </Link>
-                    <Link
+                    {/* <Link
                         href={`${user.domain}/course/${section.id}`}
                         className="hover:underline"
                         target="_blank"
-                    >
-                        <div className="text-xl font-extrabold">
-                            <p className="md:text-3xl text-primary">{section.name}</p>
-                            <p className="md:text-2xl text-secondary">{section.section}</p>
-                        </div>
-                    </Link>
+                    > */}
+                    <div className="text-xl font-extrabold">
+                        <p className="md:text-3xl text-primary">{section.name}</p>
+                        <p className="md:text-2xl text-secondary">{section.section}</p>
+                    </div>
+                    {/* </Link> */}
                 </div>
-                <div className="my-auto ml-8 space-y-2">
+                <div className="my-auto ml-6 space-y-1.5">
                     <DataControl
                         timestamp={grades.timestamp}
                         refresh={refresh}

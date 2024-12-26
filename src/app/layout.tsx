@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-
 import { ThemeProvider } from "@/contexts/ThemeContext"
+
+import Background from "@/components/Background"
 
 import "@/app/globals.css"
 
@@ -16,11 +15,11 @@ export const metadata: Metadata = {
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
-            <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased font-sans select-none text-foreground bg-background`}>
+            <Background>
                 <ThemeProvider>
                     {children}
                 </ThemeProvider>
-            </body>
+            </Background>
         </html>
     )
 }

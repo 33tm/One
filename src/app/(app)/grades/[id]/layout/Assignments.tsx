@@ -1,8 +1,8 @@
 import Link from "next/link"
 
+import { motion } from "motion/react"
 import NumberFlow from "@number-flow/react"
 
-import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 
@@ -36,22 +36,30 @@ function Assignment(props: AssignmentProps) {
     } = assignment
     const isCustom = custom !== null && custom !== grade
     return (
-        <div className={`flex pl-5 pr-2 py-2 space-x-2 justify-between rounded-lg ${isNew ? "bg-secondary" : "bg-tertiary"} shadow-md`}>
-            {
-                isNew ? (
+        <motion.div
+            className={`flex pl-5 pr-2 py-2 space-x-2 justify-between rounded-lg ${isNew ? "bg-secondary" : "bg-tertiary"} shadow-md`}
+            layout
+        >
+            <motion.div
+                className="flex my-auto mr-2 w-4 h-4 hover:cursor-pointer"
+                whileHover={{ scale: 1.25 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                onClick={drop}
+            >
+                {isNew ? (
                     <X
                         size={24}
-                        onClick={drop}
-                        className="my-auto mr-2 cursor-pointer text-background hover:scale-125 transition-transform duration-200"
+                        // onClick={drop}
+                        className="w-4 h-4 text-background"
                     />
                 ) : (
                     <Checkbox
-                        className="my-auto mr-2 hover:scale-125 transition-transform duration-200"
+                        className="my-auto"
                         checked={!dropped || custom === undefined}
-                        onCheckedChange={drop}
                     />
-                )
-            }
+                )}
+            </motion.div>
             <div className={`my-auto w-full truncate ${isCustom && "font-bold"} ${dropped && "line-through text-secondary"} transition-all duration-200`}>
                 {url ? (
                     <Link
@@ -105,7 +113,7 @@ function Assignment(props: AssignmentProps) {
                     )}
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 
@@ -125,14 +133,18 @@ export default function Assignments(props: AssignmentsProps) {
                 <p className="my-auto text-background font-semibold">
                     New Assignment
                 </p>
-                <Button
-                    className="my-auto w-10 h-10 rounded-lg outline outline-secondary hover:scale-105 transition-transform duration-200"
+                <motion.button
+                    className="flex my-auto w-10 h-10 rounded-lg outline outline-secondary"
                     onClick={create}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                 >
-                    <Plus size={24} />
-                </Button>
+                    <Plus className="m-auto w-5 h-5" />
+                </motion.button>
             </div>
             <div className="h-[calc(100%-66px)] space-y-2.5 overflow-y-auto rounded-lg">
+                {/* No AnimatePresence here since an exit animation only makes the experience less snappy */}
                 {assignments
                     .sort((a, b) => +b.new - +a.new)
                     .map(item => (
