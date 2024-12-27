@@ -128,7 +128,7 @@ export default function Assignments(props: AssignmentsProps) {
     const { assignments, drop, modify, weight, create } = props
     const animate = assignments.length < 10
     return (
-        <div className="w-3/4 pr-3 pt-3 min-w-0 h-full space-y-2.5">
+        <div className="w-3/4 pr-3 py-2 min-w-0 h-full space-y-2.5">
             <div className="flex h-14 pr-2 pl-5 justify-between bg-primary text-background rounded-lg shadow-md shadow-secondary">
                 <p className="my-auto text-background font-semibold">
                     New Assignment

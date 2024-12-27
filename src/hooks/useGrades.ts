@@ -1,6 +1,7 @@
 import server from "@/server"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useContext } from "react"
+import { AuthContext } from "@/contexts/AuthContext"
 import { toast } from "sonner"
 
 function round(grade: number) {
@@ -23,6 +24,9 @@ export function useGrades(id: string) {
         scales: {},
         timestamp: 0
     })
+
+    const { user } = useContext(AuthContext)
+    const section = user?.sections.find(section => section.id === id)
 
     const refresh = useCallback(() => {
         setRefreshing(true)
@@ -98,13 +102,14 @@ export function useGrades(id: string) {
     }, [id, refresh])
 
     useEffect(() => {
-        if (!promise) return
+        if (!promise || !section) return
         toast.promise(promise, {
             loading: "Refreshing grades...",
             success: "Grades refreshed!",
-            error: "Failed to refresh grades!"
+            error: "Failed to refresh grades!",
+            description: section.name
         })
-    }, [promise])
+    }, [promise, section])
 
     function drop(assignment: string) {
         setGrades(g => {

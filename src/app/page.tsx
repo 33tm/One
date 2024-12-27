@@ -13,9 +13,9 @@ export default function Page() {
 
     return (
         <motion.div
-            // initial={{ y: 30, opacity: 0 }}
-            // animate={{ y: 0, opacity: 1 }}
-            // transition={{ type: "spring", stiffness: 100 }}
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
             className="grid grid-cols-1 md:grid-cols-2 w-screen h-dvh"
         >
             <div className="mx-auto mt-auto md:m-auto text-center">
@@ -41,7 +41,7 @@ export default function Page() {
                                 key={theme.name}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.90 }}
-                                transition={{ type: "spring", stiffness: 300 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 15 }}
                                 className="flex rounded-md w-14 h-14 outline outline-4"
                                 onClick={() => setTheme(theme)}
                                 style={{
@@ -62,10 +62,10 @@ export default function Page() {
                     <motion.button
                         whileHover={{ scale: 1.25 }}
                         whileTap={{ scale: 0.75 }}
-                        transition={{ type: "spring", stiffness: 300 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 15 }}
                         className="mt-8"
                     >
-                        <Link href="/grades">
+                        <Link href="/grades" prefetch>
                             <ArrowRight className="mx-auto" />
                         </Link>
                     </motion.button>

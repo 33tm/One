@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 import { search, type School } from "@/server/search"
 import { redirect } from "@/server/redirect"
@@ -10,15 +10,25 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ChevronLeft, Circle } from "lucide-react"
+import { CgSpinner } from "react-icons/cg"
 
-export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
+export function OAuth({ token, origin, pausd }: { token: string, origin: string, pausd: boolean }) {
     const [query, setQuery] = useState("")
     const [schools, setSchools] = useState<School[]>()
     const [school, setSchool] = useState<School | null>(null)
     const [redirecting, setRedirecting] = useState(false)
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
+    const [pausdLogin, setPausdLogin] = useState(false)
     const searchBox = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+        const close = ({ key }: { key: string }) => key === "Escape" && setOpen(false)
+
+        window.addEventListener("keydown", close)
+
+        return () => window.removeEventListener("keydown", close)
+    }, [open])
 
     useEffect(() => {
         if (query.length < 3)
@@ -43,7 +53,7 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     }, [open])
 
     function oauth(domain: string) {
-        const url = `${window.location.origin.replace("https://", "")}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
+        const url = `${origin.replace("https://", "")}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
 
         // Schoology blocks any ipv4 address or anything that contains "localhost" from being a valid oauth_callback for whatever reason
         // (Love how this wouldn't be a problem if we just tested in production !!)
@@ -69,88 +79,161 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
     }
 
     if (pausd) {
-        redirect(oauth("pausd.schoology.com"))
-        return <></>
+        // Maybe this isn't a great thing to do without prompting the user ...
+        // Could target advertisements to non PAUSD users who doesn't love those
+        // redirect(oauth("pausd.schoology.com"))
+        // return <></>
     }
 
     return (
         <div className="overflow-hidden">
             <div className={`absolute w-screen transition-opacity duration-200 opacity-0 ${open && "opacity-100"}`}>
-                {open ? (
-                    <div className="flex p-4">
-                        <Button
-                            variant="secondary"
-                            className="rounded-r-none"
-                            onClick={() => open && setOpen(false)}
-                        >
-                            <ChevronLeft />
-                        </Button>
-                        <Input
-                            ref={searchBox}
-                            className="text-lg rounded-none"
-                            placeholder="Search"
-                            defaultValue={query}
-                            onChange={({ target }) => setQuery(target.value)}
-                        />
-                        <Button
-                            className="rounded-l-none"
-                            disabled={!school || loading || redirecting}
-                            onClick={() => {
-                                setRedirecting(true)
-                                redirect(oauth(school?.domain || "app.schoology.com"))
-                            }}
-                        >
-                            Open
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="flex p-4">
-                        <Button
-                            disabled
-                            variant="secondary"
-                            className="rounded-r-none"
-                        >
-                            <ChevronLeft />
-                        </Button>
-                        <Input
-                            disabled
-                            className="text-lg rounded-none"
-                            placeholder="Search"
-                            defaultValue={query}
-                        />
-                        <Button disabled className="rounded-l-none">
-                            Open
-                        </Button>
-                    </div>
-                )}
-                <div className="h-[calc(100dvh-72px)] px-4 pb-4 space-y-2 overflow-y-auto overflow-x-hidden">
-                    {schools && schools[0] && schools[0].title !== "No Schools Found" ? (
-                        schools.filter(({ id }) => id !== 2573996462).map(s => (
-                            <div
-                                key={s.id + s.title}
-                                className={`p-3 rounded-lg font-bold hover:scale-[101.5%] hover:shadow-2xl hover:cursor-pointer transition duration-200 ${((s.id === school?.id || s.location === school?.location) && (s.domain === school?.domain && s.domain !== "app.schoology.com")) ? "bg-primary text-tertiary" : "bg-tertiary"}`}
-                                onClick={() => setSchool(s)}
+                <div className="flex px-4 pt-4 pb-2">
+                    {open ? (
+                        <>
+                            <Button
+                                variant="secondary"
+                                className="rounded-r-none"
+                                onClick={() => open && setOpen(false)}
                             >
-                                <p className="text-xl truncate">{s.title}</p>
-                                <p className="text-secondary truncate">{s.location}</p>
-                                <p className="text-secondary truncate">{s.domain || "app.schoology.com"}</p>
-                            </div>
-                        ))
+                                <ChevronLeft />
+                            </Button>
+                            <Input
+                                ref={searchBox}
+                                className="text-lg rounded-none"
+                                placeholder="Search"
+                                defaultValue={query}
+                                onChange={({ target }) => setQuery(target.value)}
+                            />
+                            <Button
+                                className="rounded-l-none"
+                                disabled={!school || loading || redirecting}
+                                onClick={() => {
+                                    setRedirecting(true)
+                                    redirect(oauth(school?.domain || "app.schoology.com"))
+                                }}
+                            >
+                                Open
+                            </Button>
+                        </>
                     ) : (
-                        query.length < 3 ? (
-                            <></>
-                        ) : loading ? (
-                            "Loading..."
-                        ) : (
-                            "No schools were found!"
-                        )
+                        <>
+                            <Button
+                                disabled
+                                variant="secondary"
+                                className="rounded-r-none"
+                            >
+                                <ChevronLeft />
+                            </Button>
+                            <Input
+                                disabled
+                                className="text-lg rounded-none"
+                                placeholder="Search"
+                                defaultValue={query}
+                            />
+                            <Button disabled className="rounded-l-none">
+                                Open
+                            </Button>
+                        </>
                     )}
                 </div>
+                <div className="h-[calc(100dvh-64px)] p-4 pt-2 space-y-2 overflow-y-auto overflow-x-hidden">
+                    <AnimatePresence mode="wait">
+                        {!loading && schools && schools[0] && schools[0].title !== "No Schools Found" ? (
+                            schools
+                                .filter(({ id }) => id !== 2573996462)
+                                .map(s => (
+                                    <motion.button
+                                        key={s.id + s.title}
+                                        className={`p-3 w-full text-left rounded-lg font-bold md:hover:shadow-2xl md:transition-shadow transition-colors duration-200 ${((s.id === school?.id || s.location === school?.location) && (s.domain === school?.domain && s.domain !== "app.schoology.com")) ? "bg-primary text-tertiary" : "bg-tertiary"}`}
+                                        whileHover={{
+                                            scale: 1.05,
+                                            transition: { type: "spring", stiffness: 300, damping: 15 }
+                                        }}
+                                        whileTap={{
+                                            scale: 0.95,
+                                            transition: { type: "spring", stiffness: 300, damping: 15 }
+                                        }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        onClick={() => setSchool(s)}
+                                    >
+                                        <p className="text-xl truncate">{s.title}</p>
+                                        <p className="text-secondary truncate">{s.location}</p>
+                                        <p className="text-secondary truncate">{s.domain || "app.schoology.com"}</p>
+                                    </motion.button>
+                                ))
+                        ) : (
+                            <motion.div
+                                className="flex h-1/2"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <AnimatePresence mode="wait">
+                                    {query.length < 3 ? (
+                                        <motion.div
+                                            key="0"
+                                            className="m-auto text-secondary"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            Enter at least 3 characters to search.
+                                        </motion.div>
+                                    ) : loading ? (
+                                        <motion.div
+                                            key="1"
+                                            className="m-auto"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            <CgSpinner className="h-8 w-8 m-auto animate-spin" />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="2"
+                                            className="m-auto text-secondary"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            No schools found!
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-            <div className={`flex h-[50dvh] transition-transform duration-500 ${open && "-translate-y-full"}`}>
-                <Circle strokeWidth={4} size={32} className="m-auto" />
-            </div>
-            <div className={`h-[50dvh] transition-transform duration-500 ${open && "translate-y-full"}`}>
+            <motion.div
+                className="flex h-[50dvh]"
+                initial={{ y: "-100%" }}
+                animate={{ y: open ? "-100%" : 0 }}
+                exit={{ y: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            >
+                <Circle
+                    size={32}
+                    strokeWidth={4}
+                    className="m-auto"
+                />
+            </motion.div>
+            <motion.div
+                className="h-[50dvh]"
+                initial={{ y: "100%" }}
+                animate={{ y: open ? "100%" : 0 }}
+                exit={{ y: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            >
                 <div className="absolute bottom-0 w-screen">
                     <div
                         className="flex h-[22dvh] bg-tertiary text-lg font-semibold rounded-t-2xl hover:cursor-pointer"
@@ -167,17 +250,29 @@ export function OAuth({ token, pausd }: { token: string, pausd: boolean }) {
                             <Separator className="my-auto w-[40vw]" />
                         </div>
                     </div>
-                    <Link
-                        href={oauth("pausd.schoology.com")}
-                        className="flex h-[22dvh] bg-primary text-lg font-bold text-tertiary rounded-t-2xl"
-                        prefetch
+                    <motion.button
+                        onClick={() => {
+                            setPausdLogin(true)
+                            redirect(oauth("pausd.schoology.com"))
+                        }}
+                        className="flex h-[22dvh] w-full bg-primary text-lg font-bold text-tertiary rounded-t-2xl"
+                        animate={{ height: pausdLogin ? "100dvh" : "22dvh" }}
+                        transition={{ duration: 0.2, type: "spring", stiffness: 100, damping: 15 }}
                     >
-                        <p className="m-auto">
-                            PAUSD Login
-                        </p>
-                    </Link>
+                        <div className="m-auto">
+                            {pausdLogin
+                                ? <CgSpinner className="h-8 w-8 m-auto text-background animate-spin" />
+                                : "PAUSD Login"}
+                        </div>
+                    </motion.button>
                 </div>
-            </div>
+            </motion.div>
+            <motion.div
+                className="-z-10 absolute bottom-0 w-screen h-[11dvh] bg-primary rounded-t-2xl"
+                initial={{ y: "100%" }}
+                animate={{ y: open ? "100%" : 0 }}
+                exit={{ y: 0 }}
+            />
         </div >
     )
 }

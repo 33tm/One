@@ -48,7 +48,7 @@ interface CategoriesProps {
 export default function Categories(props: CategoriesProps) {
     const { category, categories, setCategory } = props
     return (
-        <div className="w-1/4 px-3 pt-3 min-w-56 space-y-2.5 overflow-y-auto rounded-lg">
+        <div className="w-1/4 px-3 pt-2 min-w-56 space-y-2.5 overflow-y-auto rounded-lg">
             {categories
                 .sort((a, b) => b.weight - a.weight)
                 .map(c => (

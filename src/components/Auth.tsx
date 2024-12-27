@@ -13,7 +13,7 @@ export function Auth({ className, variant="default" }: { className?: string, var
         <Button
             onClick={auth}
             disabled={loading}
-            className={className}
+            className={`transition-all duration-200 ${className}`}
             variant={variant}
         >
             Continue with Schoology

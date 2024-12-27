@@ -19,8 +19,11 @@ import PeriodSelect from "./layout/PeriodSelect"
 import Loader from "@/components/Loader"
 import Error from "@/components/Error"
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 import { ArrowLeft } from "lucide-react"
 import DataControl from "./layout/DataControl"
+import Graph from "./layout/Graph"
 
 export default function Course() {
     const router = useRouter()
@@ -128,13 +131,13 @@ export default function Course() {
     }
 
     return (
-        <>
+        <Tabs defaultValue="calculate">
             <title>
                 {`${section.name} | One`}
             </title>
             <div
                 style={{ background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--background) 100%)" }}
-                className="flex relative bottom-0 mx-8 px-8 py-4 outline outline-2 outline-tertiary rounded-lg"
+                className="flex relative bottom-0 mx-8 px-8 py-4 border-2 border-tertiary rounded-lg"
             >
                 <div className="space-y-1">
                     <Link href="/grades" className="flex text-sm text-secondary hover:underline">
@@ -189,21 +192,49 @@ export default function Course() {
                     src={section.image}
                     alt={section.name}
                 />
-            </div >
-            <div className="flex mx-5 h-[calc(100dvh-204px)]">
-                <Categories
-                    category={categoryId}
-                    categories={categories}
-                    setCategory={setCategoryId}
-                />
-                <Assignments
-                    assignments={assignments}
-                    drop={drop}
-                    modify={modify}
-                    weight={weight}
-                    create={() => create(period.id, categoryId)}
-                />
             </div>
-        </>
+            <TabsList className="flex mx-8 mt-2">
+                <TabsTrigger
+                    value="calculate"
+                    className="flex-1"
+                >
+                    Calculate
+                </TabsTrigger>
+                <TabsTrigger
+                    value="visualize"
+                    className="flex-1"
+                >
+                    Visualize
+                </TabsTrigger>
+            </TabsList>
+            <TabsContent
+                value="calculate"
+                className="m-0"
+            >
+                <div className="flex mx-5 h-[calc(100dvh-248px)]">
+                    <Categories
+                        category={categoryId}
+                        categories={categories}
+                        setCategory={setCategoryId}
+                    />
+                    <Assignments
+                        assignments={assignments}
+                        drop={drop}
+                        modify={modify}
+                        weight={weight}
+                        create={() => create(period.id, categoryId)}
+                    />
+                </div>
+            </TabsContent>
+            <TabsContent
+                value="visualize"
+                className="m-0"
+            >
+                <div className="flex mx-5 h-[calc(100dvh-248px)]">
+                    {/* Use grades.assignments cause they're unfiltered */}
+                    <Graph assignments={Object.values(grades.assignments)} />
+                </div>
+            </TabsContent>
+        </Tabs>
     )
 }
