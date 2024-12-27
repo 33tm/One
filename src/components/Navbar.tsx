@@ -44,7 +44,7 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, loading, logout } = useContext(AuthContext)
 
-    const points = useMemo(() => (!loading && user) ? ["75px", "300px"] : ["150px"], [loading, user])
+    const points = useMemo(() => (loading || user) ? ["75px", "300px"] : ["150px"], [loading, user])
     const [snap, setSnap] = useState<number | string | null>(points[0])
 
     useEffect(() => {
