@@ -104,10 +104,11 @@ export function useGrades(id: string) {
     useEffect(() => {
         if (!promise || !section) return
         toast.promise(promise, {
-            loading: "Refreshing grades...",
-            success: "Grades refreshed!",
-            error: "Failed to refresh grades!",
-            description: section.name
+            loading: "Fetching grades...",
+            success: "Fetched grades!",
+            error: "Failed to fetch grades!",
+            description: section.name,
+            duration: 500
         })
     }, [promise, section])
 

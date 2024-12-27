@@ -6,7 +6,7 @@ export default function Error({ children, title }: Readonly<{ children: React.Re
         <>
             {title && <title>{title}</title>}
             <motion.div
-                className="fixed flex flex-col top-0 h-dvh w-screen"
+                className="fixed flex flex-col top-0 h-dvh w-full"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
