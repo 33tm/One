@@ -42,9 +42,9 @@ import { redirect } from "@/server/redirect"
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
-    const { user, logout } = useContext(AuthContext)
+    const { user, loading, logout } = useContext(AuthContext)
 
-    const points = useMemo(() => user ? ["75px", "300px"] : ["150px"], [user])
+    const points = useMemo(() => (!loading && user) ? ["75px", "300px"] : ["150px"], [loading, user])
     const [snap, setSnap] = useState<number | string | null>(points[0])
 
     useEffect(() => {
