@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
         }).then(refresh).catch(() => setError(true))
     }
 
-    const loading = !token
+    const loading = !token && !user
 
     return (
         <AuthContext.Provider value={{ user, loading, auth, refresh, logout }}>

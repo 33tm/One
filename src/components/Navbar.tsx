@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useContext, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { motion } from "motion/react"
 
 import { AuthContext } from "@/contexts/AuthContext"
@@ -43,8 +43,12 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, logout } = useContext(AuthContext)
 
-    const points = ["75px", "300px", 1]
+    const points = useMemo(() => user ? ["75px", "300px"] : ["150px"], [user])
     const [snap, setSnap] = useState<number | string | null>(points[0])
+
+    useEffect(() => {
+        setSnap(points[0])
+    }, [user, points])
 
     if (useMediaQuery("(min-width: 768px)")) {
         return (
@@ -131,7 +135,11 @@ export function Navbar() {
                 <Drawer.Portal>
                     <Drawer.Content className={`fixed flex-col bg-inherit z-50 rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] duration-0 ${snap === 1 && "max-h-[97%]"}`}>
                         {/* Dumb workaround for a smooth border color transition */}
-                        <div id="border" className="fixed h-full w-full rounded-t-[10px] border border-b-none">
+                        <div
+                            id="border"
+                            className="fixed h-full w-full rounded-t-[10px] border border-b-none"
+                            onClick={() => setSnap(snap === points[0] ? points[1] : points[0])}
+                        >
                             <Drawer.Title />
                             <Drawer.Description />
                             <div className="flex h-[75px]">
@@ -141,10 +149,45 @@ export function Navbar() {
                                 </Link>
                             </div>
                             {user ? (
-                                <div>
-                                    {user.name}
+                                <div className="flex flex-col h-[225px]">
+                                    <div className="flex grow m-4 mt-0 rounded-lg bg-tertiary">
+                                        <Button className="w-full h-full rounded-lg">
+                                            <Link href="/grades">
+                                                Grades
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                    <div className="h-[120px] mt-auto m-4 rounded-lg bg-tertiary">
+                                        <div className="flex h-[30px] m-4">
+                                            <p className="m-auto text-md font-semibold">
+                                                {user.name}
+                                            </p>
+                                        </div>
+                                        <div className="flex w-full mt-auto bg-secondary rounded-lg">
+                                            <Button variant="ghost" className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-secondary brightness-110 text-background">
+                                                <Link href={`/user/${user.id}`}>
+                                                    <User />
+                                                </Link>
+                                            </Button>
+                                            <Button variant="ghost" className="w-1/4 h-[60px] bg-secondary text-background">
+                                                <Link href="/settings">
+                                                    <Wrench />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                className="flex w-1/2 h-[60px] rounded-l-none rounded-r-lg"
+                                                onClick={() => logout()}
+                                            >
+                                                <LogOut />
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
-                            ) : <Auth />}
+                            ) : (
+                                <div className="flex h-[75px]">
+                                    <Auth className="m-auto h-full w-full text-md rounded-b-none rounded-t-lg" />
+                                </div>
+                            )}
                         </div>
                     </Drawer.Content>
                 </Drawer.Portal>

@@ -11,7 +11,7 @@ import { ThemeContext } from "@/contexts/ThemeContext"
 import { Auth } from "@/components/Auth"
 
 export default function Grades() {
-    const { user } = useContext(AuthContext)
+    const { user, loading } = useContext(AuthContext)
     const { theme } = useContext(ThemeContext)
 
     // Using an image breaks on WebKit
@@ -21,6 +21,8 @@ export default function Grades() {
         .map(c => parseInt(c, 16))
         .filter(c => !isNaN(c))
         .join(", ")
+
+    if (loading) return <></>
 
     return (
         <>
