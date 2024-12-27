@@ -29,7 +29,7 @@ export default function Grades() {
             </title>
             {user ? (
                 <div className="h-full w-full overflow-y-auto overflow-x-hidden">
-                    <div className="m-4 md:m-8 md:mt-1 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-3">
+                    <div className="m-4 md:m-8 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-3">
                         <AnimatePresence>
                             {user?.sections.map((section, i) => (
                                 <Link key={section.id} href={`/grades/${section.id}`} prefetch>

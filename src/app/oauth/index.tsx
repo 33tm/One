@@ -53,7 +53,7 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
     }, [open])
 
     function oauth(domain: string) {
-        const url = `${origin.replace(/https?:\/\//, "")}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
+        const url = `${origin}/callback?domain=${encodeURIComponent(`https://${domain}`)}`
 
         // Schoology blocks any ipv4 address or anything that contains "localhost" from being a valid oauth_callback for whatever reason
         // (Love how this wouldn't be a problem if we just tested in production !!)
@@ -67,7 +67,7 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
         // Previously (up until e57e882) the NEXT_PUBLIC_CALLBACK_URL variable was used, but it was removed since it didn't work across domains.
 
         const callback = process.env.NODE_ENV === "development"
-            ? `tttm.us/redirect?url=${Buffer.from(url).toString("base64")}`
+            ? `tttm.us/redirect?url=${Buffer.from(`http://${url}`).toString("base64")}`
             : url
 
         const params = new URLSearchParams({
