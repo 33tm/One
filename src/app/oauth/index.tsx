@@ -255,7 +255,7 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
                             setPausdLogin(true)
                             redirect(oauth("pausd.schoology.com"))
                         }}
-                        className="flex h-[22dvh] w-full bg-primary text-lg font-bold text-tertiary rounded-t-2xl"
+                        className={`flex h-[22dvh] w-full bg-primary text-lg font-bold text-tertiary ${pausdLogin || "rounded-t-2xl"}`}
                         animate={{ height: pausdLogin ? "100dvh" : "22dvh" }}
                         transition={{ duration: 0.2, type: "spring", stiffness: 100, damping: 15 }}
                     >
