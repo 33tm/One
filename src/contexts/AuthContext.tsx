@@ -5,7 +5,7 @@ import server, { websocket } from "@/server"
 import { createContext, useCallback, useEffect, useRef, useState } from "react"
 import Error from "@/components/Error"
 
-interface Section {
+export interface Section {
     id: string
     name: string
     section: string

@@ -55,12 +55,12 @@ export default function Grades() {
                                         }}
                                         className="relative w-full group text-center text-lg py-8 rounded-xl hover:shadow-2xl transition-shadow ease-in-out duration-200"
                                         style={{
-                                            backgroundImage: `linear-gradient(rgba(${background}, 0.7), rgba(${background}, 0.7)), url('${section.image}')`,
+                                            backgroundImage: `linear-gradient(rgba(${background}, 0.75), rgba(${background}, 0.75)), url('${section.image}')`,
                                             backgroundSize: "cover"
                                         }}
                                     >
-                                        <p className="font-bold truncate px-8">{section.name}</p>
-                                        <p className="truncate px-8">{section.section}</p>
+                                        <p className="font-extrabold truncate px-8">{section.name}</p>
+                                        <p className="font-bold text-secondary truncate px-8">{section.section}</p>
                                     </motion.button>
                                 </Link>
                             ))}

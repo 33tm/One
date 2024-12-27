@@ -19,35 +19,33 @@ export default function PeriodSelect(props: PeriodSelectProps) {
     const end = DateTime.fromSeconds(period.end).toFormat("DDD")
 
     return (
-        <div className={`${className}`}>
-            <div className="flex">
-                <Select
-                    value={period.id}
-                    onValueChange={setPeriod}
-                >
-                    <SelectTrigger className="w-32 text-xs rounded-r-none">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {periods.map(period => (
-                            <SelectItem
-                                key={period.id}
-                                onClick={() => setPeriod(period.id)}
-                                value={period.id}
-                            >
-                                {period.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Button className="w-32 text-xs text-center rounded-l-none hover:cursor-default">
-                    <div>
-                        <p>{start}</p>
-                        <Separator className="opacity-10 rounded w-24" />
-                        <p>{end}</p>
-                    </div>
-                </Button>
-            </div>
+        <div className={`flex ${className}`}>
+            <Select
+                value={period.id}
+                onValueChange={setPeriod}
+            >
+                <SelectTrigger className="md:w-32 text-xs rounded-r-none">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    {periods.map(period => (
+                        <SelectItem
+                            key={period.id}
+                            onClick={() => setPeriod(period.id)}
+                            value={period.id}
+                        >
+                            {period.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <Button className="md:w-32 text-xs text-center rounded-l-none hover:cursor-default">
+                <div>
+                    <p>{start}</p>
+                    <Separator className="opacity-10 rounded md:w-24" />
+                    <p>{end}</p>
+                </div>
+            </Button>
         </div>
     )
 }

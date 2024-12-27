@@ -1,20 +1,20 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
-import NumberFlow from "@number-flow/react"
 import { toast } from "sonner"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
+import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { useGrades } from "@/hooks/useGrades"
 
 import { AuthContext } from "@/contexts/AuthContext"
 
+import Header from "./layout/Header"
 import Categories from "./layout/Categories"
 import Assignments from "./layout/Assignments"
 import CalculationError from "./layout/CalculationError"
-import PeriodSelect from "./layout/PeriodSelect"
+import Graph from "./layout/Graph"
 
 import Loader from "@/components/Loader"
 import Error from "@/components/Error"
@@ -22,13 +22,12 @@ import Error from "@/components/Error"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { ArrowLeft } from "lucide-react"
-import DataControl from "./layout/DataControl"
-import Graph from "./layout/Graph"
 
 export default function Course() {
     const router = useRouter()
     const { id } = useParams<{ id: string }>()
     const { user, loading } = useContext(AuthContext)
+    const desktop = useMediaQuery("(min-width: 768px)")
 
     const {
         grades,
@@ -43,7 +42,6 @@ export default function Course() {
     } = useGrades(id)
 
     const [dismiss, setDismiss] = useState(false)
-
     const [periodId, setPeriod] = useState<string>()
     const [categoryId, setCategoryId] = useState<string>()
     const [warningCategoryId, setWarningCategoryId] = useState<string>()
@@ -125,7 +123,7 @@ export default function Course() {
 
     if (assignments.length > 10 && warningCategoryId !== categoryId) {
         setWarningCategoryId(categoryId)
-        toast.info("Animations disabled for performance.")
+        toast.info("Animations disabled for performance.", { duration: 1500 })
     } else if (assignments.length <= 10 && warningCategoryId === categoryId) {
         setWarningCategoryId(undefined)
     }
@@ -135,65 +133,16 @@ export default function Course() {
             <title>
                 {`${section.name} | One`}
             </title>
-            <div
-                style={{ background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--background) 100%)" }}
-                className="flex relative bottom-0 mx-8 px-8 py-4 border-2 border-tertiary rounded-lg"
-            >
-                <div className="space-y-1">
-                    <Link href="/grades" className="flex text-sm text-secondary hover:underline">
-                        <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
-                    </Link>
-                    {/* <Link
-                        href={`${user.domain}/course/${section.id}`}
-                        className="hover:underline"
-                        target="_blank"
-                    > */}
-                    <div className="text-xl font-extrabold">
-                        <p className="md:text-3xl text-primary">{section.name}</p>
-                        <p className="md:text-2xl text-secondary">{section.section}</p>
-                    </div>
-                    {/* </Link> */}
-                </div>
-                <div className="my-auto ml-6 space-y-1.5">
-                    <DataControl
-                        timestamp={grades.timestamp}
-                        refresh={refresh}
-                        refreshing={refreshing}
-                    />
-                    <PeriodSelect
-                        period={period}
-                        periods={periods}
-                        setPeriod={setPeriod}
-                    />
-                </div>
-                {!!period.calculated && (
-                    <div className="ml-auto mt-auto text-right">
-                        <div className={`flex ml-auto w-20 bg-primary rounded-lg text-tertiary ${period.calculated === period.grade && "opacity-0"} ${period.calculated > period.grade ? "bg-primary" : "bg-secondary"} transition-all duration-200`}>
-                            <NumberFlow
-                                className="m-auto py-1 font-bold text-xs text-background"
-                                value={Math.round((period.calculated - period.grade + Number.EPSILON) * 100) / 100}
-                                prefix={period.calculated > period.grade ? "+" : ""}
-                                suffix="%"
-                                continuous
-                            />
-                        </div>
-                        <NumberFlow
-                            className="text-3xl pt-2 font-bold"
-                            value={period.calculated}
-                            suffix="%"
-                            continuous
-                        />
-                    </div>
-                )}
-                <Image
-                    fill
-                    priority
-                    className="-z-10 object-cover opacity-20 rounded-lg"
-                    src={section.image}
-                    alt={section.name}
-                />
-            </div>
-            <TabsList className="flex mx-8 mt-2">
+            <Header
+                section={section}
+                grades={grades}
+                period={period}
+                periods={periods}
+                setPeriod={setPeriod}
+                refresh={refresh}
+                refreshing={refreshing}
+            />
+            <TabsList className="flex mt-2 mx-3 md:mx-8">
                 <TabsTrigger
                     value="calculate"
                     className="flex-1"
@@ -211,29 +160,37 @@ export default function Course() {
                 value="calculate"
                 className="m-0"
             >
-                <div className="flex mx-5 h-[calc(100dvh-248px)]">
-                    <Categories
-                        category={categoryId}
-                        categories={categories}
-                        setCategory={setCategoryId}
-                    />
-                    <Assignments
-                        assignments={assignments}
-                        drop={drop}
-                        modify={modify}
-                        weight={weight}
-                        create={() => create(period.id, categoryId)}
-                    />
-                </div>
+                {desktop ? (
+                    <div className="flex mx-5 h-[calc(100dvh-248px)]">
+                        <Categories
+                            category={categoryId}
+                            categories={categories}
+                            setCategory={setCategoryId}
+                        />
+                        <Assignments
+                            assignments={assignments}
+                            drop={drop}
+                            modify={modify}
+                            weight={weight}
+                            create={() => create(period.id, categoryId)}
+                        />
+                    </div>
+                ) : (
+                    <></>
+                )}
             </TabsContent>
             <TabsContent
                 value="visualize"
                 className="m-0"
             >
-                <div className="flex mx-5 h-[calc(100dvh-248px)]">
-                    {/* Use grades.assignments cause they're unfiltered */}
-                    <Graph assignments={Object.values(grades.assignments)} />
-                </div>
+                {/* Use grades.assignments cause they're unfiltered */}
+                {desktop ? (
+                    <div className="flex mx-5 h-[calc(100dvh-248px)]">
+                        <Graph assignments={Object.values(grades.assignments)} />
+                    </div>
+                ) : (
+                    <></>
+                )}
             </TabsContent>
         </Tabs>
     )

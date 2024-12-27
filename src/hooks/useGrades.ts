@@ -27,6 +27,7 @@ export function useGrades(id: string) {
 
     const { user } = useContext(AuthContext)
     const section = user?.sections.find(section => section.id === id)
+    const production = process.env.NODE_ENV === "production"
 
     const refresh = useCallback(() => {
         setRefreshing(true)
@@ -92,8 +93,9 @@ export function useGrades(id: string) {
             const calculated = calculate(grades)
             if (validate(grades, calculated)) setGrades(calculated)
             else setError("calc")
-            // Refresh if grades are older than 10 minutes
-            if (grades.timestamp < Date.now() - 1000 * 60 * 10)
+            // Refresh if grades are older than 10 minutes,
+            // 1 minute in development
+            if (grades.timestamp < Date.now() - (production ? 1000 * 60 * 10 : 1000 * 60))
                 refresh()
         } else {
             localStorage.removeItem(`grades-${id}`)

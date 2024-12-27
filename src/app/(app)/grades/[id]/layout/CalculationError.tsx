@@ -33,7 +33,7 @@ export default function CalculationError(props: CalculationErrorProps) {
                 {`${section.name} | One`}
             </title>
             <Error>
-                <Link href="/grades" className="fixed flex left-4 top-28 md:left-8 md:top-20 text-sm text-secondary hover:underline">
+                <Link href="/grades" className="fixed flex left-8 top-20 md:left-8 md:top-20 text-sm text-secondary hover:underline">
                     <ArrowLeft size={13} className="my-auto mr-2" /> All Courses
                 </Link>
                 <p className="font-bold mb-2">Failed to calculate grades!</p>

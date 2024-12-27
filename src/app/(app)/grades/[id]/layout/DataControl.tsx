@@ -14,6 +14,8 @@ export default function DataControl(props: DataControlProps) {
     const { timestamp, refresh, refreshing, className } = props
     const [now, setNow] = useState(Date.now())
 
+    const production = process.env.NODE_ENV === "production"
+
     useEffect(() => {
         const interval = setInterval(() => setNow(Date.now()), 1000)
         return () => clearInterval(interval)
@@ -26,7 +28,7 @@ export default function DataControl(props: DataControlProps) {
             </Button>
             <Button
                 onClick={refresh}
-                disabled={refreshing || now - timestamp < 1000 * 60 * 10}
+                disabled={refreshing || (production && now - timestamp < 1000 * 60 * 10)}
                 className="w-12 rounded-l-none"
             >
                 <RefreshCw className={`${refreshing && "animate-spin"}`} />

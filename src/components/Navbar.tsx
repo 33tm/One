@@ -38,6 +38,7 @@ import {
     Wrench
 } from "lucide-react"
 import { Drawer } from "vaul"
+import { redirect } from "@/server/redirect"
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
@@ -138,11 +139,13 @@ export function Navbar() {
                         <div
                             id="border"
                             className="fixed h-full w-full rounded-t-[10px] border border-b-none"
-                            onClick={() => setSnap(snap === points[0] ? points[1] : points[0])}
                         >
                             <Drawer.Title />
                             <Drawer.Description />
-                            <div className="flex h-[75px]">
+                            <div
+                                className="flex h-[75px]"
+                                onClick={() => setSnap(snap === points[0] ? points[1] : points[0])}
+                            >
                                 <Schedule className="ml-[25px]" />
                                 <Link href="/" className="my-auto mr-[25px]">
                                     <Circle size={30} strokeWidth={4} />
@@ -151,11 +154,20 @@ export function Navbar() {
                             {user ? (
                                 <div className="flex flex-col h-[225px]">
                                     <div className="flex grow m-4 mt-0 rounded-lg bg-tertiary">
-                                        <Button className="w-full h-full rounded-lg">
-                                            <Link href="/grades">
-                                                Grades
-                                            </Link>
+                                        {/* <Link
+                                            href="/grades"
+                                            onClick={() => alert("adsjlksd")}
+                                        > */}
+                                        <Button
+                                            className="w-full h-full rounded-lg"
+                                            onClick={() => {
+                                                redirect("/grades")
+                                                setSnap(points[0])
+                                            }}
+                                        >
+                                            Grades
                                         </Button>
+                                        {/* </Link> */}
                                     </div>
                                     <div className="h-[120px] mt-auto m-4 rounded-lg bg-tertiary">
                                         <div className="flex h-[30px] m-4">
@@ -164,15 +176,25 @@ export function Navbar() {
                                             </p>
                                         </div>
                                         <div className="flex w-full mt-auto bg-secondary rounded-lg">
-                                            <Button variant="ghost" className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-secondary brightness-110 text-background">
-                                                <Link href={`/user/${user.id}`}>
-                                                    <User />
-                                                </Link>
+                                            <Button
+                                                variant="ghost"
+                                                className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-secondary brightness-110 text-background"
+                                                onClick={() => {
+                                                    redirect(`/user/${user.id}`)
+                                                    setSnap(points[0])
+                                                }}
+                                            >
+                                                <User />
                                             </Button>
-                                            <Button variant="ghost" className="w-1/4 h-[60px] bg-secondary text-background">
-                                                <Link href="/settings">
-                                                    <Wrench />
-                                                </Link>
+                                            <Button
+                                                variant="ghost"
+                                                className="w-1/4 h-[60px] bg-secondary text-background"
+                                                onClick={() => {
+                                                    redirect("/settings")
+                                                    setSnap(points[0])
+                                                }}
+                                            >
+                                                <Wrench />
                                             </Button>
                                             <Button
                                                 className="flex w-1/2 h-[60px] rounded-l-none rounded-r-lg"
