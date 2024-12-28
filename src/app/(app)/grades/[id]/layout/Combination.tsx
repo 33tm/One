@@ -13,10 +13,10 @@ interface AssignmentProps {
 }
 function Assignment(props: AssignmentProps) {
     const {
-        assignment,
-        drop,
-        modify,
-        weight
+        assignment
+        // drop,
+        // modify,
+        // weight
     } = props
     return (
         <div className="">
