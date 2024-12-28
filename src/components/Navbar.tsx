@@ -158,10 +158,6 @@ export function Navbar() {
                             {user ? (
                                 <div className="flex flex-col h-[225px]">
                                     <div className="flex grow m-4 mt-0 rounded-lg bg-tertiary">
-                                        {/* <Link
-                                            href="/grades"
-                                            onClick={() => alert("adsjlksd")}
-                                        > */}
                                         <Button
                                             className="w-full h-full rounded-lg"
                                             onClick={() => {
@@ -171,7 +167,6 @@ export function Navbar() {
                                         >
                                             Grades
                                         </Button>
-                                        {/* </Link> */}
                                     </div>
                                     <div className="h-[120px] mt-auto m-4 rounded-lg bg-tertiary">
                                         <div className="flex h-[30px] m-4">
@@ -181,8 +176,7 @@ export function Navbar() {
                                         </div>
                                         <div className="flex w-full mt-auto bg-secondary rounded-lg">
                                             <Button
-                                                variant="ghost"
-                                                className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-secondary brightness-110 text-background"
+                                                className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-150"
                                                 onClick={() => {
                                                     redirect(`/user/${user.id}`)
                                                     setSnap(points[0])
@@ -191,8 +185,7 @@ export function Navbar() {
                                                 <User />
                                             </Button>
                                             <Button
-                                                variant="ghost"
-                                                className="w-1/4 h-[60px] bg-secondary text-background"
+                                                className="w-1/4 h-[60px] rounded-none bg-primary brightness-125"
                                                 onClick={() => {
                                                     redirect("/settings")
                                                     setSnap(points[0])
