@@ -1,14 +1,28 @@
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
+import { useMediaQuery } from "./useMediaQuery"
 
 export function useSchedule() {
     const { user } = useContext(AuthContext)
     const [loading, setLoading] = useState(true)
+    const [message, setMessage] = useState<string>()
     const [schedule, setSchedule] = useState<{
         period: string
         start: string
         end: string
     }>()
+
+    const desktop = useMediaQuery("(min-width: 768px)")
+
+    useEffect(() => {
+        if (desktop || !user) return
+        setTimeout(() => setLoading(false), 200)
+        setMessage("Touch to open")
+        setTimeout(() => {
+            setLoading(true)
+            setTimeout(() => setMessage(undefined), 200)
+        }, 2000)
+    }, [desktop, user])
 
     useEffect(() => {
         const toTime = (time: number) => `${Math.floor(time / 60 - (+(time / 60 >= 13) * 12))}:${(time % 60).toString().padStart(2, "0")}`
@@ -32,7 +46,7 @@ export function useSchedule() {
                 gradYear: `${user.class}`
             }).toString() : ""
 
-            fetch(`https://gunnwatt.web.app/api/next-period?${query}`, { signal: controller.signal })
+            fetch(`https://gunnwatt.web.app/api/next-period?${query}&timestamp=`, { signal: controller.signal })
                 .then(res => res.json())
                 .then((status: Response) => {
                     if (!status?.next) return
@@ -70,7 +84,7 @@ export function useSchedule() {
         return () => controller.abort(null)
     }, [user])
 
-    return { schedule, loading }
+    return { schedule, message, loading }
 }
 
 // https://github.com/GunnWATT/watt/blob/main/shared/data/schedule.ts#L8

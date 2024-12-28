@@ -44,7 +44,11 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, loading, logout } = useContext(AuthContext)
 
-    const points = useMemo(() => (loading || user) ? ["75px", "300px"] : ["150px"], [loading, user])
+    const points = useMemo(() => {
+        if (loading) return ["75px"]
+        if (user) return ["75px", "300px"]
+        return ["150px"]
+    }, [loading, user])
     const [snap, setSnap] = useState<number | string | null>(points[0])
 
     useEffect(() => {
@@ -207,7 +211,7 @@ export function Navbar() {
                                 </div>
                             ) : (
                                 <div className="flex h-[75px]">
-                                    <Auth className="m-auto h-full w-full text-md rounded-b-none rounded-t-lg" />
+                                    <Auth className="m-auto h-full w-full text-md rounded-none" />
                                 </div>
                             )}
                         </div>
