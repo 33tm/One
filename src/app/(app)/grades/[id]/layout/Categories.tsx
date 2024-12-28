@@ -23,14 +23,14 @@ function Category(props: CategoryProps) {
                     <p className="truncate">
                         {name}
                     </p>
-                    {!!weight && (
+                    {weight && (
                         <p className="text-secondary font-medium">
                             ({weight}%)
                         </p>
                     )}
                 </div>
                 <NumberFlow
-                    className={`font-semibold w-1/3 text-right ${calculated || "opacity-0"} transiiton-opacity duration-200`}
+                    className={`font-semibold w-1/3 text-right ${calculated || "opacity-0"} transition-opacity duration-200`}
                     value={calculated || 0}
                     suffix="%"
                     continuous

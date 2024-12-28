@@ -13,8 +13,9 @@ import { AuthContext } from "@/contexts/AuthContext"
 import Header from "./layout/Header"
 import Categories from "./layout/Categories"
 import Assignments from "./layout/Assignments"
-import CalculationError from "./layout/CalculationError"
+import Combination from "./layout/Combination"
 import Graph from "./layout/Graph"
+import CalculationError from "./layout/CalculationError"
 
 import Loader from "@/components/Loader"
 import Error from "@/components/Error"
@@ -105,9 +106,13 @@ export default function Course() {
         .values(period.categories)
         .sort((a, b) => b.weight - a.weight)
 
-    const assignments = Object
-        .values(grades.assignments)
-        .filter(item => item.period === period.id && item.category === categoryId)
+    const assignments = desktop
+        ? Object
+            .values(grades.assignments)
+            .filter(item => item.period === period.id && item.category === categoryId)
+        : Object
+            .values(grades.assignments)
+            .filter(item => item.period === period.id)
 
     if (error && error === "calc" && !dismiss) {
         return (
@@ -121,11 +126,13 @@ export default function Course() {
         )
     }
 
-    if (assignments.length > 10 && warningCategoryId !== categoryId) {
-        setWarningCategoryId(categoryId)
-        toast.info("Animations disabled for performance.", { duration: 1500 })
-    } else if (assignments.length <= 10 && warningCategoryId === categoryId) {
-        setWarningCategoryId(undefined)
+    if (desktop) {
+        if (assignments.length > 10 && warningCategoryId !== categoryId) {
+            setWarningCategoryId(categoryId)
+            toast.info("Animations disabled for performance.", { duration: 1500 })
+        } else if (assignments.length <= 10 && warningCategoryId === categoryId) {
+            setWarningCategoryId(undefined)
+        }
     }
 
     return (
@@ -176,7 +183,16 @@ export default function Course() {
                         />
                     </div>
                 ) : (
-                    <></>
+                    <div className="mx-3 my-2 h-[calc(100dvh-268px)] overflow-y-auto rounded-lg">
+                        <Combination
+                            categories={categories}
+                            assignments={assignments}
+                            drop={drop}
+                            modify={modify}
+                            weight={weight}
+                            create={(categoryId: string) => create(period.id, categoryId)}
+                        />
+                    </div>
                 )}
             </TabsContent>
             <TabsContent

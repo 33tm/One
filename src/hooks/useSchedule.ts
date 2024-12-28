@@ -16,12 +16,10 @@ export function useSchedule() {
 
     useEffect(() => {
         if (desktop || !user) return
-        setTimeout(() => setLoading(false), 200)
         setMessage("Touch to open")
-        setTimeout(() => {
-            setLoading(true)
-            setTimeout(() => setMessage(undefined), 200)
-        }, 2000)
+        setTimeout(() => setLoading(false), 200)
+        setTimeout(() => setLoading(true), 2000)
+        setTimeout(() => setMessage(undefined), 2400)
     }, [desktop, user])
 
     useEffect(() => {
