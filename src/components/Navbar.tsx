@@ -49,6 +49,7 @@ export function Navbar() {
         if (user) return ["75px", "300px"]
         return ["150px"]
     }, [loading, user])
+
     const [snap, setSnap] = useState<number | string | null>(points[0])
 
     useEffect(() => {
@@ -138,76 +139,70 @@ export function Navbar() {
         return (
             <Drawer.Root open dismissible={false} modal={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap} snapToSequentialPoint>
                 <Drawer.Portal>
-                    <Drawer.Content className={`fixed flex-col bg-inherit z-50 rounded-t-[10px] bottom-0 left-0 right-0 h-full mx-[-1px] duration-0 ${snap === 1 && "max-h-[97%]"}`}>
-                        {/* Dumb workaround for a smooth border color transition */}
+                    <Drawer.Content className={`z-50 fixed flex-col bg-inherit rounded-t-[10px] border primary bottom-0 left-0 right-0 h-full mx-[-1px] duration-0 ${snap === 1 && "max-h-[97%]"}`}>
+                        <Drawer.Title />
+                        <Drawer.Description />
                         <div
-                            id="border"
-                            className="fixed h-full w-full rounded-t-[10px] border border-b-none"
+                            className="flex h-[75px]"
+                            onClick={() => setSnap(snap === points[0] ? points[1] : points[0])}
                         >
-                            <Drawer.Title />
-                            <Drawer.Description />
-                            <div
-                                className="flex h-[75px]"
-                                onClick={() => setSnap(snap === points[0] ? points[1] : points[0])}
-                            >
-                                <Schedule className="ml-[25px]" />
-                                <Link href="/" className="my-auto mr-[25px]">
-                                    <Circle size={30} strokeWidth={4} />
-                                </Link>
-                            </div>
-                            {user ? (
-                                <div className="flex flex-col h-[225px]">
-                                    <div className="flex grow m-4 mt-0 rounded-lg bg-tertiary">
+                            <Schedule className="ml-[25px]" />
+                            <Link href="/" className="my-auto mr-[25px]">
+                                <Circle size={30} strokeWidth={4} />
+                            </Link>
+                        </div>
+                        {user ? (
+                            <div className="flex flex-col h-[225px]">
+                                <div className="flex grow m-4 mt-0 rounded-lg bg-tertiary">
+                                    <Button
+                                        className="w-full h-full rounded-lg"
+                                        onClick={() => {
+                                            redirect("/grades")
+                                            setSnap(points[0])
+                                        }}
+                                    >
+                                        Grades
+                                    </Button>
+                                </div>
+                                <div className="h-[120px] mt-auto m-4 rounded-lg bg-tertiary">
+                                    <div className="flex h-[30px] m-4">
+                                        <p className="m-auto text-md font-semibold">
+                                            {user.name}
+                                        </p>
+                                    </div>
+                                    <div className="flex w-full mt-auto bg-secondary rounded-lg">
                                         <Button
-                                            className="w-full h-full rounded-lg"
+                                            className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-150"
                                             onClick={() => {
-                                                redirect("/grades")
+                                                redirect(`/user/${user.id}`)
                                                 setSnap(points[0])
                                             }}
                                         >
-                                            Grades
+                                            <User />
+                                        </Button>
+                                        <Button
+                                            className="w-1/4 h-[60px] rounded-none bg-primary brightness-125"
+                                            onClick={() => {
+                                                redirect("/settings")
+                                                setSnap(points[0])
+                                            }}
+                                        >
+                                            <Wrench />
+                                        </Button>
+                                        <Button
+                                            className="flex w-1/2 h-[60px] rounded-l-none rounded-r-lg"
+                                            onClick={() => logout()}
+                                        >
+                                            <LogOut />
                                         </Button>
                                     </div>
-                                    <div className="h-[120px] mt-auto m-4 rounded-lg bg-tertiary">
-                                        <div className="flex h-[30px] m-4">
-                                            <p className="m-auto text-md font-semibold">
-                                                {user.name}
-                                            </p>
-                                        </div>
-                                        <div className="flex w-full mt-auto bg-secondary rounded-lg">
-                                            <Button
-                                                className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-150"
-                                                onClick={() => {
-                                                    redirect(`/user/${user.id}`)
-                                                    setSnap(points[0])
-                                                }}
-                                            >
-                                                <User />
-                                            </Button>
-                                            <Button
-                                                className="w-1/4 h-[60px] rounded-none bg-primary brightness-125"
-                                                onClick={() => {
-                                                    redirect("/settings")
-                                                    setSnap(points[0])
-                                                }}
-                                            >
-                                                <Wrench />
-                                            </Button>
-                                            <Button
-                                                className="flex w-1/2 h-[60px] rounded-l-none rounded-r-lg"
-                                                onClick={() => logout()}
-                                            >
-                                                <LogOut />
-                                            </Button>
-                                        </div>
-                                    </div>
                                 </div>
-                            ) : (
-                                <div className="flex h-[75px]">
-                                    <Auth className="m-auto h-full w-full text-md rounded-none" />
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="flex h-[75px]">
+                                <Auth className="m-auto h-full w-full text-md rounded-none" />
+                            </div>
+                        )}
                     </Drawer.Content>
                 </Drawer.Portal>
             </Drawer.Root>

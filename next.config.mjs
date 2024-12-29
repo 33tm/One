@@ -13,5 +13,8 @@ export default {
                 pathname: "/system/files/imagecache/card_thumbnail_2x/courselogos/*"
             }
         ]
+    },
+    devIndicators: {
+        appIsrStatus: false
     }
 }

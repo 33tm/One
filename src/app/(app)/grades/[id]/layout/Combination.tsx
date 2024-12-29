@@ -1,26 +1,118 @@
 import type { Assignment, Category } from "@/hooks/useGrades"
 
+import { useEffect, useState } from "react"
 import { motion } from "motion/react"
-
-import { Plus } from "lucide-react"
 import NumberFlow from "@number-flow/react"
+
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+
+import { Plus, X } from "lucide-react"
 
 interface AssignmentProps {
     assignment: Assignment
     drop: () => void
     modify: (value: number | null, type: "grade" | "max") => void
-    weight: () => void
+    weight: number
 }
 function Assignment(props: AssignmentProps) {
     const {
-        assignment
-        // drop,
-        // modify,
-        // weight
+        assignment,
+        drop,
+        modify,
+        weight
     } = props
+    const {
+        custom,
+        grade,
+        max,
+        drop: dropped,
+        name,
+        new: isNew
+    } = assignment
+    const isCustom = custom !== null && custom !== grade
+
     return (
-        <div className="">
-            <p>{assignment.name}</p>
+        <div className={`flex rounded-lg ${isNew ? "bg-secondary text-background" : "bg-tertiary"}`}>
+            <div
+                className={`flex min-w-10 rounded-l-lg hover:cursor-pointer ${isNew && "bg-tertiary"}`}
+                onClick={drop}
+            >
+                {isNew ? (
+                    <X
+                        size={24}
+                        className="m-auto w-4 h-4 text-primary"
+                    />
+                ) : (
+                    <Checkbox
+                        className="w-full h-full rounded-l-lg rounded-r-none"
+                        checked={!dropped || custom === undefined}
+                    />
+                )}
+            </div>
+            <div className="m-2 space-y-1 min-w-0 w-full">
+                <p className={`truncate text-sm ${dropped && "line-through text-secondary"} ${isCustom && "font-bold"} transition-all duration-200`}>
+                    {name}
+                </p>
+                {dropped || (
+                    <div className="flex h-6 justify-between font-semibold text-xs">
+                        <p
+                            className={`
+                            my-auto w-20 h-full p-1
+                            text-center text-background
+                            rounded-md
+                            ${weight > 0 ? "bg-primary" : (isNew ? "text-primary bg-background" : "bg-secondary")}
+                            ${(dropped || isNaN(weight)) && "opacity-0"}
+                            transition-all duration-200
+                        `}
+                        >
+                            {weight > 0 && "+"}{weight}%
+                        </p>
+                        <div
+                            className={`
+                            flex outline outline-secondary rounded-md text-xs
+                            ${dropped && "text-secondary line-through"}
+                            transition-all duration-200
+                        `}
+                        >
+                            <Input
+                                id={assignment.id}
+                                type="number"
+                                disabled={dropped}
+                                className={`
+                                    z-auto
+                                    w-16 h-6 text-xs text-center text-primary
+                                    ${isNew && "rounded-r-none"}
+                                `}
+                                placeholder={isNew ? "0" : (grade ? grade.toString() : "-")}
+                                defaultValue={(custom && custom !== grade) ? custom.toString() : ""}
+                                onChange={({ target }) => {
+                                    const grade = parseFloat(target.value)
+                                    modify(isNaN(grade) ? null : grade, "grade")
+                                }}
+                            />
+                            {isNew ? (
+                                <Input
+                                    id={assignment.id}
+                                    type="number"
+                                    disabled={dropped}
+                                    className="w-16 h-6 text-xs text-center text-primary rounded-l-none"
+                                    placeholder={max ? max.toString() : "10"}
+                                    defaultValue={max === 10 ? "" : max.toString()}
+                                    onChange={({ target }) => {
+                                        const grade = parseFloat(target.value)
+                                        modify(isNaN(grade) ? 10 : grade, "max")
+                                    }}
+                                />
+                            ) : (
+                                <p className="my-auto w-16 text-center hover:cursor-not-allowed">
+                                    {max}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
@@ -30,7 +122,7 @@ interface CategoryProps {
     assignments: Assignment[]
     drop: (id: string) => void
     modify: (id: string, value: number | null, type: "grade" | "max") => void
-    weight: (id: string) => void
+    weight: (id: string) => number
     create: () => void
 }
 function Category(props: CategoryProps) {
@@ -43,8 +135,8 @@ function Category(props: CategoryProps) {
         create
     } = props
     return (
-        <>
-            <div className="flex h-12 p-2 rounded-lg justify-between bg-primary text-background">
+        <div className="space-y-2">
+            <div className="sticky z-10 flex h-12 p-2 rounded-lg justify-between bg-primary text-background">
                 <div className="flex w-1/2 space-x-1.5 ml-2 my-auto">
                     <p className="truncate">
                         {category.name}
@@ -73,16 +165,18 @@ function Category(props: CategoryProps) {
                     </motion.button>
                 </div>
             </div>
-            {assignments.map(assignment => (
-                <Assignment
-                    key={assignment.id}
-                    assignment={assignment}
-                    drop={() => drop(assignment.id)}
-                    modify={(value: number | null, type: "grade" | "max") => modify(assignment.id, value, type)}
-                    weight={() => weight(assignment.id)}
-                />
-            ))}
-        </>
+            {assignments
+                .sort((a, b) => +b.new - +a.new)
+                .map(assignment => (
+                    <Assignment
+                        key={assignment.id}
+                        assignment={assignment}
+                        drop={() => drop(assignment.id)}
+                        modify={(value: number | null, type: "grade" | "max") => modify(assignment.id, value, type)}
+                        weight={weight(assignment.id)}
+                    />
+                ))}
+        </div>
     )
 }
 
@@ -91,7 +185,7 @@ interface CombinationProps {
     assignments: Assignment[]
     drop: (id: string) => void
     modify: (id: string, value: number | null, type: "grade" | "max") => void
-    weight: (id: string) => void
+    weight: (id: string) => number
     create: (categoryId: string) => void
 }
 export default function Combination(props: CombinationProps) {
@@ -103,6 +197,17 @@ export default function Combination(props: CombinationProps) {
         weight,
         create
     } = props
+
+    const [focused, setFocused] = useState(false)
+
+    // Strange fix for the mobile navbar preventing inputs from focusing
+    useEffect(() => {
+        if (focused) return
+        const [{ id }] = assignments.filter(assignment => assignment.category === categories[0].id)
+        document.getElementById(id)?.focus()
+        setFocused(true)
+    }, [focused, assignments, categories])
+
     return (
         <div className="space-y-2 overflow-y-auto">
             {categories.map(category => (

@@ -10,7 +10,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
     const { theme = "system" } = useTheme()
     const desktop = useMediaQuery("(min-width: 768px)")
 
-    return (
+    return desktop && (
         <Sonner
             theme={theme as ToasterProps["theme"]}
             className="toaster group mb-[75px] md:mb-0"

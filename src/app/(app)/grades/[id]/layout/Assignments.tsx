@@ -50,7 +50,6 @@ function Assignment(props: AssignmentProps) {
                 {isNew ? (
                     <X
                         size={24}
-                        // onClick={drop}
                         className="w-4 h-4 text-background"
                     />
                 ) : (

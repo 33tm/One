@@ -183,7 +183,7 @@ export default function Course() {
                         />
                     </div>
                 ) : (
-                    <div className="mx-3 my-2 h-[calc(100dvh-268px)] overflow-y-auto rounded-lg">
+                    <div className="mx-3 my-2 pb-2 h-[calc(100dvh-259px)] overflow-y-auto rounded-t-lg">
                         <Combination
                             categories={categories}
                             assignments={assignments}
