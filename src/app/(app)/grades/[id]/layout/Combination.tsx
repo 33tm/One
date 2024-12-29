@@ -1,6 +1,5 @@
 import type { Assignment, Category } from "@/hooks/useGrades"
 
-import { useEffect, useState } from "react"
 import { motion } from "motion/react"
 import NumberFlow from "@number-flow/react"
 
@@ -76,11 +75,9 @@ function Assignment(props: AssignmentProps) {
                         `}
                         >
                             <Input
-                                id={assignment.id}
                                 type="number"
                                 disabled={dropped}
                                 className={`
-                                    z-auto
                                     w-16 h-6 text-xs text-center text-primary
                                     ${isNew && "rounded-r-none"}
                                 `}
@@ -93,7 +90,6 @@ function Assignment(props: AssignmentProps) {
                             />
                             {isNew ? (
                                 <Input
-                                    id={assignment.id}
                                     type="number"
                                     disabled={dropped}
                                     className="w-16 h-6 text-xs text-center text-primary rounded-l-none"
@@ -197,16 +193,6 @@ export default function Combination(props: CombinationProps) {
         weight,
         create
     } = props
-
-    const [focused, setFocused] = useState(false)
-
-    // Strange fix for the mobile navbar preventing inputs from focusing
-    useEffect(() => {
-        if (focused) return
-        const [{ id }] = assignments.filter(assignment => assignment.category === categories[0].id)
-        document.getElementById(id)?.focus()
-        setFocused(true)
-    }, [focused, assignments, categories])
 
     return (
         <div className="space-y-2 overflow-y-auto">

@@ -9,7 +9,7 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
         <AuthProvider>
             <SearchProvider>
                 <Navbar />
-                <div className="-z-20 h-[calc(100dvh-72px)] w-screen">
+                <div className="h-[calc(100dvh-72px)] w-screen">
                     {children}
                 </div>
                 <Toaster />

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { motion } from "motion/react"
 
 import { AuthContext } from "@/contexts/AuthContext"
@@ -51,6 +51,15 @@ export function Navbar() {
     }, [loading, user])
 
     const [snap, setSnap] = useState<number | string | null>(points[0])
+
+    useLayoutEffect(() => {
+        document.addEventListener("focusin", e => e.stopImmediatePropagation())
+        document.addEventListener("focusout", e => e.stopImmediatePropagation())
+        return () => {
+            document.removeEventListener("focusin", e => e.stopImmediatePropagation())
+            document.removeEventListener("focusout", e => e.stopImmediatePropagation())
+        }
+    }, [])
 
     useEffect(() => {
         setSnap(points[0])
@@ -139,7 +148,7 @@ export function Navbar() {
         return (
             <Drawer.Root open dismissible={false} modal={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap} snapToSequentialPoint>
                 <Drawer.Portal>
-                    <Drawer.Content className={`z-50 fixed flex-col bg-inherit rounded-t-[10px] border primary bottom-0 left-0 right-0 h-full mx-[-1px] duration-0 ${snap === 1 && "max-h-[97%]"}`}>
+                    <Drawer.Content className={`z-50 fixed flex-col bg-inherit rounded-t-[10px] border bottom-0 left-0 right-0 h-full mx-[-1px] duration-0 ${snap === 1 && "max-h-[97%]"}`}>
                         <Drawer.Title />
                         <Drawer.Description />
                         <div

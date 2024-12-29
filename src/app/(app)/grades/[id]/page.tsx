@@ -37,7 +37,6 @@ export default function Course() {
         drop,
         weight,
         create,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         refresh,
         refreshing
     } = useGrades(id)
