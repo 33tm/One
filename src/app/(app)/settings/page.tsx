@@ -2,18 +2,24 @@
 
 import { useContext, useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
+import { DateTime } from "luxon"
 
 import server from "@/server"
 import { redirect } from "@/server/redirect"
 
 import { AuthContext } from "@/contexts/AuthContext"
 
+import Loader from "@/components/Loader"
 import Palette from "@/components/Palette"
 import { Separator } from "@/components/ui/separator"
 
-import { CircleHelp, LaptopMinimal, Loader, LogOut, Smartphone } from "lucide-react"
 import { CgSpinner } from "react-icons/cg"
-import { DateTime } from "luxon"
+import {
+    CircleHelp,
+    LaptopMinimal,
+    LogOut,
+    Smartphone
+} from "lucide-react"
 
 interface Session {
     ip: string
@@ -68,7 +74,7 @@ export default function Settings() {
     return (
         <>
             <div className="flex h-full overflow-y-auto py-10">
-                <div className="mx-auto space-y-3">
+                <div className={`mx-auto ${sessions && "my-auto"} space-y-3`}>
                     <div className="p-4 bg-tertiary rounded-lg">
                         <p className="text-xl font-bold">Color Palette</p>
                         <p className="text-sm">colors yahoo</p>
