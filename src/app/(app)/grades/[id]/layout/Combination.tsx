@@ -1,6 +1,6 @@
 import type { Assignment, Category } from "@/hooks/useGrades"
 
-import { motion } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
 import NumberFlow from "@number-flow/react"
 
 import { Checkbox } from "@/components/ui/checkbox"
@@ -32,7 +32,10 @@ function Assignment(props: AssignmentProps) {
     const isCustom = custom !== null && custom !== grade
 
     return (
-        <div className={`flex rounded-lg ${isNew ? "bg-secondary text-background" : "bg-tertiary"}`}>
+        <motion.div
+            className={`flex rounded-lg ${isNew ? "bg-secondary text-background" : "bg-tertiary"}`}
+            animate={{ height: dropped ? "36px" : "64px" }}
+        >
             <div
                 className={`flex min-w-10 rounded-l-lg hover:cursor-pointer ${isNew && "bg-tertiary"}`}
                 onClick={drop}
@@ -53,10 +56,18 @@ function Assignment(props: AssignmentProps) {
                 <p className={`truncate text-sm ${dropped && "line-through text-secondary"} ${isCustom && "font-bold"} transition-all duration-200`}>
                     {name}
                 </p>
-                {dropped || (
-                    <div className="flex h-6 justify-between font-semibold text-xs">
-                        <p
-                            className={`
+                <AnimatePresence initial={false}>
+                    {dropped || (
+                        <motion.div
+                            className="flex h-6 justify-between font-semibold text-xs"
+                            {...isNew ? {} : {
+                                initial: { opacity: 0 },
+                                animate: { opacity: 1 },
+                                transition: { delay: 0.1 }
+                            }}
+                        >
+                            <p
+                                className={`
                             my-auto w-20 h-full p-1
                             text-center text-background
                             rounded-md
@@ -64,52 +75,53 @@ function Assignment(props: AssignmentProps) {
                             ${(dropped || isNaN(weight)) && "opacity-0"}
                             transition-all duration-200
                         `}
-                        >
-                            {weight > 0 && "+"}{weight}%
-                        </p>
-                        <div
-                            className={`
+                            >
+                                {weight > 0 && "+"}{weight}%
+                            </p>
+                            <div
+                                className={`
                             flex outline outline-secondary rounded-md text-xs
                             ${dropped && "text-secondary line-through"}
                             transition-all duration-200
                         `}
-                        >
-                            <Input
-                                type="number"
-                                disabled={dropped}
-                                className={`
-                                    w-16 h-6 text-xs text-center text-primary
-                                    ${isNew && "rounded-r-none"}
-                                `}
-                                placeholder={isNew ? "0" : (grade ? grade.toString() : "-")}
-                                defaultValue={(custom && custom !== grade) ? custom.toString() : ""}
-                                onChange={({ target }) => {
-                                    const grade = parseFloat(target.value)
-                                    modify(isNaN(grade) ? null : grade, "grade")
-                                }}
-                            />
-                            {isNew ? (
+                            >
                                 <Input
                                     type="number"
                                     disabled={dropped}
-                                    className="w-16 h-6 text-xs text-center text-primary rounded-l-none"
-                                    placeholder={max ? max.toString() : "10"}
-                                    defaultValue={max === 10 ? "" : max.toString()}
+                                    className={`
+                                    w-16 h-6 text-xs text-center text-primary
+                                    ${isNew && "rounded-r-none"}
+                                `}
+                                    placeholder={isNew ? "0" : (grade ? grade.toString() : "-")}
+                                    defaultValue={(custom && custom !== grade) ? custom.toString() : ""}
                                     onChange={({ target }) => {
                                         const grade = parseFloat(target.value)
-                                        modify(isNaN(grade) ? 10 : grade, "max")
+                                        modify(isNaN(grade) ? null : grade, "grade")
                                     }}
                                 />
-                            ) : (
-                                <p className="my-auto w-16 text-center hover:cursor-not-allowed">
-                                    {max}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                )}
+                                {isNew ? (
+                                    <Input
+                                        type="number"
+                                        disabled={dropped}
+                                        className="w-16 h-6 text-xs text-center text-primary rounded-l-none"
+                                        placeholder={max ? max.toString() : "10"}
+                                        defaultValue={max === 10 ? "" : max.toString()}
+                                        onChange={({ target }) => {
+                                            const grade = parseFloat(target.value)
+                                            modify(isNaN(grade) ? 10 : grade, "max")
+                                        }}
+                                    />
+                                ) : (
+                                    <p className="my-auto w-16 text-center hover:cursor-not-allowed">
+                                        {max}
+                                    </p>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </div>
+        </motion.div >
     )
 }
 
@@ -132,12 +144,12 @@ function Category(props: CategoryProps) {
     } = props
     return (
         <div className="space-y-2">
-            <div className="sticky z-10 flex h-12 p-2 rounded-lg justify-between bg-primary text-background">
+            <div className="flex h-12 p-2 rounded-lg justify-between bg-primary text-background">
                 <div className="flex w-1/2 space-x-1.5 ml-2 my-auto">
                     <p className="truncate">
                         {category.name}
                     </p>
-                    {category.weight && (
+                    {!!category.weight && (
                         <p className="text-secondary font-medium">
                             ({category.weight}%)
                         </p>

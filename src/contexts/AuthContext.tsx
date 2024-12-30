@@ -23,6 +23,7 @@ export interface UserType {
     class: number | null
     domain: string
     sections: Section[]
+    created: string
 }
 
 interface AuthContextType {
@@ -48,25 +49,24 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
     const popup = useRef<Window | null>(null)
 
     const refresh = useCallback(() => {
-        server("/auth/verify", {
-            method: "POST",
-            credentials: "include"
-        }).then(async res => {
-            if (res.ok) {
-                setUser(await res.json())
-                setToken(null)
-                popup.current?.close()
-                popup.current = null
-            } else {
-                setUser(null)
-                if (token) return
-                const ws = websocket("/auth")
-                ws.onmessage = ({ data }) => {
-                    if (data === "auth") ws.close()
-                    else setToken(data)
+        server("/auth/verify", { method: "POST" })
+            .then(async res => {
+                if (res.ok) {
+                    setUser(await res.json())
+                    setToken(null)
+                    popup.current?.close()
+                    popup.current = null
+                } else {
+                    setUser(null)
+                    if (token) return
+                    const ws = websocket("/auth")
+                    ws.onmessage = ({ data }) => {
+                        if (data === "auth") ws.close()
+                        else setToken(data)
+                    }
                 }
-            }
-        }).catch(() => setError(true))
+            })
+            .catch(() => setError(true))
     }, [token])
 
     useEffect(() => {
@@ -87,10 +87,9 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 
     function logout() {
         user?.sections.forEach(section => localStorage.removeItem(`grades-${section.id}`))
-        server("/auth/logout", {
-            method: "POST",
-            credentials: "include"
-        }).then(refresh).catch(() => setError(true))
+        server("/auth/logout", { method: "POST" })
+            .then(refresh)
+            .catch(() => setError(true))
     }
 
     const loading = !token && !user

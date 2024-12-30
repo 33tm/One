@@ -204,7 +204,9 @@ export default function Course() {
                         <Graph assignments={Object.values(grades.assignments)} />
                     </div>
                 ) : (
-                    <></>
+                    <div className="mx-3 my-2 pb-2 h-[calc(100dvh-259px)] overflow-y-auto rounded-t-lg">
+                        <Graph assignments={Object.values(grades.assignments)} />
+                    </div>
                 )}
             </TabsContent>
         </Tabs>

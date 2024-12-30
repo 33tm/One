@@ -31,58 +31,57 @@ export function useGrades(id: string) {
 
     const refresh = useCallback(() => {
         setRefreshing(true)
-        const promise = server(`/sections/${id}/grades`, {
-            method: "POST",
-            credentials: "include"
-        }).then(async res => {
-            setRefreshing(false)
-            if (res.status !== 200) {
-                const error = await res.text()
-                setError(error)
-                return
-            }
+        const promise = server(`/sections/${id}/grades`, { method: "POST" })
+            .then(async res => {
+                setRefreshing(false)
+                if (res.status !== 200) {
+                    const error = await res.text()
+                    setError(error)
+                    return
+                }
 
-            const grades = await res.json() as Grades
-            const calculated = calculate(grades)
+                const grades = await res.json() as Grades
+                const calculated = calculate(grades)
 
-            if (validate(grades, calculated)) {
-                localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
-            } else {
-                localStorage.removeItem(`grades-${id}`)
-                setError("calc")
+                if (validate(grades, calculated)) {
+                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                } else {
+                    localStorage.removeItem(`grades-${id}`)
+                    setError("calc")
 
-                // Attempt to calculate unpublished assignments
-                // Only functional for one unpublished assignment per category
-                // Just don't question why Schoology calculates grades with unpublished assignments
-                const assignments = Object.values(grades.assignments)
+                    // Attempt to calculate unpublished assignments
+                    // Only functional for one unpublished assignment per category
+                    // Just don't question why Schoology calculates grades with unpublished assignments
+                    const assignments = Object.values(grades.assignments)
 
-                // Arguably this a terrible way to do it
-                // Uh rewrite someday I guess :'D
-                Object.values(grades.periods).forEach(period => {
-                    Object.values(period.categories).forEach(category => {
-                        const unpublished = assignments.filter(item => item.category === category.id && !item.publish)
-                        if (unpublished.length !== 1) return
-                        const g = { ...grades }
-                        const item = g.assignments[unpublished[0].id]
-                        item.publish = true
-                        item.drop = false
-                        setGrades(calculated)
-                        while (Math.abs(period.grade - g.periods[period.id].calculated) > 0.05) {
-                            item.grade = Math.round((item.grade + 0.1) * 100) / 100
-                            const calculated = calculate(g)
-                            setGrades(g)
-                            if (validate(g, calculated)) {
-                                localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
-                                setError(undefined)
-                                break
+                    // Arguably this a terrible way to do it
+                    // Uh rewrite someday I guess :'D
+                    Object.values(grades.periods).forEach(period => {
+                        Object.values(period.categories).forEach(category => {
+                            const unpublished = assignments.filter(item => item.category === category.id && !item.publish)
+                            if (unpublished.length !== 1) return
+                            const g = { ...grades }
+                            const item = g.assignments[unpublished[0].id]
+                            item.publish = true
+                            item.drop = false
+                            setGrades(calculated)
+                            while (Math.abs(period.grade - g.periods[period.id].calculated) > 0.05) {
+                                item.grade = Math.round((item.grade + 0.1) * 100) / 100
+                                const calculated = calculate(g)
+                                setGrades(g)
+                                if (validate(g, calculated)) {
+                                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                                    setError(undefined)
+                                    break
+                                }
                             }
-                        }
+                        })
                     })
-                })
-            }
+                }
 
-            setGrades(calculated)
-        }).catch(() => setError("An error occurred!"))
+                setGrades(calculated)
+            })
+            .catch(() => setError("An error occurred!"))
         setPromise(promise)
     }, [id])
 

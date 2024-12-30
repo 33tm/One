@@ -106,10 +106,11 @@ export function Navbar() {
                             <Button
                                 variant="outline"
                                 onClick={toggle}
+                                className="transition-none"
                             >
                                 <Search />
                                 Search
-                                <kbd className="[&_svg]:size-auto flex gap-1 rounded bg-primary text-background transition-colors duration-200 px-1.5 font-mono">
+                                <kbd className="[&_svg]:size-auto flex gap-1 rounded bg-primary text-background px-1.5 font-mono">
                                     <Command size={12} />
                                     K
                                 </kbd>
@@ -121,7 +122,7 @@ export function Navbar() {
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="flex flex-col bg-background space-y-2 p-2 w-44 mr-4 mt-0.5">
-                                    <Link href={`/user/${user.id}`}>
+                                    <Link href="/profile">
                                         <Button variant="ghost" className="flex w-40">
                                             Profile
                                             <User className="ml-auto" />
@@ -181,16 +182,16 @@ export function Navbar() {
                                     </div>
                                     <div className="flex w-full mt-auto bg-secondary rounded-lg">
                                         <Button
-                                            className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-150"
+                                            className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-75"
                                             onClick={() => {
-                                                redirect(`/user/${user.id}`)
+                                                redirect("/profile")
                                                 setSnap(points[0])
                                             }}
                                         >
                                             <User />
                                         </Button>
                                         <Button
-                                            className="w-1/4 h-[60px] rounded-none bg-primary brightness-125"
+                                            className="w-1/4 h-[60px] rounded-none bg-primary brightness-90"
                                             onClick={() => {
                                                 redirect("/settings")
                                                 setSnap(points[0])

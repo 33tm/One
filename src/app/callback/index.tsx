@@ -14,8 +14,7 @@ export function Callback({ oauth_token, domain }: { oauth_token: string, domain:
         if (!oauth_token || !domain) return
         server("/auth/callback", {
             method: "POST",
-            body: JSON.stringify({ key: oauth_token, domain }),
-            credentials: "include"
+            body: JSON.stringify({ key: oauth_token, domain })
         }).then(async res => {
             if (res.status !== 200) setError(await res.text())
             else new BroadcastChannel("auth").postMessage(null)

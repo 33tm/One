@@ -7,7 +7,10 @@ const url = process.env.NODE_ENV === "development"
     : `${process.env.NEXT_PUBLIC_API_URL}`
 
 export default function server(uri: string, options?: RequestInit) {
-    return fetch(`${url}${uri}`, options)
+    return fetch(`${url}${uri}`, {
+        credentials: "include",
+        ...options
+    })
 }
 
 export function websocket(uri: string) {
