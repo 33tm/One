@@ -23,7 +23,7 @@ function Category(props: CategoryProps) {
                     <p className="truncate">
                         {name}
                     </p>
-                    {weight && (
+                    {!!weight && (
                         <p className="text-secondary font-medium">
                             ({weight}%)
                         </p>
