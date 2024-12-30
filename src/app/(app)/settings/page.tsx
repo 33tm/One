@@ -200,7 +200,7 @@ export default function Settings() {
     return (
         <>
             <div className="flex h-full overflow-y-auto py-10">
-                <div className={`mx-auto ${sessions && "my-auto"} space-y-3`}>
+                <div className="m-auto space-y-3">
                     <div className="p-4 bg-tertiary rounded-lg">
                         <p className="text-xl font-bold">Color Palette</p>
                         <p className="text-sm">colors yahoo</p>

@@ -44,6 +44,8 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, loading, logout } = useContext(AuthContext)
 
+    const [open, setOpen] = useState(false)
+
     const points = useMemo(() => {
         if (loading) return ["75px"]
         if (user) return ["75px", "300px"]
@@ -115,13 +117,16 @@ export function Navbar() {
                                     K
                                 </kbd>
                             </Button>
-                            <Popover>
+                            <Popover open={open}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost">
+                                    <Button variant="ghost" onClick={() => setOpen(!open)}>
                                         {user.name}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="flex flex-col bg-background space-y-2 p-2 w-44 mr-4 mt-0.5">
+                                <PopoverContent
+                                    className="flex flex-col bg-background space-y-2 p-2 w-44 mr-4 mt-0.5"
+                                    onClick={() => setOpen(false)}
+                                >
                                     <Link href="/profile">
                                         <Button variant="ghost" className="flex w-40">
                                             Profile
