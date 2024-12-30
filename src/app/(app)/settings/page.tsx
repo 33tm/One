@@ -179,8 +179,6 @@ function Icon({ ua, className }: { ua: string, className?: string }) {
 export default function Settings() {
     const { user, loading } = useContext(AuthContext)
     const [sessions, setSessions] = useState<Sessions>()
-    console.log(sessions)
-
 
     useEffect(() => {
         if (loading) return

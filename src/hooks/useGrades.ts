@@ -100,7 +100,7 @@ export function useGrades(id: string) {
             localStorage.removeItem(`grades-${id}`)
             refresh()
         }
-    }, [id, refresh])
+    }, [id, production, refresh])
 
     useEffect(() => {
         if (!promise || !section) return
