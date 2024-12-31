@@ -44,7 +44,9 @@ export function useGrades(id: string) {
                 const calculated = calculate(grades)
 
                 if (validate(grades, calculated)) {
+                    setGrades(calculated)
                     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                    setError(undefined)
                 } else {
                     localStorage.removeItem(`grades-${id}`)
                     setError("calc")
@@ -56,21 +58,26 @@ export function useGrades(id: string) {
 
                     // Arguably this a terrible way to do it
                     // Uh rewrite someday I guess :'D
-                    Object.values(grades.periods).forEach(period => {
+                    const g = structuredClone(grades)
+                    Object.values(g.periods).forEach(period => {
                         Object.values(period.categories).forEach(category => {
-                            const unpublished = assignments.filter(item => item.category === category.id && !item.publish)
+                            const unpublished = assignments
+                                .filter(item => item.category === category.id && !item.publish)
+
                             if (unpublished.length !== 1) return
-                            const g = { ...grades }
+
                             const item = g.assignments[unpublished[0].id]
                             item.publish = true
                             item.drop = false
-                            setGrades(calculated)
-                            while (Math.abs(period.grade - g.periods[period.id].calculated) > 0.05) {
+
+                            const target = grades.periods[period.id].grade
+
+                            while (Math.abs(target - g.periods[period.id].calculated) < 0.05) {
                                 item.grade = Math.round((item.grade + 0.1) * 100) / 100
                                 const calculated = calculate(g)
-                                setGrades(g)
-                                if (validate(g, calculated)) {
-                                    localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
+                                if (validate(grades, calculated)) {
+                                    setGrades(calculated)
+                                    localStorage.setItem(`grades-${id}`, JSON.stringify(g))
                                     setError(undefined)
                                     break
                                 }
@@ -78,8 +85,6 @@ export function useGrades(id: string) {
                         })
                     })
                 }
-
-                setGrades(calculated)
             })
             .catch(() => setError("An error occurred!"))
         setPromise(promise)
@@ -134,21 +139,19 @@ export function useGrades(id: string) {
     }
 
     function weight(assignment: string) {
-        const g = { ...grades }
-        const a = g.assignments[assignment]
-        const original = g.periods[a.period].calculated
-        calculate({
-            ...g,
+        const { period } = grades.assignments[assignment]
+        const original = grades.periods[period].calculated
+        const calculated = calculate({
+            ...grades,
             assignments: {
-                ...g.assignments,
+                ...grades.assignments,
                 [assignment]: {
-                    ...g.assignments[assignment],
+                    ...grades.assignments[assignment],
                     drop: true
                 }
             }
         })
-        const modified = g.periods[a.period].calculated
-        calculate(g)
+        const modified = calculated.periods[period].calculated
         return round(original - modified)
     }
 
@@ -192,7 +195,9 @@ export function useGrades(id: string) {
     }
 }
 
-function calculate(grades: Grades) {
+export function calculate(grades: Grades) {
+    grades = structuredClone(grades)
+
     const periods = Object.values(grades.periods)
 
     periods.forEach(period => {
