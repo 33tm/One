@@ -20,6 +20,7 @@ import {
     ChartTooltipContent
 } from "@/components/ui/chart"
 import Loader from "@/components/Loader"
+import { useState } from "react"
 
 interface GraphProps {
     grades: Grades
@@ -27,6 +28,10 @@ interface GraphProps {
 }
 export default function Graph(props: GraphProps) {
     const { grades, periodId } = props
+    const [selection, setSelection] = useState<{
+        start?: number
+        end?: number
+    }>()
 
     const assignments = Object
         .entries(grades.assignments)
@@ -59,14 +64,26 @@ export default function Graph(props: GraphProps) {
 
     return (
         <div className="bg-tertiary p-4 w-full h-full">
-            <div className="bg-background rounded-lg shadow-2xl p-4 w-full h-1/2">
+            <div className="bg-background rounded-lg shadow-2xl p-3 w-full h-1/2">
                 <ResponsiveContainer>
                     <ChartContainer config={{}}>
                         <LineChart
                             data={points}
+                            onMouseDown={e => setSelection({
+                                start: e.chartX
+                            })}
+                            onMouseMove={e => selection && setSelection(selection => ({
+                                ...selection,
+                                end: e.chartX
+                            }))}
+                            onMouseUp={() => {
+                                console.log(selection)
+                                setSelection(undefined)
+                            }}
                         >
                             <CartesianGrid vertical={false} />
                             <XAxis
+                                height={15}
                                 dataKey="timestamp"
                                 domain={[
                                     points[0].timestamp,
@@ -75,12 +92,14 @@ export default function Graph(props: GraphProps) {
                                 scale="time"
                                 type="number"
                                 tickFormatter={timestamp => DateTime.fromSeconds(timestamp).toFormat("LLL d")}
+                                className="font-medium"
                             />
                             <YAxis
-                                width={40}
-                                domain={[Math.floor(min), Math.ceil(max)]}
+                                width={35}
+                                domain={[Math.floor(min - 1), Math.ceil(max)]}
                                 type="number"
                                 tickFormatter={value => `${value}%`}
+                                className="font-bold"
                             />
                             <ChartTooltip
                                 cursor={false}
@@ -111,6 +130,9 @@ export default function Graph(props: GraphProps) {
                     </ChartContainer>
                 </ResponsiveContainer>
             </div>
-        </div>
+            <div className="p-3 w-full h-1/2">
+
+            </div>
+        </div >
     )
 }

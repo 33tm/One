@@ -46,9 +46,10 @@ export function useGrades(id: string) {
                 const grades = await res.json() as Grades
                 const calculated = calculate(grades)
 
+                setGrades(calculated)
+                setCopy(calculated)
+
                 if (validate(grades, calculated)) {
-                    setGrades(calculated)
-                    setCopy(calculated)
                     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
                     setError(undefined)
                 } else {
