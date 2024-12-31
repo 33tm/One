@@ -117,7 +117,7 @@ export function Navbar() {
                                     K
                                 </kbd>
                             </Button>
-                            <Popover open={open}>
+                            <Popover open={open} onOpenChange={setOpen}>
                                 <PopoverTrigger asChild>
                                     <Button variant="ghost" onClick={() => setOpen(!open)}>
                                         {user.name}
