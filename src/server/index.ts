@@ -2,8 +2,8 @@
 
 const url = process.env.NODE_ENV === "development"
     ? typeof window !== "undefined"
-        ? window.location.origin.replace("3000", "443")
-        : "http://localhost:443"
+        ? window.location.origin.replace("3000", "5000")
+        : "http://localhost:5000"
     : `${process.env.NEXT_PUBLIC_API_URL}`
 
 export default function server(uri: string, options?: RequestInit) {
