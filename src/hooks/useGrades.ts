@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useContext } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
 import { toast } from "sonner"
 
-function round(grade: number) {
+export function round(grade: number) {
     const rounded = Math.round((grade + Number.EPSILON) * 100) / 100
     if (rounded > 9999)
         return Infinity
@@ -13,17 +13,20 @@ function round(grade: number) {
     return rounded
 }
 
+const defaultGrades = {
+    weighted: false,
+    periods: {},
+    assignments: {},
+    scales: {},
+    timestamp: 0
+} satisfies Grades
+
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
     const [refreshing, setRefreshing] = useState(false)
     const [promise, setPromise] = useState<Promise<void>>()
-    const [grades, setGrades] = useState<Grades>({
-        weighted: false,
-        periods: {},
-        assignments: {},
-        scales: {},
-        timestamp: 0
-    })
+    const [grades, setGrades] = useState<Grades>(defaultGrades)
+    const [copy, setCopy] = useState<Grades>(defaultGrades)
 
     const { user } = useContext(AuthContext)
     const section = user?.sections.find(section => section.id === id)
@@ -45,6 +48,7 @@ export function useGrades(id: string) {
 
                 if (validate(grades, calculated)) {
                     setGrades(calculated)
+                    setCopy(calculated)
                     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
                     setError(undefined)
                 } else {
@@ -77,6 +81,7 @@ export function useGrades(id: string) {
                                 const calculated = calculate(g)
                                 if (validate(grades, calculated)) {
                                     setGrades(calculated)
+                                    setCopy(calculated)
                                     localStorage.setItem(`grades-${id}`, JSON.stringify(g))
                                     setError(undefined)
                                     break
@@ -95,8 +100,12 @@ export function useGrades(id: string) {
         const grades = JSON.parse(localStorage.getItem(`grades-${id}`)!) as Grades | null
         if (grades) {
             const calculated = calculate(grades)
-            if (validate(grades, calculated)) setGrades(calculated)
-            else setError("calc")
+            if (validate(grades, calculated)) {
+                setGrades(calculated)
+                setCopy(calculated)
+            } else {
+                setError("calc")
+            }
             // Refresh if grades are older than 10 minutes,
             // 1 minute in development
             if (grades.timestamp < Date.now() - (production ? 1000 * 60 * 10 : 1000 * 60))
@@ -184,6 +193,7 @@ export function useGrades(id: string) {
     }
 
     return {
+        copy,
         grades,
         error,
         modify,

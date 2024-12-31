@@ -31,6 +31,7 @@ export default function Course() {
     const desktop = useMediaQuery("(min-width: 768px)")
 
     const {
+        copy,
         grades,
         error,
         modify,
@@ -73,6 +74,8 @@ export default function Course() {
         if (!user && !loading)
             router.push("/grades")
     }, [user, loading, router])
+
+    if (loading) return <Loader />
 
     if (!user) return <Error>Invalid user!</Error>
 
@@ -198,14 +201,13 @@ export default function Course() {
                 value="visualize"
                 className="m-0"
             >
-                {/* Use grades.assignments cause they're unfiltered */}
                 {desktop ? (
-                    <div className="flex mx-5 h-[calc(100dvh-248px)]">
-                        <Graph assignments={Object.values(grades.assignments)} />
+                    <div className="flex mx-8 mt-2 mb-3 h-[calc(100dvh-288px)] overflow-y-auto rounded-lg">
+                        <Graph grades={copy} periodId={periodId} />
                     </div>
                 ) : (
-                    <div className="mx-3 my-2 pb-2 h-[calc(100dvh-259px)] overflow-y-auto rounded-t-lg">
-                        <Graph assignments={Object.values(grades.assignments)} />
+                    <div className="mx-3 my-2 mb-2 h-[calc(100dvh-268px)] overflow-y-auto rounded-lg">
+                        <Graph grades={copy} periodId={periodId} />
                     </div>
                 )}
             </TabsContent>

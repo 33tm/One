@@ -9,6 +9,7 @@ import { AuthContext } from "@/contexts/AuthContext"
 import { ThemeContext } from "@/contexts/ThemeContext"
 
 import { Auth } from "@/components/Auth"
+import Loader from "@/components/Loader"
 
 export default function Grades() {
     const { user, loading } = useContext(AuthContext)
@@ -22,7 +23,7 @@ export default function Grades() {
         .filter(c => !isNaN(c))
         .join(", ")
 
-    if (loading) return <></>
+    if (loading) return <Loader />
 
     return (
         <>
