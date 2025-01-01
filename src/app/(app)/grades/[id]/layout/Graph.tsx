@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { DateTime } from "luxon"
+import { AnimatePresence, motion } from "motion/react"
+import NumberFlow from "@number-flow/react"
 
 import {
     calculate,
@@ -15,17 +17,12 @@ import {
     YAxis
 } from "recharts"
 
-import type { CategoricalChartState } from "recharts/types/chart/types"
-
 import {
     ChartContainer,
     ChartTooltip
 } from "@/components/ui/chart"
 
 import Loader from "@/components/Loader"
-import NumberFlow from "@number-flow/react"
-import { Checkbox } from "@/components/ui/checkbox"
-import { AnimatePresence, motion } from "motion/react"
 
 interface GraphProps {
     grades: Grades
@@ -47,10 +44,6 @@ export default function Graph(props: GraphProps) {
                 assignments: Object.fromEntries(assignments.slice(0, i + 1))
             }).periods[periodId]
         }))
-
-    // const [current, setCurrent] = useState<CategoricalChartState>({
-    //     activeLabel: points[points.length - 1].timestamp.toString()
-    // })
 
     const [timestamp, setTimestamp] = useState(points[points.length - 1].timestamp)
 
