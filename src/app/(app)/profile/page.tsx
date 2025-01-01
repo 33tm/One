@@ -26,7 +26,7 @@ export default function User() {
                 <p className="text-sm">{user.domain.replace(/^https?:\/\//, "")}</p>
                 <div className="flex mt-1 space-x-1 text-xs text-background font-bold">
                     {user.pausd && <p className="bg-primary py-1 px-3 rounded-full w-fit">PAUSD</p>}
-                    {user.gunn && <p className="bg-primary py-1 px-3 rounded-full w-fit">Gunn {`'${user.class?.toString().slice(2)}`}</p>}
+                    {user.gunn && <p className="bg-primary py-1 px-3 rounded-full w-fit">Gunn{user.class && ` '${user.class.toString().slice(2)}`}</p>}
                 </div>
             </div>
             <div className="absolute bottom-28 w-full text-center text-xs">
