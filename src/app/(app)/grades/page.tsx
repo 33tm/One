@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useContext } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 
 import { AuthContext } from "@/contexts/AuthContext"
@@ -11,9 +11,49 @@ import { ThemeContext } from "@/contexts/ThemeContext"
 import { Auth } from "@/components/Auth"
 import Loader from "@/components/Loader"
 
+import { Circle } from "lucide-react"
+
 export default function Grades() {
     const { user, loading } = useContext(AuthContext)
     const { theme } = useContext(ThemeContext)
+
+    const video = useRef<HTMLVideoElement>(null)
+    const [play, setPlay] = useState(false)
+
+    useEffect(() => {
+        if (user) return
+
+        function showcase() {
+            setTimeout(() => {
+                if (!video.current) return
+                setPlay(true)
+                setTimeout(() => {
+                    video.current?.play()
+                    setTimeout(() => {
+                        setPlay(false)
+                        setTimeout(() => {
+                            if (!video.current) return
+                            video.current.src = "/showcase/visualize.mp4"
+                            setTimeout(() => {
+                                setPlay(true)
+                                video.current?.play()
+                                setTimeout(() => {
+                                    setPlay(false)
+                                    setTimeout(() => {
+                                        if (!video.current) return
+                                        video.current.src = "/showcase/calculate.mp4"
+                                        showcase()
+                                    }, 300)
+                                }, 8500)
+                            }, 700)
+                        }, 300)
+                    }, 7500)
+                }, 300)
+            }, 1000)
+        }
+
+        showcase()
+    }, [user])
 
     // Using an image breaks on WebKit
     // Yippee wahoo one more context needed
@@ -69,16 +109,47 @@ export default function Grades() {
                     </div>
                 </div >
             ) : (
-                <div className="flex fixed top-0 -z-10 w-screen h-dvh outline-dashed">
-                    <div className="text-xl font-bold">
-                        <h1 className="font-bold text-xl">Grades</h1>
-                        <Auth variant="link" className="text-md underline hover:opacity-75" />
+                <div className="flex flex-col md:flex-row h-full overflow-y-hidden">
+                    <div className="flex w-full md:w-1/2 h-20 my-10 md:my-0 md:h-full">
+                        <div className="m-auto text-center md:text-left space-y-2">
+                            <h1 className="md:text-xl font-light">Schoology Grade Calculator and Visualizer</h1>
+                            <Auth variant="outline" className="text-xs h-8 p-4" />
+                        </div>
                     </div>
-                    <div className="m-auto">
+                    <div className="flex pb-28 md:p-16 w-full md:w-1/2 h-3/4 md:h-full ">
+                        <motion.div
+                            className="m-auto shadow-2xl h-full"
+                            initial={{
+                                y: 250,
+                                opacity: 0
+                            }}
+                            animate={{
+                                y: 0,
+                                opacity: 1,
+                                transition: { type: "spring", stiffness: 220, damping: 20 }
+                            }}
+                        >
+                            <div className="relative mx-auto h-full aspect-[9/19.5] outline outline-4 rounded-md">
+                                <div className="flex bg-tertiary w-full h-full">
+                                    <Circle
+                                        className="m-auto"
+                                        size={30}
+                                        strokeWidth={4}
+                                    />
+                                </div>
+                                <video
+                                    ref={video}
+                                    className={`absolute top-0 h-full w-full outline outline-4 rounded-md ${play || "opacity-0"} transition-opacity duration-300`}
+                                    src="/showcase/calculate.mp4"
+                                    preload="auto"
+                                    muted
+                                    playsInline
+                                />
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
-            )
-            }
+            )}
         </>
     )
 }
