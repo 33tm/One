@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { DateTime } from "luxon"
-import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import NumberFlow from "@number-flow/react"
 
 import {
