@@ -313,7 +313,7 @@ export function calculate(grades: Grades) {
             } else {
                 // Hope this doesn't happen ...
                 // tbh shouldn't cause it'd would have happened above with the categories
-                period.calculated = Infinity
+                period.calculated = points
             }
         }
 
