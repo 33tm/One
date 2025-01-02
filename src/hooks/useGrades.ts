@@ -172,13 +172,14 @@ export function useGrades(id: string) {
 
         setGrades(g => {
             const grades = { ...g }
+            const timestamp = Date.now() / 1000
             grades.assignments[id] = {
                 id,
                 name: "Custom Assignment",
                 category,
                 period,
-                due: Date.now(),
-                updated: Date.now(),
+                due: timestamp,
+                updated: timestamp,
                 url: null,
                 drop: false,
                 publish: false,

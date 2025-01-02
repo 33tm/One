@@ -53,18 +53,20 @@ export default function Graph(props: GraphProps) {
             assignments: Object.fromEntries(assignments.slice(0, i + 1))
         })
 
+        const [, assignment] = assignments[i] || []
+
         if (
-            (points.length &&
+            !assignment
+            || (points.length &&
                 calculated.periods[periodId].calculated
                 ===
                 points[points.length - 1].grades.periods[periodId].calculated)
             || calculated.periods[periodId].calculated === 100
+            || assignment.new
         ) continue
 
-        const [, { updated }] = assignments[i]
-
         points.push({
-            timestamp: updated,
+            timestamp: assignment.updated,
             grades: calculated
         })
     }
