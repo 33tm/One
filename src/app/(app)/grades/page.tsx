@@ -110,13 +110,13 @@ export default function Grades() {
                 </div >
             ) : (
                 <div className="flex flex-col md:flex-row h-full overflow-y-hidden">
-                    <div className="flex w-full md:w-1/2 h-20 my-10 md:my-0 md:h-full">
-                        <div className="m-auto text-center md:text-left space-y-2">
+                    <div className="flex w-full md:w-1/2 h-20 my-8 md:my-0 md:h-full">
+                        <div className="m-auto text-center md:text-left space-y-2 px-4">
                             <h1 className="md:text-xl font-light">Schoology Grade Calculator and Visualizer</h1>
                             <Auth variant="outline" className="text-xs h-8 p-4" />
                         </div>
                     </div>
-                    <div className="flex pb-28 md:p-16 w-full md:w-1/2 h-3/4 md:h-full ">
+                    <div className="flex pb-28 md:p-16 w-full md:w-1/2 h-[calc(100%-80px)] md:h-full ">
                         <motion.div
                             className="m-auto shadow-2xl h-full"
                             initial={{
