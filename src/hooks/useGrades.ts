@@ -316,6 +316,9 @@ export function calculate(grades: Grades) {
                 period.calculated = Infinity
             }
         }
+
+        if (isNaN(period.calculated))
+            period.calculated = 100
     })
 
     return grades
