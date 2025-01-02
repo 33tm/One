@@ -177,8 +177,9 @@ function Icon({ ua, className }: { ua: string, className?: string }) {
 }
 
 export default function Settings() {
-    const { user, loading } = useContext(AuthContext)
+    const { user, loading, refresh } = useContext(AuthContext)
     const [sessions, setSessions] = useState<Sessions>()
+    const [refreshing, setRefreshing] = useState<Promise<Response>>()
 
     useEffect(() => {
         if (loading) return
@@ -190,6 +191,21 @@ export default function Settings() {
             .then(res => res.json())
             .then(setSessions)
     }, [loading, user])
+
+    useEffect(() => {
+        if (!refreshing) return
+        toast.promise(refreshing, {
+            loading: "Refreshing courses...",
+            success: () => {
+                setRefreshing(undefined)
+                refresh()
+                return "Courses updated!"
+            },
+            error: () => {
+                return "Failed to update courses!"
+            }
+        })
+    }, [refreshing])
 
     if (loading) return <Loader />
 
@@ -204,6 +220,21 @@ export default function Settings() {
                         <p className="text-sm">colors yahoo</p>
                         <Separator className="bg-secondary rounded-full my-2" />
                         <Palette />
+                    </div>
+                    <div className="p-4 bg-tertiary rounded-lg">
+                        <p className="text-xl font-bold">Courses</p>
+                        <p className="text-sm">horses</p>
+                        <Separator className="bg-secondary rounded-full my-2" />
+                        <motion.button
+                            disabled={!!refreshing}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            className={`${refreshing ? "bg-secondary" : "bg-primary"} transition-colors duration-200 text-background rounded-lg p-2 w-full font-bold`}
+                            onClick={() => setRefreshing(server("/sections/refresh", { method: "POST" }))}
+                        >
+                            Refresh Courses
+                        </motion.button>
                     </div>
                     <div className="p-4 bg-tertiary rounded-lg">
                         <p className="text-xl font-bold">Active Sessions</p>
