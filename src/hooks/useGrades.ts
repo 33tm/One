@@ -47,7 +47,7 @@ export function useGrades(id: string) {
                 const calculated = calculate(grades)
 
                 setGrades(calculated)
-                setCopy(calculated)
+                setCopy(structuredClone(calculated))
 
                 if (validate(grades, calculated)) {
                     localStorage.setItem(`grades-${id}`, JSON.stringify(grades))
@@ -82,7 +82,7 @@ export function useGrades(id: string) {
                                 const calculated = calculate(g)
                                 if (validate(grades, calculated)) {
                                     setGrades(calculated)
-                                    setCopy(calculated)
+                                    setCopy(structuredClone(calculated))
                                     localStorage.setItem(`grades-${id}`, JSON.stringify(g))
                                     setError(undefined)
                                     break
@@ -103,7 +103,7 @@ export function useGrades(id: string) {
             const calculated = calculate(grades)
             if (validate(grades, calculated)) {
                 setGrades(calculated)
-                setCopy(calculated)
+                setCopy(structuredClone(calculated))
             } else {
                 setError("calc")
             }
