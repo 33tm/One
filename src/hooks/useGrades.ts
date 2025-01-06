@@ -24,13 +24,30 @@ const defaultGrades = {
 export function useGrades(id: string) {
     const [error, setError] = useState<string>()
     const [refreshing, setRefreshing] = useState(false)
+    const [sectionsRefreshing, setSectionsRefreshing] = useState<Promise<Response>>()
     const [promise, setPromise] = useState<Promise<void>>()
     const [grades, setGrades] = useState<Grades>(defaultGrades)
     const [copy, setCopy] = useState<Grades>(defaultGrades)
 
-    const { user } = useContext(AuthContext)
+    const { user, refresh: authRefresh } = useContext(AuthContext)
     const section = user?.sections.find(section => section.id === id)
     const production = process.env.NODE_ENV === "production"
+
+    useEffect(() => {
+        if (!sectionsRefreshing) return
+        toast.promise(sectionsRefreshing, {
+            loading: "Rebuilding courses...",
+            success: () => {
+                setSectionsRefreshing(undefined)
+                authRefresh()
+                return "Courses rebuilt!"
+            },
+            error: () => {
+                return "Failed to rebuild courses!"
+            },
+            duration: 500
+        })
+    }, [sectionsRefreshing, authRefresh])
 
     const refresh = useCallback(() => {
         setRefreshing(true)
@@ -40,6 +57,7 @@ export function useGrades(id: string) {
                 if (res.status !== 200) {
                     const error = await res.text()
                     setError(error)
+                    setSectionsRefreshing(server("/sections/refresh", { method: "POST" }))
                     return
                 }
 
