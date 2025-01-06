@@ -33,7 +33,7 @@ export default function Grades() {
                         setPlay(false)
                         setTimeout(() => {
                             if (!video.current) return
-                            video.current.src = "/showcase/visualize.mp4"
+                            video.current.src = "https://cdn.tttm.us/one/visualize.mp4"
                             setTimeout(() => {
                                 setPlay(true)
                                 video.current?.play()
@@ -41,7 +41,7 @@ export default function Grades() {
                                     setPlay(false)
                                     setTimeout(() => {
                                         if (!video.current) return
-                                        video.current.src = "/showcase/calculate.mp4"
+                                        video.current.src = "https://cdn.tttm.us/one/calculate.mp4"
                                         showcase()
                                     }, 300)
                                 }, 8500)
@@ -140,7 +140,7 @@ export default function Grades() {
                                 <video
                                     ref={video}
                                     className={`absolute top-0 h-full w-full outline outline-4 rounded-md ${play || "opacity-0"} transition-opacity duration-300`}
-                                    src="/showcase/calculate.mp4"
+                                    src="https://cdn.tttm.us/one/calculate.mp4"
                                     preload="auto"
                                     muted
                                     playsInline

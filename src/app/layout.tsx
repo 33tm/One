@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Analytics } from "@vercel/analytics/react"
 
 import { ThemeProvider } from "@/contexts/ThemeContext"
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
+            <Analytics />
             <Background>
                 <ThemeProvider>
                     {children}

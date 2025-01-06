@@ -24,7 +24,7 @@ export default function PeriodSelect(props: PeriodSelectProps) {
                 value={period.id}
                 onValueChange={setPeriod}
             >
-                <SelectTrigger className="md:w-32 text-xs rounded-r-none">
+                <SelectTrigger className="md:w-32 px-2 text-xs rounded-r-none">
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

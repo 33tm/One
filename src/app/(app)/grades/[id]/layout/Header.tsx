@@ -73,7 +73,6 @@ export default function Header(props: HeaderProps) {
             )}
             <Image
                 fill
-                priority
                 className="-z-10 object-cover opacity-20"
                 src={section.image}
                 alt={section.name}
@@ -109,7 +108,6 @@ export default function Header(props: HeaderProps) {
             />
             <Image
                 fill
-                priority
                 className="-z-10 object-cover opacity-10"
                 src={section.image}
                 alt={section.name}

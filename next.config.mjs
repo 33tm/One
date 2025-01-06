@@ -12,7 +12,8 @@ export default {
                 hostname: "asset-cdn.schoology.com",
                 pathname: "/system/files/imagecache/card_thumbnail_2x/courselogos/*"
             }
-        ]
+        ],
+        unoptimized: true
     },
     devIndicators: {
         appIsrStatus: false
