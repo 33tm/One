@@ -15,7 +15,7 @@ export default function Error({ children, title }: Readonly<{ children: React.Re
                     <TriangleAlert size={32} className="m-auto" />
                     <div>{children}</div>
                 </div>
-            </motion.div >
+            </motion.div>
         </>
     )
 }
