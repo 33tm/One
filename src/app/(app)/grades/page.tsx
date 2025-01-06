@@ -144,6 +144,7 @@ export default function Grades() {
                                     preload="auto"
                                     muted
                                     playsInline
+                                    autoPlay
                                 />
                             </div>
                         </motion.div>
