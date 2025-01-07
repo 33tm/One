@@ -1,4 +1,3 @@
-import { readFile } from "fs/promises"
 import { ImageResponse } from "next/og"
 
 export const contentType = "image/png"
