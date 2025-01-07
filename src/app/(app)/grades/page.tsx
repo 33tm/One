@@ -74,37 +74,39 @@ export default function Grades() {
                 <div className="h-full w-full overflow-y-auto overflow-x-hidden">
                     <div className="m-4 md:m-24 md:mt-12 grid md:grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-3">
                         <AnimatePresence>
-                            {user?.sections.map((section, i) => (
-                                <Link key={section.id} href={`/grades/${section.id}`} prefetch>
-                                    <motion.button
-                                        whileHover={{
-                                            scale: 1.05,
-                                            transition: { type: "spring", stiffness: 300 }
-                                        }}
-                                        whileTap={{
-                                            scale: 0.9,
-                                            transition: { type: "spring", stiffness: 300 }
-                                        }}
-                                        initial={{
-                                            y: 25,
-                                            opacity: 0
-                                        }}
-                                        animate={{
-                                            y: 0,
-                                            opacity: 1,
-                                            transition: { type: "spring", stiffness: 200, damping: 15, delay: i * 0.05 }
-                                        }}
-                                        className="relative w-full group text-center text-lg py-8 rounded-xl hover:shadow-2xl transition-shadow ease-in-out duration-200"
-                                        style={{
-                                            backgroundImage: `linear-gradient(rgba(${background}, 0.75), rgba(${background}, 0.75)), url('${section.image}')`,
-                                            backgroundSize: "cover"
-                                        }}
-                                    >
-                                        <p className="font-extrabold truncate px-8">{section.name}</p>
-                                        <p className="font-bold text-secondary truncate px-8">{section.section}</p>
-                                    </motion.button>
-                                </Link>
-                            ))}
+                            {user?.sections
+                                .sort((a, b) => a.period - b.period)
+                                .map((section, i) => (
+                                    <Link key={section.id} href={`/grades/${section.id}`} prefetch>
+                                        <motion.button
+                                            whileHover={{
+                                                scale: 1.05,
+                                                transition: { type: "spring", stiffness: 300 }
+                                            }}
+                                            whileTap={{
+                                                scale: 0.9,
+                                                transition: { type: "spring", stiffness: 300 }
+                                            }}
+                                            initial={{
+                                                y: 25,
+                                                opacity: 0
+                                            }}
+                                            animate={{
+                                                y: 0,
+                                                opacity: 1,
+                                                transition: { type: "spring", stiffness: 200, damping: 15, delay: i * 0.05 }
+                                            }}
+                                            className="relative w-full group text-center text-lg py-8 rounded-xl hover:shadow-2xl transition-shadow ease-in-out duration-200"
+                                            style={{
+                                                backgroundImage: `linear-gradient(rgba(${background}, 0.75), rgba(${background}, 0.75)), url('${section.image}')`,
+                                                backgroundSize: "cover"
+                                            }}
+                                        >
+                                            <p className="font-extrabold truncate px-8">{section.name}</p>
+                                            <p className="font-bold text-secondary truncate px-8">{section.section}</p>
+                                        </motion.button>
+                                    </Link>
+                                ))}
                         </AnimatePresence>
                     </div>
                 </div >
