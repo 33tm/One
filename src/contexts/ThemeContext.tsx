@@ -11,7 +11,7 @@ interface Theme {
     tertiary: string
 }
 
-const themes = [
+export const themes = [
     {
         name: "Dark",
         background: "#171717",
