@@ -21,5 +21,5 @@ export function Callback({ oauth_token, domain }: { oauth_token: string, domain:
         })
     }, [oauth_token, domain])
 
-    return error ? <Error>An error occurred during authentication.</Error> : <Loader />
+    return error ? <Error>{error || "An error occured during authentication."}</Error> : <Loader />
 }
