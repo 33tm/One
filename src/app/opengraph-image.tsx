@@ -69,8 +69,10 @@ const themes = [
 ]
 
 export default async function Image() {
-    const light = await readFile("public/geist/light.ttf")
-    const bold = await readFile("public/geist/bold.ttf")
+    const light = await fetch("https://gunn.one/geist/light.ttf")
+        .then(res => res.arrayBuffer())
+    const bold = await fetch("https://gunn.one/geist/bold.ttf")
+        .then(res => res.arrayBuffer())
 
     const theme = themes[Math.random() * themes.length | 0]
 
