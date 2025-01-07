@@ -19,6 +19,7 @@ export function useSchedule() {
         setMessage("Touch to open")
         setTimeout(() => setLoading(false), 200)
         setTimeout(() => setLoading(true), 2000)
+        setTimeout(() => setLoading(false), 2400)
         setTimeout(() => setMessage(undefined), 2400)
     }, [desktop, user])
 
