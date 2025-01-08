@@ -4,6 +4,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 
 import Palette from "@/components/Palette"
+import { Button } from "@/components/ui/button"
 
 import { ArrowRight, Circle } from "lucide-react"
 
@@ -33,16 +34,19 @@ export default function Page() {
                         Select a color theme:
                     </p>
                     <Palette />
-                    <motion.button
-                        whileHover={{ scale: 1.25 }}
-                        whileTap={{ scale: 0.75 }}
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                        className="mt-8"
+                        className="flex mt-8"
                     >
-                        <Link href="/grades" prefetch>
-                            <ArrowRight className="mx-auto" />
+                        <Link href="/grades" prefetch className="mx-auto">
+                            <Button className="flex items-center transition-colors duration-500">
+                                <p>Continue</p>
+                                <ArrowRight className="mx-auto" />
+                            </Button>
                         </Link>
-                    </motion.button>
+                    </motion.div>
                 </div>
             </div>
         </motion.div>

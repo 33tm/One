@@ -3,6 +3,7 @@
 import server, { websocket } from "@/server"
 
 import { createContext, useCallback, useEffect, useRef, useState } from "react"
+
 import Error from "@/components/Error"
 
 export interface Section {
@@ -96,7 +97,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 
     return (
         <AuthContext.Provider value={{ user, loading, auth, refresh, logout }}>
-            {error ? <Error>Server is offline!</Error> : children}
+            {error ? <Error>Server offline!</Error> : children}
         </AuthContext.Provider>
     )
 }

@@ -185,25 +185,28 @@ export function Navbar() {
                                             {user.name}
                                         </p>
                                     </div>
-                                    <div className="flex w-full mt-auto bg-secondary rounded-lg">
-                                        <Button
-                                            className="w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-75"
-                                            onClick={() => {
-                                                redirect("/profile")
-                                                setSnap(points[0])
-                                            }}
+                                    <div
+                                        className="flex w-full mt-auto bg-secondary rounded-lg"
+                                        onClick={() => setSnap(points[0])}
+                                    >
+                                        <Link
+                                            href="/profile"
+                                            className="flex w-1/4 h-[60px] rounded-l-lg rounded-r-none bg-primary brightness-90"
                                         >
-                                            <User />
-                                        </Button>
-                                        <Button
-                                            className="w-1/4 h-[60px] rounded-none bg-primary brightness-90"
-                                            onClick={() => {
-                                                redirect("/settings")
-                                                setSnap(points[0])
-                                            }}
+                                            <User
+                                                className="m-auto text-background"
+                                                size={16}
+                                            />
+                                        </Link>
+                                        <Link
+                                            href="/settings"
+                                            className="flex w-1/4 h-[60px] rounded-none bg-primary brightness-95"
                                         >
-                                            <Wrench />
-                                        </Button>
+                                            <Wrench
+                                                className="m-auto text-background"
+                                                size={16}
+                                            />
+                                        </Link>
                                         <Button
                                             className="flex w-1/2 h-[60px] rounded-l-none rounded-r-lg"
                                             onClick={() => logout()}
