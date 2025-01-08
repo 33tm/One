@@ -38,12 +38,12 @@ export default function Page() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                        className="flex mt-8"
+                        className="mt-8 mx-auto w-fit"
                     >
-                        <Link href="/grades" prefetch className="mx-auto">
-                            <Button className="flex items-center transition-colors duration-500">
+                        <Link href="/grades" prefetch className="outline flex">
+                            <Button className="flex transition-colors duration-500">
                                 <p>Continue</p>
-                                <ArrowRight className="mx-auto" />
+                                <ArrowRight />
                             </Button>
                         </Link>
                     </motion.div>
