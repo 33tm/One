@@ -40,7 +40,7 @@ export default function Page() {
                         transition={{ type: "spring", stiffness: 300, damping: 15 }}
                         className="mt-8 mx-auto w-fit"
                     >
-                        <Link href="/grades" prefetch className="outline flex">
+                        <Link href="/grades" prefetch>
                             <Button className="flex transition-colors duration-500">
                                 <p>Continue</p>
                                 <ArrowRight />
