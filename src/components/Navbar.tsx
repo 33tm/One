@@ -168,16 +168,15 @@ export function Navbar() {
                         </div>
                         {user ? (
                             <div className="flex flex-col h-[225px]">
-                                <div className="flex grow m-4 mt-0 rounded-lg bg-tertiary">
-                                    <Button
-                                        className="w-full h-full rounded-lg"
-                                        onClick={() => {
-                                            redirect("/grades")
-                                            setSnap(points[0])
-                                        }}
-                                    >
-                                        Grades
-                                    </Button>
+                                <div
+                                    className="flex grow m-4 mt-0 rounded-lg bg-tertiary"
+                                    onClick={() => setSnap(points[0])}
+                                >
+                                    <Link href="/grades" className="w-full">
+                                        <Button className="w-full h-full rounded-lg">
+                                            Grades
+                                        </Button>
+                                    </Link>
                                 </div>
                                 <div className="h-[120px] mt-auto m-4 rounded-lg bg-tertiary">
                                     <div className="flex h-[30px] m-4">
