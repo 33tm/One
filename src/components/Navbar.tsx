@@ -38,7 +38,6 @@ import {
     Wrench
 } from "lucide-react"
 import { Drawer } from "vaul"
-import { redirect } from "@/server/redirect"
 
 export function Navbar() {
     const toggle = useContext(SearchContext)
