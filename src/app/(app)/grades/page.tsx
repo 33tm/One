@@ -77,7 +77,7 @@ export default function Grades() {
                             {user?.sections
                                 .sort((a, b) => a.period - b.period)
                                 .map((section, i) => (
-                                    <Link key={section.id} href={`/grades/${section.id}`} prefetch>
+                                    <Link key={section.id} href={`/grades/${section.id}`} prefetch className="min-w-[calc(100%-64px)]">
                                         <motion.button
                                             whileHover={{
                                                 scale: 1.05,
@@ -109,7 +109,7 @@ export default function Grades() {
                                 ))}
                         </AnimatePresence>
                     </div>
-                </div >
+                </div>
             ) : (
                 <div className="flex flex-col md:flex-row h-full overflow-y-hidden">
                     <div className="flex w-full md:w-1/2 h-20 my-8 md:my-0 md:h-full">
