@@ -55,12 +55,12 @@ export default function Course() {
 
         if (!periodId) {
             const now = Date.now() / 1000
-            const period = periods.find(period => {
+            const { id } = periods.find(period => {
                 const start = period.start
                 const end = period.end
                 return start <= now && now <= end
-            })
-            setPeriod(period?.id || periods[0].id)
+            }) || periods[0]
+            setPeriod(id)
         }
 
         const categories = Object
