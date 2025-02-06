@@ -69,17 +69,16 @@ export function Navbar() {
     if (useMediaQuery("(min-width: 768px)")) {
         return (
             <div className="relative flex w-screen p-4 z-10">
-                <Link href="/" className="flex my-auto px-4">
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                        className="my-auto"
-                    >
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="my-auto"
+                >
+                    <Link href="/" className="flex my-auto px-4">
                         <Circle strokeWidth={4} />
-
-                    </motion.button>
-                </Link>
+                    </Link>
+                </motion.button>
                 <NavigationMenu>
                     <NavigationMenuList>
                         <NavigationMenuItem>
@@ -90,6 +89,11 @@ export function Navbar() {
                         <Link href="/grades" legacyBehavior passHref>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                 Grades
+                            </NavigationMenuLink>
+                        </Link>
+                        <Link href="/about" legacyBehavior passHref>
+                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                About
                             </NavigationMenuLink>
                         </Link>
                     </NavigationMenuList>
@@ -171,9 +175,14 @@ export function Navbar() {
                                     className="flex grow m-4 mt-0 rounded-lg bg-tertiary"
                                     onClick={() => setSnap(points[0])}
                                 >
-                                    <Link href="/grades" className="w-full">
-                                        <Button className="w-full h-full rounded-lg">
+                                    <Link href="/grades" className="w-1/2">
+                                        <Button className="w-full h-full rounded-l-lg rounded-r-none">
                                             Grades
+                                        </Button>
+                                    </Link>
+                                    <Link href="/about" className="w-1/2">
+                                        <Button className="w-full h-full bg-secondary rounded-l-none rounded-r-lg">
+                                            About
                                         </Button>
                                     </Link>
                                 </div>
