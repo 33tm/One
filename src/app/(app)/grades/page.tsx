@@ -20,8 +20,11 @@ export default function Grades() {
     const video = useRef<HTMLVideoElement>(null)
     const [play, setPlay] = useState(false)
 
+    // this whole thing is pretty rough :> enjoy
     useEffect(() => {
         if (user) return
+
+        const start = Date.now()
 
         function showcase() {
             setTimeout(() => {
@@ -33,26 +36,39 @@ export default function Grades() {
                         setPlay(false)
                         setTimeout(() => {
                             if (!video.current) return
+                            const second = Date.now()
                             video.current.src = "https://cdn.tttm.us/one/visualize.mp4"
-                            setTimeout(() => {
-                                setPlay(true)
-                                video.current?.play()
-                                setTimeout(() => {
-                                    setPlay(false)
+                            const interval = setInterval(() => {
+                                if (video.current && video.current.readyState === 4) {
+                                    clearInterval(interval)
                                     setTimeout(() => {
-                                        if (!video.current) return
-                                        video.current.src = "https://cdn.tttm.us/one/calculate.mp4"
-                                        showcase()
-                                    }, 300)
-                                }, 8500)
-                            }, 700)
+                                        setPlay(true)
+                                        video.current?.play()
+                                        setTimeout(() => {
+                                            setPlay(false)
+                                            setTimeout(() => {
+                                                if (!video.current) return
+                                                video.current.src = "https://cdn.tttm.us/one/calculate.mp4"
+                                                showcase()
+                                            }, 300)
+                                        }, 8500)
+                                    }, Date.now() - second > 1000 ? 0 : 1000 - (Date.now() - second))
+                                }
+                            }, 100)
                         }, 300)
                     }, 7500)
                 }, 300)
-            }, 1000)
+            }, Date.now() - start > 1000 ? 0 : 1000 - (Date.now() - start))
         }
 
-        showcase()
+        const interval = setInterval(() => {
+            if (video.current?.readyState === 4) {
+                clearInterval(interval)
+                showcase()
+            }
+        }, 100)
+
+        return () => clearInterval(interval)
     }, [user])
 
     // Using an image breaks on WebKit
