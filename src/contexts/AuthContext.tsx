@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                     }
                 }
             })
-            .catch(() => setToken("Server Offline! ~5:00PM PST"))
+            .catch(() => setError(true))
     }, [token])
 
     useEffect(() => {
