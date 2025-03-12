@@ -15,9 +15,6 @@ export default {
         ],
         unoptimized: true
     },
-    devIndicators: {
-        appIsrStatus: false
-    },
     async headers() {
         return [
             {

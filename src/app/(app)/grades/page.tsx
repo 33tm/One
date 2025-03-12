@@ -88,7 +88,7 @@ export default function Grades() {
             </title>
             {user ? (
                 <div className="h-full w-full overflow-y-auto overflow-x-hidden">
-                    <div className="m-4 md:m-24 md:mt-12 grid md:grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-3">
+                    <div className="m-4 md:m-24 md:mt-12 grid md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3">
                         <AnimatePresence>
                             {user?.sections
                                 .sort((a, b) => a.period - b.period)
