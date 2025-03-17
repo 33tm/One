@@ -79,6 +79,8 @@ export default function Grades() {
         .filter(c => !isNaN(c))
         .join(", ")
 
+    const opacity = 0.85
+
     if (loading) return <Loader />
 
     return (
@@ -97,7 +99,7 @@ export default function Grades() {
                                         <motion.button
                                             whileHover={{
                                                 scale: 1.05,
-                                                transition: { type: "spring", stiffness: 300 }
+                                                transition: { type: "spring", stiffness: 250 }
                                             }}
                                             whileTap={{
                                                 scale: 0.9,
@@ -112,9 +114,9 @@ export default function Grades() {
                                                 opacity: 1,
                                                 transition: { type: "spring", stiffness: 200, damping: 15, delay: i * 0.05 }
                                             }}
-                                            className="relative w-full group text-center text-lg py-8 rounded-xl hover:shadow-2xl transition-shadow ease-in-out duration-200"
+                                            className="relative w-full group text-center text-lg py-6 border-4 border-tertiary rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-200"
                                             style={{
-                                                backgroundImage: `linear-gradient(rgba(${background}, 0.75), rgba(${background}, 0.75)), url('${section.image}')`,
+                                                backgroundImage: `linear-gradient(rgba(${background}, ${opacity}), rgba(${background}, ${opacity})), url('${section.image}')`,
                                                 backgroundSize: "cover"
                                             }}
                                         >
