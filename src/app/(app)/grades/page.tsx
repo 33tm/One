@@ -12,13 +12,16 @@ import { Auth } from "@/components/Auth"
 import Loader from "@/components/Loader"
 
 import { Circle } from "lucide-react"
+import { toast } from "sonner"
+import server from "@/server"
 
 export default function Grades() {
-    const { user, loading } = useContext(AuthContext)
+    const { user, loading, refresh } = useContext(AuthContext)
     const { theme } = useContext(ThemeContext)
 
     const video = useRef<HTMLVideoElement>(null)
     const [play, setPlay] = useState(false)
+    const [refreshing, setRefreshing] = useState<Promise<Response>>()
 
     // this whole thing is pretty rough :> enjoy
     useEffect(() => {
@@ -71,6 +74,28 @@ export default function Grades() {
         return () => clearInterval(interval)
     }, [user])
 
+    useEffect(() => {
+        if (!refreshing) return
+        toast.promise(refreshing, {
+            loading: "Updating courses...",
+            success: () => {
+                setRefreshing(undefined)
+                refresh()
+                return "Updated courses!"
+            },
+            error: () => "Failed to update courses!",
+            duration: 500
+        })
+    }, [refresh, refreshing])
+
+    useEffect(() => {
+        const latest = localStorage.getItem("coursesLastUpdated") || "0"
+        if (Date.now() - parseInt(latest) > 1000 * 60 * 10) {
+            setRefreshing(server("/sections/refresh", { method: "POST" }))
+            localStorage.setItem("coursesLastUpdated", Date.now().toString())
+        }
+    }, [])
+
     // Using an image breaks on WebKit
     // Yippee wahoo one more context needed
     const background = theme.background
@@ -79,7 +104,7 @@ export default function Grades() {
         .filter(c => !isNaN(c))
         .join(", ")
 
-    const opacity = 0.85
+    const opacity = 0.90
 
     if (loading) return <Loader />
 
@@ -114,7 +139,7 @@ export default function Grades() {
                                                 opacity: 1,
                                                 transition: { type: "spring", stiffness: 200, damping: 15, delay: i * 0.05 }
                                             }}
-                                            className="relative w-full group text-center text-lg py-6 border-4 border-tertiary rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-200"
+                                            className="relative w-full group text-center text-lg py-6 border-4 border-tertiary rounded-xl hover:shadow-lg transition-shadow duration-200"
                                             style={{
                                                 backgroundImage: `linear-gradient(rgba(${background}, ${opacity}), rgba(${background}, ${opacity})), url('${section.image}')`,
                                                 backgroundSize: "cover"

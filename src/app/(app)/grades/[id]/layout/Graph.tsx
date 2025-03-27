@@ -120,10 +120,7 @@ export default function Graph(props: GraphProps) {
                                 && timestamp !== +e.activeLabel
                                 && setTimestamp(+e.activeLabel)}
                         >
-                            <CartesianGrid
-                                strokeDasharray="3"
-                                vertical={false}
-                            />
+                            <CartesianGrid strokeDasharray="3" />
                             <XAxis
                                 height={15}
                                 dataKey="timestamp"

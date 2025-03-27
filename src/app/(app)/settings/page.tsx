@@ -195,15 +195,13 @@ export default function Settings() {
     useEffect(() => {
         if (!refreshing) return
         toast.promise(refreshing, {
-            loading: "Rebuilding courses...",
+            loading: "Fetching courses...",
             success: () => {
                 setRefreshing(undefined)
                 refresh()
                 return "Courses rebuilt!"
             },
-            error: () => {
-                return "Failed to rebuild courses!"
-            },
+            error: () => "Failed to fetch courses!",
             duration: 500
         })
     }, [refresh, refreshing])

@@ -15,6 +15,7 @@ export function round(grade: number) {
 
 const defaultGrades = {
     weighted: false,
+    rounded: false,
     periods: {},
     assignments: {},
     scales: {},
@@ -36,14 +37,14 @@ export function useGrades(id: string) {
     useEffect(() => {
         if (!sectionsRefreshing) return
         toast.promise(sectionsRefreshing, {
-            loading: "Rebuilding courses...",
+            loading: "Fetching courses...",
             success: () => {
                 setSectionsRefreshing(undefined)
                 authRefresh()
-                return "Courses rebuilt!"
+                return "Fetched courses!"
             },
             error: () => {
-                return "Failed to rebuild courses!"
+                return "Failed to fetch courses!"
             },
             duration: 500
         })
@@ -62,6 +63,11 @@ export function useGrades(id: string) {
                 }
 
                 const grades = await res.json() as Grades
+                if (!Object.values(grades.periods).length) {
+                    setError("No grades found!")
+                    return
+                }
+
                 const calculated = calculate(grades)
 
                 setGrades(calculated)
@@ -95,9 +101,11 @@ export function useGrades(id: string) {
 
                             const target = grades.periods[period.id].grade
 
+                            let tries = 0
                             while (Math.abs(target - g.periods[period.id].calculated) < 0.05) {
                                 item.grade = Math.round((item.grade + 0.1) * 100) / 100
                                 const calculated = calculate(g)
+
                                 if (validate(grades, calculated)) {
                                     setGrades(calculated)
                                     setCopy(structuredClone(calculated))
@@ -105,6 +113,8 @@ export function useGrades(id: string) {
                                     setError(undefined)
                                     break
                                 }
+
+                                if (++tries > 100) break
                             }
                         })
                     })
@@ -120,6 +130,11 @@ export function useGrades(id: string) {
         if (grades) {
             const calculated = calculate(grades)
             if (validate(grades, calculated)) {
+                if (!Object.values(calculated.periods).length) {
+                    setError("No grades found!")
+                    refresh()
+                    return
+                }
                 setGrades(calculated)
                 setCopy(structuredClone(calculated))
             } else {
@@ -410,8 +425,9 @@ export interface Scale {
 
 export interface Grades {
     weighted: boolean
+    rounded: boolean
     periods: { [id: string]: Period }
     assignments: { [id: string]: Assignment }
-    scales: { [id: string]: Scale },
+    scales: { [id: string]: Scale }
     timestamp: number
 }
