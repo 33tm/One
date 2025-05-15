@@ -58,6 +58,10 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
                     popup.current?.close()
                     popup.current = null
                 } else {
+                    if (res.status === 521) {
+                        setError(true)
+                        return
+                    }
                     setUser(null)
                     if (token) return
                     const ws = websocket("/auth")
