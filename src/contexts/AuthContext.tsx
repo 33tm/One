@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 
     return (
         <AuthContext.Provider value={{ user, loading, auth, refresh, logout }}>
-            {error ? <Error>Server offline!</Error> : children}
+            {error ? <Error>Server upgrade in progress ~5:00PM PDT</Error> : children}
         </AuthContext.Provider>
     )
 }
