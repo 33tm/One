@@ -26,6 +26,7 @@ function Assignment(props: AssignmentProps) {
         animate
     } = props
     const {
+        id,
         custom,
         grade,
         max,
@@ -85,10 +86,12 @@ function Assignment(props: AssignmentProps) {
                 />
                 <div className={`flex outline outline-secondary rounded-md ${dropped && "text-secondary line-through"} transition-all duration-200`}>
                     <Input
+                        type="number"
                         disabled={dropped}
                         className={`w-20 text-center ${isNew && "rounded-r-none"}`}
                         placeholder={isNew ? "0" : (grade ? grade.toString() : "-")}
                         defaultValue={(custom && custom !== grade) ? custom.toString() : ""}
+                        onKeyDown={({ key }) => key === "/" && isNew && document.getElementById(id)?.focus()}
                         onChange={({ target }) => {
                             const grade = parseFloat(target.value)
                             modify(isNaN(grade) ? null : grade, "grade")
@@ -96,6 +99,8 @@ function Assignment(props: AssignmentProps) {
                     />
                     {isNew ? (
                         <Input
+                            id={id}
+                            type="number"
                             disabled={dropped}
                             className="w-20 text-center  rounded-l-none"
                             placeholder={max ? max.toString() : "10"}
