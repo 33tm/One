@@ -42,7 +42,9 @@ export function useSchedule() {
             const query = user ? new URLSearchParams({
                 period0: hasPeriod(0),
                 period8: hasPeriod(8),
-                gradYear: `${user.class}`
+                ...(user.class && {
+                    gradYear: user.class.toString()
+                })
             }).toString() : ""
 
             fetch(`https://gunnwatt.web.app/api/next-period?${query}&timestamp=`, { signal: controller.signal })
