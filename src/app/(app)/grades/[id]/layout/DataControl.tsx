@@ -28,7 +28,7 @@ export default function DataControl(props: DataControlProps) {
             </Button>
             <Button
                 onClick={refresh}
-                disabled={refreshing || (production && now - timestamp < 1000 * 60 * 10)}
+                disabled={refreshing || (production && now - timestamp < 1000 * 10)}
                 className="w-12 rounded-l-none"
             >
                 <RefreshCw className={`${refreshing && "animate-spin"}`} />
