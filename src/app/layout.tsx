@@ -10,8 +10,8 @@ import Background from "@/components/Background"
 import "@/app/globals.css"
 
 export const metadata: Metadata = {
-    title: "One",
-    description: "Schoology Grade Calculator",
+    title: "One - Schoology Grade Calculator",
+    description: "Grade Calculator for Schoology. Supports calculating theoretical \"what-if\" grades, and graphing historical grade progression.",
     referrer: "no-referrer"
 }
 
