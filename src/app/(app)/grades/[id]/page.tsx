@@ -159,10 +159,10 @@ export default function Course() {
                     Calculate
                 </TabsTrigger>
                 <TabsTrigger
-                    value="visualize"
+                    value="history"
                     className="flex-1"
                 >
-                    Visualize
+                    History
                 </TabsTrigger>
             </TabsList>
             <TabsContent
@@ -198,7 +198,7 @@ export default function Course() {
                 )}
             </TabsContent>
             <TabsContent
-                value="visualize"
+                value="history"
                 className="m-0"
             >
                 {desktop ? (

@@ -1,4 +1,5 @@
 // Contrary to everything else in this folder, this isn't a server component.
+// 2025.10.05 update - Wow I should really rewrite this entire thing
 
 const url = process.env.NODE_ENV === "development"
     ? typeof window !== "undefined"

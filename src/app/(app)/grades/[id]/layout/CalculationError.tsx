@@ -19,14 +19,7 @@ interface CalculationErrorProps {
     refreshing: boolean
     dismiss: () => void
 }
-export default function CalculationError(props: CalculationErrorProps) {
-    const {
-        section,
-        period,
-        categories,
-        refreshing,
-        dismiss
-    } = props
+export default function CalculationError({ section, period, categories, refreshing, dismiss }: CalculationErrorProps) {
     return (
         <>
             <title>

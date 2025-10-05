@@ -362,6 +362,12 @@ function validate(grades: Grades, calculated: Grades) {
     const periods = Object.values(grades.periods)
     return periods.every(period => {
         const p = calculated.periods[period.id]
+
+        if (Math.round(p.calculated) === period.grade) {
+            toast.info("Grades are automatically rounded for this class.")
+            return true
+        }
+
         // Schoology API's category weights are not precise enough,
         // So we have to set an arbitrary threshold of error we are fine with.
         if (Math.abs(period.grade - p.calculated) > 0.05)

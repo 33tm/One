@@ -16,9 +16,6 @@ import { Button } from "@/components/ui/button"
 
 import {
     NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
     NavigationMenuList,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu"
@@ -81,20 +78,17 @@ export function Navbar() {
                 </motion.button>
                 <NavigationMenu>
                     <NavigationMenuList>
-                        <NavigationMenuItem>
-                            <NavigationMenuContent>
-                                <NavigationMenuLink>Link</NavigationMenuLink>
-                            </NavigationMenuContent>
-                        </NavigationMenuItem>
-                        <Link href="/grades" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                Grades
-                            </NavigationMenuLink>
+                        <Link
+                            href="/grades"
+                            className={navigationMenuTriggerStyle()}
+                        >
+                            Grades
                         </Link>
-                        <Link href="/about" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                About
-                            </NavigationMenuLink>
+                        <Link
+                            href="/about"
+                            className={navigationMenuTriggerStyle()}
+                        >
+                            About
                         </Link>
                     </NavigationMenuList>
                 </NavigationMenu>

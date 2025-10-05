@@ -1,20 +1,21 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useContext } from "react"
+
 import { DateTime } from "luxon"
 
 import { AuthContext } from "@/contexts/AuthContext"
-
-import { redirect } from "@/server/redirect"
 
 import Loader from "@/components/Loader"
 
 export default function User() {
     const { user, loading } = useContext(AuthContext)
+    const router = useRouter()
 
     if (loading) return <Loader />
 
-    if (!user) return redirect("/")
+    if (!user) return router.push("/")
 
     return (
         <div className="h-full flex">
@@ -35,7 +36,6 @@ export default function User() {
                 </p>
                 <p className="mt-6">Exciting, isn{"'"}t it...</p>
             </div>
-            {/* <p className="absolute bottom-28 w-full text-center text-xs"></p> */}
         </div>
     )
 }

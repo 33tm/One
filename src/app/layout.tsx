@@ -11,7 +11,7 @@ import "@/app/globals.css"
 
 export const metadata: Metadata = {
     title: "One - Schoology Grade Calculator",
-    description: "Grade Calculator for Schoology. Supports calculating theoretical \"what-if\" grades, and graphing historical grade progression.",
+    description: "Grade calculator for Schoology: calculate theoretical \"what-if\" grades and view grade history.",
     referrer: "no-referrer"
 }
 

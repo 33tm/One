@@ -1,10 +1,10 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 
 import { search, type School } from "@/server/search"
-import { redirect } from "@/server/redirect"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,8 @@ import { ChevronLeft, Circle } from "lucide-react"
 import { CgSpinner } from "react-icons/cg"
 
 export function OAuth({ token, origin, pausd }: { token: string, origin: string, pausd: boolean }) {
+    const router = useRouter()
+
     const [query, setQuery] = useState("")
     const [schools, setSchools] = useState<School[]>()
     const [school, setSchool] = useState<School | null>(null)
@@ -81,7 +83,7 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
     if (pausd) {
         // Maybe this isn't a great thing to do without prompting the user ...
         // Could target advertisements to non PAUSD users who doesn't love those
-        // redirect(oauth("pausd.schoology.com"))
+        // router.push(oauth("pausd.schoology.com"))
         // return <></>
     }
 
@@ -100,21 +102,11 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
                             </Button>
                             <Input
                                 ref={searchBox}
-                                className="text-lg rounded-none"
+                                className="text-lg rounded-l-none"
                                 placeholder="Search"
                                 defaultValue={query}
                                 onChange={({ target }) => setQuery(target.value)}
                             />
-                            <Button
-                                className="rounded-l-none"
-                                disabled={!school || loading || redirecting}
-                                onClick={() => {
-                                    setRedirecting(true)
-                                    redirect(oauth(school?.domain || "app.schoology.com"))
-                                }}
-                            >
-                                Open
-                            </Button>
                         </>
                     ) : (
                         <>
@@ -127,13 +119,10 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
                             </Button>
                             <Input
                                 disabled
-                                className="text-lg rounded-none"
+                                className="text-lg rounded-l-none"
                                 placeholder="Search"
                                 defaultValue={query}
                             />
-                            <Button disabled className="rounded-l-none">
-                                Open
-                            </Button>
                         </>
                     )}
                 </div>
@@ -141,17 +130,17 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
                     <AnimatePresence mode="wait">
                         {!loading && schools && schools[0] && schools[0].title !== "No Schools Found" ? (
                             schools
-                                .filter(({ id }) => id !== 2573996462)
+                                .filter(({ id }) => id !== 208315110 && id !== 2573996462)
                                 .map(s => (
-                                    <motion.button
+                                    <motion.div
                                         key={s.id + s.title}
-                                        className={`p-3 w-full text-left rounded-lg font-bold md:hover:shadow-2xl md:transition-shadow transition-colors duration-200 ${((s.id === school?.id || s.location === school?.location) && (s.domain === school?.domain && s.domain !== "app.schoology.com")) ? "bg-primary text-tertiary" : "bg-tertiary"}`}
+                                        className={`p-3 w-full text-left rounded-lg font-bold md:hover:shadow-2xl md:transition-shadow transition-colors duration-200 ${s.id === school?.id ? "bg-primary text-tertiary" : "bg-tertiary hover:cursor-pointer"}`}
                                         whileHover={{
-                                            scale: 1.05,
+                                            scale: s.id === school?.id ? 1 : 1.05,
                                             transition: { type: "spring", stiffness: 300, damping: 15 }
                                         }}
                                         whileTap={{
-                                            scale: 0.95,
+                                            scale: s.id === school?.id ? 1 : 0.95,
                                             transition: { type: "spring", stiffness: 300, damping: 15 }
                                         }}
                                         initial={{ opacity: 0 }}
@@ -161,9 +150,22 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
                                         onClick={() => setSchool(s)}
                                     >
                                         <p className="text-xl truncate">{s.title}</p>
-                                        <p className="text-secondary truncate">{s.location}</p>
-                                        <p className="text-secondary truncate">{s.domain || "app.schoology.com"}</p>
-                                    </motion.button>
+                                        {school?.id !== s.id && <p className="text-secondary truncate">{s.location}</p>}
+                                        <p className={`${s.id === school?.id ? "text-background text-xl" : "text-secondary"} truncate`}>{s.domain || "app.schoology.com"}</p>
+                                        {school?.id === s.id && (
+                                            <Button
+                                                className="mt-2 w-full bg-background"
+                                                variant="secondary"
+                                                disabled={!school || loading || redirecting}
+                                                onClick={() => {
+                                                    setRedirecting(true)
+                                                    router.push(oauth(school?.domain || "app.schoology.com"))
+                                                }}
+                                            >
+                                                Continue
+                                            </Button>
+                                        )}
+                                    </motion.div>
                                 ))
                         ) : (
                             <motion.div
@@ -253,7 +255,7 @@ export function OAuth({ token, origin, pausd }: { token: string, origin: string,
                     <motion.button
                         onClick={() => {
                             setPausdLogin(true)
-                            redirect(oauth("pausd.schoology.com"))
+                            router.push(oauth("pausd.schoology.com"))
                         }}
                         className={`flex h-[22dvh] w-full bg-primary text-lg font-bold text-tertiary ${pausdLogin || "rounded-t-2xl"}`}
                         animate={{ height: pausdLogin ? "100dvh" : "22dvh" }}
