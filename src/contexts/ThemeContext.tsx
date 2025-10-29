@@ -141,6 +141,6 @@ export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode
         <ThemeContext.Provider value={{ theme, themes, setTheme }}>
             <meta name="theme-color" content={theme.background} />
             {children}
-        </ThemeContext.Provider >
+        </ThemeContext.Provider>
     )
 }

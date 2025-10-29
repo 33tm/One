@@ -120,7 +120,12 @@ export default function Grades() {
                             {user?.sections
                                 .sort((a, b) => a.period - b.period)
                                 .map((section, i) => (
-                                    <Link key={section.id} href={`/grades/${section.id}`} prefetch className="min-w-[calc(100%-64px)]">
+                                    <Link
+                                        key={section.id}
+                                        href={`/grades/${section.id}`}
+                                        prefetch={false}
+                                        className="min-w-[calc(100%-64px)]"
+                                    >
                                         <motion.button
                                             whileHover={{
                                                 scale: 1.05,
