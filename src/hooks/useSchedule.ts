@@ -80,7 +80,7 @@ export function useSchedule() {
                 .catch(() => { })
         }
 
-        update()
+        if (user && user.gunn) update()
 
         return () => controller.abort(null)
     }, [user])

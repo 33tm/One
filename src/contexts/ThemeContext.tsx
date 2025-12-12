@@ -85,7 +85,7 @@ const defaultThemeContext = {
 export const ThemeContext = createContext<ThemeContextType>(defaultThemeContext)
 
 export const ThemeProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    const [theme, setTheme] = useState<Theme>(themes[4])
+    const [theme, setTheme] = useState<Theme>(themes[1])
     const favicon = useFavicon()
 
     useEffect(() => {
