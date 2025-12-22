@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next"
+import Script from "next/script"
 
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -27,6 +28,11 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
         <html lang="en">
             <Analytics />
             <SpeedInsights />
+            <Script
+                defer
+                src="https://static.cloudflareinsights.com/beacon.min.js"
+                data-cf-beacon={JSON.stringify({ token: "9a49aef11f8d4d00992417224d560f6b" })}
+            />
             <Background>
                 <ThemeProvider>
                     {children}

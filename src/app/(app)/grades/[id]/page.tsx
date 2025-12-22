@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { toast } from "sonner"
 
 import { useParams, useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
@@ -129,12 +128,10 @@ export default function Course() {
     }
 
     if (desktop) {
-        if (assignments.length > 10 && warningCategoryId !== categoryId) {
+        if (assignments.length > 10 && warningCategoryId !== categoryId)
             setWarningCategoryId(categoryId)
-            toast.info("Animations disabled for performance.", { duration: 1500 })
-        } else if (assignments.length <= 10 && warningCategoryId === categoryId) {
+        else if (assignments.length <= 10 && warningCategoryId === categoryId)
             setWarningCategoryId(undefined)
-        }
     }
 
     return (

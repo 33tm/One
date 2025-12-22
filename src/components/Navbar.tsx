@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useContext, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "motion/react"
 
 import { AuthContext } from "@/contexts/AuthContext"
@@ -40,7 +40,10 @@ export function Navbar() {
     const toggle = useContext(SearchContext)
     const { user, loading, logout } = useContext(AuthContext)
 
+    const isDesktop = useMediaQuery("(min-width: 768px)")
+
     const [open, setOpen] = useState(false)
+    const [keyboardOpen, setKeyboardOpen] = useState(false)
 
     const points = useMemo(() => {
         if (loading) return ["75px"]
@@ -50,20 +53,52 @@ export function Navbar() {
 
     const [snap, setSnap] = useState<number | string | null>(points[0])
 
-    useLayoutEffect(() => {
-        document.addEventListener("focusin", e => e.stopImmediatePropagation())
-        document.addEventListener("focusout", e => e.stopImmediatePropagation())
+    useEffect(() => {
+        const stopPropagation = (e: FocusEvent) => e.stopImmediatePropagation()
+        document.addEventListener("focusin", stopPropagation)
+        document.addEventListener("focusout", stopPropagation)
         return () => {
-            document.removeEventListener("focusin", e => e.stopImmediatePropagation())
-            document.removeEventListener("focusout", e => e.stopImmediatePropagation())
+            document.removeEventListener("focusin", stopPropagation)
+            document.removeEventListener("focusout", stopPropagation)
         }
     }, [])
+
+    const baselineHeight = useRef<number | null>(null)
+
+    useEffect(() => {
+        if (isDesktop) {
+            setKeyboardOpen(false)
+            return
+        }
+
+        const viewport = typeof window !== "undefined" ? window.visualViewport : null
+        if (!viewport) return
+
+        const handleResize = () => {
+            if (baselineHeight.current === null)
+                baselineHeight.current = viewport.height
+
+            const delta = (baselineHeight.current ?? viewport.height) - viewport.height
+
+            if (Math.abs(delta) < 50) {
+                baselineHeight.current = viewport.height
+                setKeyboardOpen(false)
+                return
+            }
+
+            setKeyboardOpen(delta > 150)
+        }
+
+        handleResize()
+        viewport.addEventListener("resize", handleResize)
+        return () => viewport.removeEventListener("resize", handleResize)
+    }, [isDesktop])
 
     useEffect(() => {
         setSnap(points[0])
     }, [user, points])
 
-    if (useMediaQuery("(min-width: 768px)")) {
+    if (isDesktop) {
         return (
             <div className="relative flex w-screen p-4 z-10">
                 <motion.button
@@ -93,13 +128,13 @@ export function Navbar() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <div className="flex ml-auto space-x-2">
-                    <Link
+                    {/* <Link
                         href="https://gunnwatt.web.app"
                         target="_blank"
                         className="pr-2 my-auto transition-opacity ease-in duration-200 hover:opacity-75 hover:cursor-pointer"
-                    >
+                    > */}
                         <Schedule />
-                    </Link>
+                    {/* </Link> */}
                     {user ? (
                         <>
                             <Button
@@ -147,7 +182,7 @@ export function Navbar() {
                 </div>
             </div>
         )
-    } else {
+    } else if (!keyboardOpen) {
         return (
             <Drawer.Root open dismissible={false} modal={false} snapPoints={points} activeSnapPoint={snap} setActiveSnapPoint={setSnap} snapToSequentialPoint>
                 <Drawer.Portal>
@@ -226,5 +261,7 @@ export function Navbar() {
                 </Drawer.Portal>
             </Drawer.Root>
         )
+    } else {
+        return null
     }
 }

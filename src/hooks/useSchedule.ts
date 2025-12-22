@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "@/contexts/AuthContext"
-import { useMediaQuery } from "./useMediaQuery"
+import { useMediaQuery } from "@/hooks/useMediaQuery"
 
 export function useSchedule() {
     const { user } = useContext(AuthContext)
@@ -22,6 +22,10 @@ export function useSchedule() {
         setTimeout(() => setLoading(false), 2400)
         setTimeout(() => setMessage(undefined), 2400)
     }, [desktop, user])
+
+    useEffect(() => {
+        if (desktop) setMessage(undefined)
+    }, [desktop])
 
     useEffect(() => {
         const toTime = (time: number) => `${Math.floor(time / 60 - (+(time / 60 >= 13) * 12))}:${(time % 60).toString().padStart(2, "0")}`
@@ -80,7 +84,8 @@ export function useSchedule() {
                 .catch(() => { })
         }
 
-        if (user && user.gunn) update()
+        // if (user && user.gunn) update()
+        // Gunn WATT's firestore and functions bill ended up costing quite a bit ;; even more than One itself
 
         return () => controller.abort(null)
     }, [user])
